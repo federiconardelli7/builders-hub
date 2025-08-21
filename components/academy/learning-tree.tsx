@@ -40,6 +40,16 @@ const learningPaths: CourseNode[] = [
     position: { x: 50, y: 150 },
     mobileOrder: 2
   },
+  {
+    id: "customizing-evm",
+    name: "Customizing the EVM",
+    description: "Add custom precompiles and configure the EVM",
+    slug: "customizing-evm",
+    category: "VM Customization",
+    dependencies: ["avalanche-fundamentals"],
+    position: { x: 85, y: 150 },
+    mobileOrder: 6
+  },
 
   // Third Layer - Branching paths
   {
@@ -53,56 +63,65 @@ const learningPaths: CourseNode[] = [
     mobileOrder: 3
   },
   {
+    id: "l1-native-tokens",
+    name: "L1 Native Tokens",
+    description: "Design L1 economics with transaction fees and staking",
+    slug: "l1-tokenomics",
+    category: "L1 Tokenomics",
+    dependencies: ["avalanche-fundamentals"],
+    position: { x: 50, y: 350 },
+    mobileOrder: 4
+  },
+  {
     id: "permissioned-l1s",
     name: "Permissioned L1s",
     description: "Create and manage permissioned blockchains with Proof of Authority",
     slug: "permissioned-l1s",
     category: "L1 Development",
     dependencies: ["avalanche-fundamentals"],
-    position: { x: 40, y: 350 },
+    position: { x: 85, y: 350 },
     mobileOrder: 7
   },
+  // Fourth Layer - Advanced topics
   {
-    id: "l1-tokenomics",
-    name: "L1 Tokenomics",
-    description: "Design L1 economics with transaction fees and staking",
-    slug: "l1-tokenomics",
-    category: "L1 Tokenomics",
-    dependencies: ["avalanche-fundamentals"],
-    position: { x: 65, y: 350 },
-    mobileOrder: 6
-  },
-  {
-    id: "customizing-evm",
-    name: "Customizing the EVM",
-    description: "Add custom precompiles and configure the EVM",
-    slug: "customizing-evm",
-    category: "VM Customization",
-    dependencies: ["avalanche-fundamentals"],
-    position: { x: 90, y: 350 },
-    mobileOrder: 8
-  },
-
-  // Fourth Layer - Advanced topics (adjusted for no overlap)
-  {
-    id: "interchain-token-transfer",
-    name: "Interchain Token Transfer",
+    id: "erc-20-bridging",
+    name: "ERC-20 Bridging",
     description: "Transfer assets between chains using Interchain Messaging",
     slug: "interchain-token-transfer",
     category: "Interoperability",
     dependencies: ["interchain-messaging"],
     position: { x: 5, y: 550 },
-    mobileOrder: 4
+    mobileOrder: 7
   },
   {
-    id: "icm-chainlink",
-    name: "Chainlink via ICM",
-    description: "Use Chainlink services on an L1 through the Interchain Messaging",
-    slug: "icm-chainlink",
+    id: "cross-chain-l1-native-tokens",
+    name: "Cross-Chain L1 Native Tokens",
+    description: "Bridge native tokens between L1 chains",
+    slug: "interchain-token-transfer",
     category: "Interoperability",
-    dependencies: ["interchain-messaging"],
-    position: { x: 35, y: 550 },
-    mobileOrder: 5
+    dependencies: ["erc-20-bridging", "l1-native-tokens"],
+    position: { x: 20, y: 750 },
+    mobileOrder: 8
+  },
+  {
+    id: "permissionless-l1s",
+    name: "Permissionless L1s",
+    description: "Create and manage permissionless blockchains",
+    slug: "permissioned-l1s",
+    category: "L1 Development",
+    dependencies: ["l1-native-tokens", "permissioned-l1s"],
+    position: { x: 62, y: 550 },
+    mobileOrder: 9
+  },
+  {
+    id: "access-restriction",
+    name: "Access Restriction",
+    description: "Implement access control mechanisms for L1s",
+    slug: "permissioned-l1s",
+    category: "L1 Development",
+    dependencies: ["permissioned-l1s"],
+    position: { x: 95, y: 550 },
+    mobileOrder: 10
   },
 ];
 
@@ -171,7 +190,7 @@ export default function LearningTree() {
   }, [hoveredNode]);
 
   // Calculate SVG dimensions based on node positions
-  const maxY = Math.max(...learningPaths.map(node => node.position.y)) + 200;
+  const maxY = Math.max(...learningPaths.map(node => node.position.y)) + 250;
 
   const drawConnections = () => {
     const connections: React.JSX.Element[] = [];
