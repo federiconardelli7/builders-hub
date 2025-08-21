@@ -42,9 +42,9 @@ export default function HomePage(): React.ReactElement {
     url: page.url,
     data: {
       title: page.data.title,
-      description: page.data.description,
+      description: page.data.description || '',
       topics: page.data.topics,
-      date: page.data.date,
+      date: page.data.date instanceof Date ? page.data.date.toISOString() : page.data.date,
     },
     file: {
       name: page.file.name,
