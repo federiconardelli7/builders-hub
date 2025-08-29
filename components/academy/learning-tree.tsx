@@ -133,9 +133,9 @@ const entrepreneurLearningPaths: CourseNode[] = [
   // Foundation Layer
   {
     id: "codebase-foundation",
-    name: "Codebase Foundation",
+    name: "Foundations of a Web3 Venture",
     description: "Foundation course covering essential blockchain and business fundamentals",
-    slug: "codebase-entrepreneur-academy",
+    slug: "codebase-entrepreneur-fundamentals",
     category: "Fundamentals",
     position: { x: 50, y: 0 },
     mobileOrder: 1
@@ -143,20 +143,20 @@ const entrepreneurLearningPaths: CourseNode[] = [
 
   // Second Layer  
   {
-    id: "go-to-market",
-    name: "Go To Market",
+    id: "codebase-gtm",
+    name: "Go To Market Strategist",
     description: "Master go-to-market strategies for Web3 products and services",
-    slug: "codebase-entrepreneur-academy",
+    slug: "codebase-entrepreneur-go-to-market",
     category: "Business Strategy",
     dependencies: ["codebase-foundation"],
     position: { x: 30, y: 200 },
     mobileOrder: 2
   },
   {
-    id: "web3-community-architect",
+    id: "codebase-web3-community-architect",
     name: "Web3 Community Architect",
     description: "Learn to build and manage thriving Web3 communities",
-    slug: "codebase-entrepreneur-academy",
+    slug: "codebase-entrepreneur-community",
     category: "Community",
     dependencies: ["codebase-foundation"],
     position: { x: 70, y: 200 },
@@ -165,12 +165,12 @@ const entrepreneurLearningPaths: CourseNode[] = [
 
   // Third Layer
   {
-    id: "fundraising",
-    name: "Fundraising",
+    id: "codebase-fundraising",
+    name: "Fundraising & Finance Pro",
     description: "Master fundraising strategies and financial management in Web3",
-    slug: "codebase-entrepreneur-academy",
+    slug: "codebase-entrepreneur-fundraising",
     category: "Finance",
-    dependencies: ["go-to-market", "web3-community-architect"],
+    dependencies: ["codebase-web3-community-architect", "codebase-gtm"],
     position: { x: 50, y: 400 },
     mobileOrder: 4
   }

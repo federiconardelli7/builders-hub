@@ -86,7 +86,7 @@ export function AcademyContent({ blogs }: AcademyContentProps) {
                                             : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                                     )}
                                 >
-                                    Avalanche
+                                    Developer
                                 </button>
                                 <button
                                     onClick={() => setPathType('entrepreneur')}
@@ -105,7 +105,7 @@ export function AcademyContent({ blogs }: AcademyContentProps) {
                         <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white mb-8">
                             Learning Path for{" "}
                             <span className="text-red-600">
-                                {pathType === 'avalanche' ? 'Avalanche' : 'Codebase Entrepreneur Academy'}
+                                {pathType === 'avalanche' ? 'Avalanche Developer Academy' : 'Codebase Entrepreneur Academy'}
                             </span>
                         </h2>
 
