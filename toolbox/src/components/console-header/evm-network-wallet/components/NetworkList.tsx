@@ -1,31 +1,40 @@
 import { DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { NetworkMenuItem } from './NetworkMenuItem'
+import { L1ListItem } from '@/stores/l1ListStore'
 
 interface NetworkListProps {
-  availableNetworks: any[]
-  getNetworkBalance: (network: any) => number | string
-  isNetworkActive: (network: any) => boolean
-  onNetworkSelect: (network: any) => void
+  availableNetworks: L1ListItem[]
+  getNetworkBalance: (network: L1ListItem) => number | string
+  isNetworkActive: (network: L1ListItem) => boolean
+  onNetworkSelect: (network: L1ListItem) => void
+  onNetworkRemove?: (network: L1ListItem) => void
+  isEditMode: boolean
 }
 
 export function NetworkList({ 
   availableNetworks, 
-  getNetworkBalance, 
+  getNetworkBalance,
   isNetworkActive, 
-  onNetworkSelect 
+  onNetworkSelect,
+  onNetworkRemove,
+  isEditMode
 }: NetworkListProps) {
   return (
     <>
-      <DropdownMenuLabel>Select Network</DropdownMenuLabel>
+      <div className="flex items-center justify-between px-2 py-1.5">
+        <DropdownMenuLabel className="px-0">Select Network</DropdownMenuLabel>
+      </div>
       <DropdownMenuSeparator />
 
       {availableNetworks.map((network) => (
         <NetworkMenuItem
           key={network.id}
           network={network}
-          balance={getNetworkBalance(network)}
           isActive={isNetworkActive(network)}
           onSelect={onNetworkSelect}
+          isEditMode={isEditMode}
+          onRemove={onNetworkRemove}
+          balance={getNetworkBalance(network)}
         />
       ))}
     </>

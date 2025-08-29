@@ -1,33 +1,60 @@
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { Globe, Check } from 'lucide-react'
+import { Globe, Check, Trash2 } from 'lucide-react'
+import { L1ListItem } from '@/stores/l1ListStore'
 
 interface NetworkMenuItemProps {
-  network: {
-    id: string
-    name: string
-    symbol: string
-    logoUrl?: string
-  }
-  balance: number | string
+  network: L1ListItem
   isActive: boolean
-  onSelect: (network: any) => void
+  onSelect: (network: L1ListItem) => void
+  isEditMode?: boolean
+  onRemove?: (network: L1ListItem) => void
+  balance?: number | string
 }
 
-export function NetworkMenuItem({ network, balance, isActive, onSelect }: NetworkMenuItemProps) {
+const isCChain = (evmChainId: number | undefined) => {
+  return evmChainId === 43113 || evmChainId === 43114
+}
+
+export function NetworkMenuItem({ 
+  network, 
+  isActive, 
+  onSelect, 
+  isEditMode = false, 
+  onRemove,
+  balance = 0
+}: NetworkMenuItemProps) {
+
   const formatBalance = (balance: number | string) => {
     const num = typeof balance === 'string' ? parseFloat(balance) : balance
     if (isNaN(num)) return '0'
     return num.toFixed(4)
   }
 
+  const handleSelect: React.ComponentProps<typeof DropdownMenuItem>["onSelect"] = (e) => {
+    // Prevent the dropdown from auto-closing; parent decides when to close
+    e.preventDefault()
+    if (isEditMode && onRemove && !isCChain(network.evmChainId)) {
+      onRemove(network)
+    } else if (!isEditMode) {
+      onSelect(network)
+    }
+  }
+
+  const canRemove = isEditMode && !isCChain(network.evmChainId)
+
   return (
     <DropdownMenuItem
-      onClick={() => onSelect(network)}
-      className="flex items-center justify-between p-3 cursor-pointer"
+      onSelect={handleSelect}
+      className={`flex items-center justify-between p-3 ${
+        canRemove ? 'cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/20' : 
+        isEditMode && isCChain(network.evmChainId) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+      }`}
     >
       <div className="flex items-center gap-3">
-        <div className="flex-shrink-0 w-5 h-5 rounded-md overflow-hidden flex items-center justify-start">
-          {network.logoUrl ? (
+        <div className="flex-shrink-0 w-5 h-5 rounded-md overflow-hidden flex items-center justify-center">
+          {isEditMode && !isCChain(network.evmChainId) ? (
+            <Trash2 className="w-4 h-4 text-red-500" />
+          ) : network.logoUrl ? (
             <img 
               src={network.logoUrl} 
               alt={`${network.name} logo`} 
@@ -38,15 +65,20 @@ export function NetworkMenuItem({ network, balance, isActive, onSelect }: Networ
           )}
         </div>
         <div className="flex flex-col">
-          <span className="font-medium">{network.name}</span>
+          <span className={`font-medium ${
+            canRemove ? 'text-red-600 dark:text-red-400' : ''
+          }`}>
+            {network.name}
+          </span>
           <span className="text-xs text-muted-foreground">
-            Balance: {formatBalance(balance)} {network.symbol}
+            {isEditMode && !isCChain(network.evmChainId) ? 'Click to remove' : 
+             isEditMode && isCChain(network.evmChainId) ? 'Cannot be removed' :
+             `Balance: ${formatBalance(balance)} ${network.coinName}`}
           </span>
         </div>
       </div>
-      {isActive && (
-        <Check className="text-xs">
-          Active
+      {!isEditMode && isActive && (
+        <Check className="w-4 h-4 text-green-600">
         </Check>
       )}
     </DropdownMenuItem>

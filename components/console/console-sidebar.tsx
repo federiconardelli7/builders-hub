@@ -45,7 +45,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AvalancheLogo } from "@/components/navigation/avalanche-logo";
 
-
 // Navigation data structure matching user specification
 const data = {
   navMain: [
@@ -107,6 +106,11 @@ const data = {
           icon: Server,
         },
         {
+          title: "L1 Validator Balance",
+          url: "/console/layer-1/l1-validator-balance",
+          icon: Coins,
+        },
+        {
           title: "Explorer Setup",
           url: "/console/layer-1/explorer-setup",
           icon: Telescope,
@@ -142,6 +146,11 @@ const data = {
           title: "Validator Manager Setup",
           url: "/console/permissioned-l1s/validator-manager-setup",
           icon: SquareTerminal,
+        },
+        {
+          title: "Multisig Setup",
+          url: "/console/permissioned-l1s/multisig-setup",
+          icon: ShieldUser,
         },
         {
           title: "Query Validator Set",
