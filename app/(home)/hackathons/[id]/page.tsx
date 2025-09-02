@@ -27,12 +27,13 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const { hackathons } = await getFilteredHackathons({});
-  return hackathons.map((hackathon) => ({
-    id: hackathon.id,
-  }));
-}
+// Commented out to avoid build-time database dependency
+// export async function generateStaticParams() {
+//   const { hackathons } = await getFilteredHackathons({});
+//   return hackathons.map((hackathon) => ({
+//     id: hackathon.id,
+//   }));
+// }
 
 export async function generateMetadata({
   params,
