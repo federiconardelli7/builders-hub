@@ -76,14 +76,14 @@ export function AcademyContent({ blogs }: AcademyContentProps) {
                 <div className="mb-20">
                     <div className="text-center mb-12">
                         <div className="flex justify-center mb-6">
-                            <div className="inline-flex items-center gap-0 p-1 rounded-full bg-gradient-to-r from-zinc-50 to-zinc-100 dark:from-zinc-950/20 dark:to-zinc-950/30 border border-zinc-200 dark:border-zinc-800/30">
+                            <div className="inline-flex items-center gap-0 p-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-lg">
                                 <button
                                     onClick={() => setPathType('avalanche')}
                                     className={cn(
                                         "px-6 py-2 rounded-full text-sm font-medium transition-all duration-200",
                                         pathType === 'avalanche'
-                                            ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm"
-                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                                            ? "bg-red-500 text-white shadow-sm"
+                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700/50"
                                     )}
                                 >
                                     Developer
@@ -93,8 +93,8 @@ export function AcademyContent({ blogs }: AcademyContentProps) {
                                     className={cn(
                                         "px-6 py-2 rounded-full text-sm font-medium transition-all duration-200",
                                         pathType === 'entrepreneur'
-                                            ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm"
-                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                                            ? "bg-red-500 text-white shadow-sm"
+                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700/50"
                                     )}
                                 >
                                     Entrepreneur
@@ -105,8 +105,9 @@ export function AcademyContent({ blogs }: AcademyContentProps) {
                         <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white mb-8">
                             Learning Path for{" "}
                             <span className="text-red-600">
-                                {pathType === 'avalanche' ? 'Avalanche Developer Academy' : 'Codebase Entrepreneur Academy'}
+                                {pathType === 'avalanche' ? 'Avalanche Developer ' : 'Codebase Entrepreneur '}
                             </span>
+                            Academy
                         </h2>
 
                         {/* Visual hint */}
