@@ -53,6 +53,31 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
   // Calculate SVG dimensions based on node positions
   const maxY = Math.max(...learningPaths.map(node => node.position.y)) + 250;
 
+  // Legend component
+  const Legend = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <div className={isMobile ? "mt-8 grid grid-cols-2 gap-3" : "flex flex-wrap gap-6 justify-center"}>
+      {Object.entries(categoryStyles).map(([category, style]) => {
+        const Icon = style.icon;
+        return (
+          <div key={category} className="flex items-center gap-2">
+            <div className={cn(
+              isMobile ? "w-6 h-6" : "w-8 h-8",
+              "rounded-full bg-gradient-to-br flex items-center justify-center shadow-sm",
+              isMobile && "flex-shrink-0",
+              style.gradient
+            )}>
+              <Icon className={isMobile ? "w-3 h-3 text-white" : "w-4 h-4 text-white"} />
+            </div>
+            <span className={cn(
+              isMobile ? "text-xs" : "text-sm",
+              "font-medium text-zinc-600 dark:text-zinc-400"
+            )}>{category}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   const drawConnections = () => {
     const connections: React.JSX.Element[] = [];
 
@@ -78,34 +103,25 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
             // Calculate control points for curved path
             const midY = (parentBottomY + childTopY) / 2;
 
+            // Adjust the end point to account for arrow marker
+            const adjustedChildTopY = childTopY + (isActive ? 6 : 5); // Account for marker size
+
             // Create a curved path
-            const pathData = `M ${parentCenterX} ${parentBottomY} C ${parentCenterX} ${midY}, ${childCenterX} ${midY}, ${childCenterX} ${childTopY}`;
+            const pathData = `M ${parentCenterX} ${parentBottomY} C ${parentCenterX} ${midY}, ${childCenterX} ${midY}, ${childCenterX} ${adjustedChildTopY}`;
 
             connections.push(
-              <g key={`${depId}-${node.id}`}>
-                {/* Main path - thin and elegant */}
-                <path
-                  d={pathData}
-                  fill="none"
-                  stroke={isActive ? "rgb(99, 102, 241)" : "rgb(226, 232, 240)"}
-                  strokeWidth={isActive ? "1.5" : "1"}
-                  opacity={isActive ? "1" : "0.5"}
-                  className="transition-all duration-700 ease-in-out"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {/* Arrow marker at the end */}
-                {isActive && (
-                  <circle
-                    cx={childCenterX}
-                    cy={childTopY}
-                    r="2"
-                    fill="rgb(99, 102, 241)"
-                    className="transition-all duration-700 ease-in-out"
-                  />
-                )}
-              </g>
+              <path
+                key={`${depId}-${node.id}`}
+                d={pathData}
+                fill="none"
+                stroke={isActive ? "rgb(99, 102, 241)" : "rgb(226, 232, 240)"}
+                strokeWidth={isActive ? "1.5" : "1"}
+                opacity={isActive ? "1" : "0.5"}
+                className="transition-all duration-700 ease-in-out"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                markerEnd={isActive ? "url(#arrow-active)" : "url(#arrow-inactive)"}
+              />
             );
           }
         });
@@ -131,7 +147,22 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
                 {/* Connection line from previous course */}
                 {index > 0 && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <ChevronDown className="w-4 h-4 text-zinc-400 dark:text-zinc-600" />
+                    <svg width="16" height="16" viewBox="0 0 16 16" className="text-zinc-400 dark:text-zinc-600">
+                      <path
+                        d="M8 2 L8 10"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        fill="none"
+                      />
+                      <path
+                        d="M4 8 L8 12 L12 8"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        fill="none"
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </div>
                 )}
 
@@ -179,24 +210,6 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
             );
           })}
         </div>
-
-        {/* Legend for mobile */}
-        <div className="mt-8 grid grid-cols-2 gap-3">
-          {Object.entries(categoryStyles).map(([category, style]) => {
-            const Icon = style.icon;
-            return (
-              <div key={category} className="flex items-center gap-2">
-                <div className={cn(
-                  "w-6 h-6 rounded-full bg-gradient-to-br flex items-center justify-center shadow-sm flex-shrink-0",
-                  style.gradient
-                )}>
-                  <Icon className="w-3 h-3 text-white" />
-                </div>
-                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{category}</span>
-              </div>
-            );
-          })}
-        </div>
       </div>
     );
   };
@@ -212,6 +225,38 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
           style={{ height: `${maxY}px`, zIndex: 1 }}
           preserveAspectRatio="none"
         >
+          {/* Define arrow markers */}
+          <defs>
+            <marker
+              id="arrow-inactive"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="5"
+              markerHeight="5"
+              orient="auto"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                fill="rgb(226, 232, 240)"
+                opacity="0.5"
+              />
+            </marker>
+            <marker
+              id="arrow-active"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                fill="rgb(99, 102, 241)"
+              />
+            </marker>
+          </defs>
           {drawConnections()}
         </svg>
 
@@ -281,29 +326,16 @@ export default function LearningTree({ pathType = 'avalanche' }: LearningTreePro
           );
         })}
       </div>
-
-      {/* Legend */}
-      <div className="mt-8 flex flex-wrap gap-6 justify-center">
-        {Object.entries(categoryStyles).map(([category, style]) => {
-          const Icon = style.icon;
-          return (
-            <div key={category} className="flex items-center gap-2">
-              <div className={cn(
-                "w-8 h-8 rounded-full bg-gradient-to-br flex items-center justify-center shadow-sm",
-                style.gradient
-              )}>
-                <Icon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{category}</span>
-            </div>
-          );
-        })}
-      </div>
     </>
   );
 
   return (
     <div className="relative w-full">
+      {/* Legend at top for all learning trees */}
+      <div className="mb-8">
+        <Legend isMobile={false} />
+      </div>
+
       {/* Mobile Layout - visible on small screens, hidden on lg and up */}
       <div className="block lg:hidden">
         <MobileLayout />

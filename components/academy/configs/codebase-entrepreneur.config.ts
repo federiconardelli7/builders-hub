@@ -16,7 +16,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     {
         id: "codebase-foundation",
         name: "Foundations of a Web3 Venture",
-        description: "Foundation course covering essential blockchain and business fundamentals",
+        description: "Foundation course covering essential blockchain and business fundamentals.",
         slug: "codebase-entrepreneur-foundations",
         category: "Fundamentals",
         position: { x: 50, y: 0 },
@@ -27,7 +27,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     {
         id: "codebase-gtm",
         name: "Go To Market Strategist",
-        description: "Master go-to-market strategies for Web3 products and services",
+        description: "Master go-to-market strategies for Web3 products and services.",
         slug: "codebase-entrepreneur-go-to-market",
         category: "Business Strategy",
         dependencies: ["codebase-foundation"],
@@ -37,7 +37,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     {
         id: "codebase-web3-community-architect",
         name: "Web3 Community Architect",
-        description: "Learn to build and manage thriving Web3 communities",
+        description: "Learn to build and manage thriving Web3 communities.",
         slug: "codebase-entrepreneur-community",
         category: "Community",
         dependencies: ["codebase-foundation"],
@@ -49,7 +49,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     {
         id: "codebase-fundraising",
         name: "Fundraising & Finance Pro",
-        description: "Master fundraising strategies and financial management in Web3",
+        description: "Master fundraising strategies and financial management in Web3.",
         slug: "codebase-entrepreneur-fundraising",
         category: "Finance",
         dependencies: ["codebase-web3-community-architect", "codebase-gtm"],

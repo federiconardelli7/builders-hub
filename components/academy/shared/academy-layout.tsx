@@ -33,6 +33,7 @@ export function AcademyLayout({ config, blogs = [], children, afterLearningPath 
                     title={config.heroTitle}
                     accent={config.heroAccent}
                     description={config.heroDescription}
+                    useRedAccent={config.useRedAccent}
                 />
 
                 <div className="pb-12 sm:pb-24">

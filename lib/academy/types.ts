@@ -7,6 +7,7 @@ export interface AcademyConfig {
     heroAccent: string;
     heroDescription: string;
     pathType: 'avalanche' | 'entrepreneur';
+    useRedAccent?: boolean;
     customContent?: ReactNode;
     showBlogs?: boolean;
     features?: {

@@ -7,6 +7,7 @@ export const codebaseEntrepreneurConfig: AcademyConfig = {
     heroAccent: 'Academy',
     heroDescription: 'Join the next generation of Web3 entrepreneurs. Learn how to build, launch, and scale your blockchain startup with guidance from industry experts and successful founders.',
     pathType: 'entrepreneur',
+    useRedAccent: false,
     showBlogs: false,
     features: {
         successStories: {
