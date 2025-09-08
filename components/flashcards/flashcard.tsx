@@ -1,7 +1,7 @@
 "use client"
 import type React from "react"
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, RotateCw, Eye, EyeOff } from "lucide-react"
+import { ChevronLeft, ChevronRight, RotateCw, Eye, EyeOff, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { saveFlashcardProgress, getFlashcardProgress, resetFlashcardProgress } from "@/utils/quizzes/indexedDB"
@@ -160,7 +160,7 @@ const CleanFlashcard: React.FC<FlashcardProps> = ({ flashcardSetId }) => {
                     >
                         {!isRevealed ? (
                             <div className="flex flex-col items-center justify-center h-full text-center">
-                                <EyeOff className="h-8 w-8 text-muted-foreground mb-3" />
+                                <HelpCircle className="h-8 w-8 text-muted-foreground mb-3" />
                                 <p className="text-muted-foreground">Click "Reveal Answer" to see the definition</p>
                             </div>
                         ) : (
@@ -181,7 +181,14 @@ const CleanFlashcard: React.FC<FlashcardProps> = ({ flashcardSetId }) => {
 
                     {/* Reveal Button */}
                     <div className="text-center mt-6">
-                        <Button onClick={handleReveal} variant={isRevealed ? "outline" : "default"} className="px-6">
+                        <Button
+                            onClick={handleReveal}
+                            variant={isRevealed ? "outline" : "default"}
+                            className={cn(
+                                "px-6",
+                                !isRevealed && "bg-red-600 hover:bg-red-700 text-white border-red-600 hover:border-red-700"
+                            )}
+                        >
                             {isRevealed ? (
                                 <>
                                     <EyeOff className="h-4 w-4 mr-2" />
