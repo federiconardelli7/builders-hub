@@ -17,7 +17,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
         id: "codebase-foundation",
         name: "Foundations of a Web3 Venture",
         description: "Foundation course covering essential blockchain and business fundamentals",
-        slug: "codebase-entrepreneur-fundamentals",
+        slug: "codebase-entrepreneur-foundations",
         category: "Fundamentals",
         position: { x: 50, y: 0 },
         mobileOrder: 1

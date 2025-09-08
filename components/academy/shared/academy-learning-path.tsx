@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LearningTree from '@/components/academy/learning-tree';
 import { cn } from '@/utils/cn';
 
@@ -9,8 +9,28 @@ interface AcademyLearningPathProps {
     showToggle?: boolean;
 }
 
+const ACADEMY_PATH_KEY = 'academy-selected-path';
+
 export function AcademyLearningPath({ defaultPathType, showToggle = true }: AcademyLearningPathProps) {
     const [pathType, setPathType] = useState<'avalanche' | 'entrepreneur'>(defaultPathType);
+
+    // Load saved preference on mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedPath = localStorage.getItem(ACADEMY_PATH_KEY) as 'avalanche' | 'entrepreneur' | null;
+            if (savedPath && (savedPath === 'avalanche' || savedPath === 'entrepreneur')) {
+                setPathType(savedPath);
+            }
+        }
+    }, []);
+
+    // Save preference when it changes
+    const handlePathChange = (newPath: 'avalanche' | 'entrepreneur') => {
+        setPathType(newPath);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(ACADEMY_PATH_KEY, newPath);
+        }
+    };
 
     return (
         <div className="mb-20">
@@ -19,7 +39,7 @@ export function AcademyLearningPath({ defaultPathType, showToggle = true }: Acad
                     <div className="flex justify-center mb-6">
                         <div className="inline-flex items-center gap-0 p-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-lg">
                             <button
-                                onClick={() => setPathType('avalanche')}
+                                onClick={() => handlePathChange('avalanche')}
                                 className={cn(
                                     "px-6 py-2 rounded-full text-sm font-medium transition-all duration-200",
                                     pathType === 'avalanche'
@@ -30,7 +50,7 @@ export function AcademyLearningPath({ defaultPathType, showToggle = true }: Acad
                                 Developer
                             </button>
                             <button
-                                onClick={() => setPathType('entrepreneur')}
+                                onClick={() => handlePathChange('entrepreneur')}
                                 className={cn(
                                     "px-6 py-2 rounded-full text-sm font-medium transition-all duration-200",
                                     pathType === 'entrepreneur'
