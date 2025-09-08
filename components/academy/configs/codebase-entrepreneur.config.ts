@@ -15,8 +15,8 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     // Foundation Layer
     {
         id: "codebase-foundation",
-        name: "Foundations of a Web3 Venture",
-        description: "Foundation course covering essential blockchain and business fundamentals.",
+        name: "Level 1: Foundations of a Web3 Venture",
+        description: "Establishing essential blockchain and business fundamentals.",
         slug: "codebase-entrepreneur-foundations",
         category: "Fundamentals",
         position: { x: 50, y: 0 },
@@ -26,7 +26,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     // Second Layer  
     {
         id: "codebase-gtm",
-        name: "Go To Market Strategist",
+        name: "Level 2: Go To Market Strategist",
         description: "Master go-to-market strategies for Web3 products and services.",
         slug: "codebase-entrepreneur-go-to-market",
         category: "Business Strategy",
@@ -36,7 +36,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     },
     {
         id: "codebase-web3-community-architect",
-        name: "Web3 Community Architect",
+        name: "Level 3: Web3 Community Architect",
         description: "Learn to build and manage thriving Web3 communities.",
         slug: "codebase-entrepreneur-community",
         category: "Community",
@@ -48,7 +48,7 @@ export const entrepreneurLearningPaths: CourseNode[] = [
     // Third Layer
     {
         id: "codebase-fundraising",
-        name: "Fundraising & Finance Pro",
+        name: "Level 4: Fundraising & Finance Pro",
         description: "Master fundraising strategies and financial management in Web3.",
         slug: "codebase-entrepreneur-fundraising",
         category: "Finance",

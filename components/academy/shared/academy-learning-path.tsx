@@ -83,7 +83,10 @@ export function AcademyLearningPath({ defaultPathType, showToggle = true }: Acad
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
-                        Start with fundamentals, progress to advanced
+                        {pathType === 'avalanche'
+                            ? 'Start with fundamentals, progress to advanced'
+                            : 'Build your foundation, scale your venture'
+                        }
                     </span>
                     <div className="h-px w-16 bg-gradient-to-l from-transparent to-zinc-300 dark:to-zinc-700" />
                 </div>
