@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/utils/metadata';
 import { AcademyLayout } from '@/components/academy/shared/academy-layout';
-import { codebaseEntrepreneurConfig } from '@/lib/academy/codebase-entrepreneur.config';
+import { codebaseEntrepreneurLandingPageConfig } from '@/components/academy/landing-page-configs/codebase-entrepreneur.config';
 import { SuccessStories } from '@/components/academy/codebase-entrepreneur/success-stories';
 
 export const metadata: Metadata = createMetadata({
@@ -27,11 +27,11 @@ export const metadata: Metadata = createMetadata({
 });
 
 export default function CodebaseEntrepreneurPage(): React.ReactElement {
-    const { features } = codebaseEntrepreneurConfig;
+    const { features } = codebaseEntrepreneurLandingPageConfig;
 
     return (
         <AcademyLayout
-            config={codebaseEntrepreneurConfig}
+            config={codebaseEntrepreneurLandingPageConfig}
             afterLearningPath={
                 <>
                     {/* Success Stories - now appears after learning tree */}
