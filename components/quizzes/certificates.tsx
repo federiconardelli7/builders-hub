@@ -165,7 +165,7 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
       setTimeout(() => {
         // Redirect to the appropriate academy page
         if (courseId.startsWith('codebase-entrepreneur-')) {
-          router.push('/academy/codebase-entrepreneur');
+          router.push('/codebase-entrepreneur-academy');
         } else {
           router.push('/academy');
         }

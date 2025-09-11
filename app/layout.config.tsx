@@ -256,7 +256,7 @@ export const academyMenu: LinkItemType = {
       text: 'Codebase Entrepreneur Academy',
       description:
         'Transform from builder to founder with courses on business fundamentals, fundraising, and go-to-market strategies',
-      url: '/academy/codebase-entrepreneur',
+      url: '/codebase-entrepreneur-academy',
     },
     {
       icon: <Triangle />,

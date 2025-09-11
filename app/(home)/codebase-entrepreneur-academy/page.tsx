@@ -9,9 +9,9 @@ export const metadata: Metadata = createMetadata({
     title: 'Codebase Entrepreneur Academy',
     description: 'Join the next generation of Web3 entrepreneurs. Learn how to build, launch, and scale your blockchain startup.',
     openGraph: {
-        url: '/academy/codebase-entrepreneur',
+        url: '/codebase-entrepreneur-academy',
         images: {
-            url: '/api/og/academy/codebase-entrepreneur',
+            url: '/api/og/codebase-entrepreneur-academy',
             width: 1200,
             height: 630,
             alt: 'Codebase Entrepreneur Academy',
@@ -19,7 +19,7 @@ export const metadata: Metadata = createMetadata({
     },
     twitter: {
         images: {
-            url: '/api/og/academy/codebase-entrepreneur',
+            url: '/api/og/codebase-entrepreneur-academy',
             width: 1200,
             height: 630,
             alt: 'Codebase Entrepreneur Academy',
