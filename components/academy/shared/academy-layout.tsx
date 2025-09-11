@@ -3,6 +3,7 @@ import { AcademyHero } from './academy-hero';
 import { AcademyLearningPath } from './academy-learning-path';
 import { AcademyBlogSection } from './academy-blog-section';
 import type { AcademyLandingPageConfig } from './academy-types';
+import { AcademyBubbleNav } from './academy-bubble.config';
 
 interface BlogPage {
     url: string;
@@ -35,7 +36,7 @@ export function AcademyLayout({ config, blogs = [], children, afterLearningPath 
                     description={config.heroDescription}
                 />
 
-                <div className="pb-12 sm:pb-24">
+                <div className="pb-32 sm:pb-36">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         {/* Custom content before learning path */}
                         {children}
@@ -43,7 +44,6 @@ export function AcademyLayout({ config, blogs = [], children, afterLearningPath 
                         {/* Learning Tree Section */}
                         <AcademyLearningPath
                             defaultPathType={config.pathType}
-                            showToggle={config.pathType === 'avalanche'}
                         />
 
                         {/* Custom content after learning path */}
@@ -56,6 +56,9 @@ export function AcademyLayout({ config, blogs = [], children, afterLearningPath 
                     </div>
                 </div>
             </main>
+
+            {/* Bubble Navigation */}
+            <AcademyBubbleNav />
         </>
     );
 }
