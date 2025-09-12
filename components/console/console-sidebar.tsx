@@ -27,7 +27,8 @@ import {
   Hexagon,
   SlidersVertical,
   SquareMinus,
-  SquarePlus
+  SquarePlus,
+  HandCoins
 } from "lucide-react";
 
 import {
@@ -44,7 +45,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { AvalancheLogo } from "@/components/navigation/avalanche-logo";
-
 
 // Navigation data structure matching user specification
 const data = {
@@ -69,6 +69,11 @@ const data = {
           title: "Node Setup",
           url: "/console/primary-network/node-setup",
           icon: Server,
+        },
+        {
+          title: "Stake",
+          url: "/console/primary-network/stake",
+          icon: HandCoins,
         },
         {
           title: "Testnet Faucet",
@@ -107,12 +112,36 @@ const data = {
           icon: Server,
         },
         {
+          title: "L1 Validator Balance",
+          url: "/console/layer-1/l1-validator-balance",
+          icon: Coins,
+        },
+        {
           title: "Explorer Setup",
           url: "/console/layer-1/explorer-setup",
           icon: Telescope,
         },
       ],
     },
+
+    {
+      title: "Free Testnet Infrastructure",
+      icon: Box,
+      items: [
+        {
+          title: "Nodes",
+          url: "/console/testnet-infra/nodes",
+          icon: Layers,
+        },
+        {
+          title: "ICM Relayer",
+          url: "/console/testnet-infra/icm-relayer",
+          icon: Layers,
+          comingSoon: true,
+        },
+      ],
+    },
+
     {
       title: "L1 Tokenomics",
       icon: Coins,
@@ -142,6 +171,11 @@ const data = {
           title: "Validator Manager Setup",
           url: "/console/permissioned-l1s/validator-manager-setup",
           icon: SquareTerminal,
+        },
+        {
+          title: "Multisig Setup",
+          url: "/console/permissioned-l1s/multisig-setup",
+          icon: ShieldUser,
         },
         {
           title: "Query Validator Set",
@@ -238,6 +272,11 @@ const data = {
         {
           title: "Format Converter",
           url: "/console/utilities/format-converter",
+          icon: Wrench,
+        },
+        {
+          title: "Migrate VMC From V1 to V2",
+          url: "/console/utilities/vmcMigrateFromV1",
           icon: Wrench,
         },
       ],

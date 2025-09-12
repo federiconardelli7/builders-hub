@@ -12,8 +12,14 @@ import TeleporterMessengerDeployerAddress from '../../../contracts/icm-contracts
 import TeleporterMessengerAddress from '../../../contracts/icm-contracts-releases/v1.0.0/TeleporterMessenger_Contract_Address_v1.0.0.txt.json';
 import { Container } from "../../components/Container";
 import { Step, Steps } from "fumadocs-ui/components/steps";
+import { CheckWalletRequirements } from "../../components/CheckWalletRequirements";
+import { WalletRequirementsConfigKey } from "../../hooks/useWalletRequirements";
+import versions from "../../versions.json";
 
 const MINIMUM_BALANCE = parseEther('11');
+
+const ICM_COMMIT = versions["ava-labs/icm-contracts"];
+const TELEPORTER_MESSENGER_SOURCE_URL = `https://github.com/ava-labs/icm-contracts/blob/${ICM_COMMIT}/contracts/teleporter/TeleporterMessenger.sol`;
 
 const TopUpComponent = ({
     deployerAddress,
@@ -133,6 +139,9 @@ export default function TeleporterMessenger() {
     const hasEnoughBalance = deployerBalance >= MINIMUM_BALANCE;
 
     return (
+        <CheckWalletRequirements configKey={[
+            WalletRequirementsConfigKey.EVMChainBalance,
+        ]}>
         <Container
             title="Deploy ICM Messenger (formerly called TeleporterMessenger)"
             description="Deploy the ICM messenger contract to your L1 to enable cross-L1 messaging and applications like ICTT."
@@ -140,6 +149,9 @@ export default function TeleporterMessenger() {
             <div>
                 <p className="mt-2">This tool deploys the TeleporterMessenger contract, which is the core contract that handles cross-subnet message sending and receiving. Please read more <a href="https://github.com/ava-labs/icm-contracts/blob/main/contracts/teleporter/README.md" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">here</a>.</p>
             </div>
+            <p className="text-sm text-gray-500 mb-4">
+                Contract source: <a href={TELEPORTER_MESSENGER_SOURCE_URL} target="_blank" rel="noreferrer">TeleporterMessenger.sol</a> @ <code>{ICM_COMMIT.slice(0, 7)}</code>
+            </p>
             <Steps>
                 <Step>
                     <h2 className="text-lg font-semibold">Check if Deployer Address Balance is sufficient</h2>
@@ -224,5 +236,6 @@ export default function TeleporterMessenger() {
                 />
             )}
         </Container >
+        </CheckWalletRequirements>
     );
 }
