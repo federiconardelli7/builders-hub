@@ -5,12 +5,18 @@ import type { Notification } from '@/types/console-history';
 const LOCAL_STORAGE_KEY = 'console-history-local';
 
 export const useHistory = () => {
-  const { data: session, status } = useSession();
+  // Handle SSR/SSG - useSession might return undefined during build
+  const sessionData = typeof window !== 'undefined' ? useSession() : null;
+  const session = sessionData?.data ?? null;
+  const status = sessionData?.status ?? 'unauthenticated';
   const [history, setHistory] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load history based on auth status
   const loadHistory = useCallback(async () => {
+    // Don't load during SSR/SSG
+    if (typeof window === 'undefined') return;
+    
     setLoading(true);
     
     if (status === 'loading') return; // Wait for auth status
@@ -54,6 +60,9 @@ export const useHistory = () => {
 
   // Load history when auth status changes
   useEffect(() => {
+    // Don't run during SSR/SSG
+    if (typeof window === 'undefined') return;
+    
     loadHistory();
     
     // If user just logged in and has local history, offer to migrate it
@@ -67,6 +76,9 @@ export const useHistory = () => {
   }, [loadHistory, session, status]);
 
   const addToHistory = async (item: Omit<Notification, 'id' | 'timestamp'>) => {
+    // Don't add during SSR/SSG
+    if (typeof window === 'undefined') return;
+    
     const newItem: Notification = {
       ...item,
       id: crypto.randomUUID(),
@@ -120,6 +132,9 @@ export const useHistory = () => {
   };
 
   const clearHistory = () => {
+    // Don't clear during SSR/SSG
+    if (typeof window === 'undefined') return;
+    
     // Only allow clearing localStorage history (for non-logged-in users)
     if (!session?.user) {
       setHistory([]);
