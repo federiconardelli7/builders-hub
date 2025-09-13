@@ -1,5 +1,6 @@
 import { useWalletStore } from '@/components/toolbox/stores/walletStore';
 import { toast } from 'sonner';
+import { useHistory } from './use-history';
 
 // TO-DO move somewhere better
 const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
@@ -8,6 +9,7 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
 
 const useConsoleNotifications = () => {
     const { isTestnet } = useWalletStore();
+    const { history, loading, addToHistory, clearHistory, getExplorerUrl, isUsingLocalStorage } = useHistory();
 
     // TO-DO this should not be a thing. Core wallet should not be possible to be not set
     const sendCoreWalletNotSetNotification = () => {
@@ -29,10 +31,28 @@ const useConsoleNotifications = () => {
 
         createSubnetTx
             .then((txID) => {
-                // TO-DO Add to History
+                addToHistory({
+                    title: 'Subnet Created',
+                    description: `Transaction ID: ${txID}`,
+                    status: 'success',
+                    eventType: 'subnet_created',
+                    data: { 
+                        txID,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             })
             .catch((error) => {
-                // TO-DO Add to History Error
+                addToHistory({
+                    title: 'Subnet Creation Failed',
+                    description: error.message,
+                    status: 'error',
+                    eventType: 'subnet_created',
+                    data: { 
+                        error: error.message,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             });
     };
 
@@ -51,10 +71,29 @@ const useConsoleNotifications = () => {
 
         createChainTx
             .then((txID) => {
-                // TO-DO Add to History
+                addToHistory({
+                    title: 'Chain Created',
+                    description: `Transaction ID: ${txID}`,
+                    status: 'success',
+                    eventType: 'chain_created',
+                    data: { 
+                        txID,
+                        blockchainID: txID,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             })
             .catch((error) => {
-                // TO-DO Add to History Error
+                addToHistory({
+                    title: 'Chain Creation Failed',
+                    description: error.message,
+                    status: 'error',
+                    eventType: 'chain_created',
+                    data: { 
+                        error: error.message,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             });
     };
 
@@ -73,10 +112,28 @@ const useConsoleNotifications = () => {
 
         convertSubnetToL1Tx
             .then((txID) => {
-                // TO-DO Add to History
+                addToHistory({
+                    title: 'Subnet Converted to L1',
+                    description: `Transaction ID: ${txID}`,
+                    status: 'success',
+                    eventType: 'l1_conversion',
+                    data: { 
+                        txID,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             })
             .catch((error) => {
-                // TO-DO Add to History Error
+                addToHistory({
+                    title: 'L1 Conversion Failed',
+                    description: error.message,
+                    status: 'error',
+                    eventType: 'l1_conversion',
+                    data: { 
+                        error: error.message,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
             });
     };
 
@@ -85,6 +142,12 @@ const useConsoleNotifications = () => {
         sendCreateSubnetNotifications,
         sendCreateChainNotifications,
         sendConvertSubnetToL1Notifications,
+        // History
+        history,
+        loading,
+        clearHistory,
+        getExplorerUrl,
+        isUsingLocalStorage
     };
 };
 
