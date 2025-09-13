@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 
 import { useState, useMemo } from 'react';
-import { useConsoleNotifications } from '@/hooks/use-console-notifications';
+import useConsoleNotifications from '@/hooks/useConsoleNotifications';
 import type { Notification } from '@/types/console-history';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
