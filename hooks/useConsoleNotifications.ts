@@ -16,7 +16,7 @@ const useConsoleNotifications = () => {
 
     const sendCreateSubnetNotifications = (createSubnetTx: Promise<string>) => {
         toast.promise(createSubnetTx, {
-            loading: 'Creating Subnet...',
+            loading: 'Signing CreateSubnetTx with Core...',
             success: (txID: string) => ({
                 message: 'Subnet created successfully',
                 action: {
@@ -38,7 +38,7 @@ const useConsoleNotifications = () => {
 
     const sendCreateChainNotifications = (createChainTx: Promise<string>) => {
         toast.promise(createChainTx, {
-            loading: 'Creating Chain...',
+            loading: 'Signing CreateChainTx with Core...',
             success: (txID: string) => ({
                 message: 'Chain created successfully',
                 action: {
