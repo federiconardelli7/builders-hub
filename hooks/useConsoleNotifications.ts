@@ -7,7 +7,7 @@ const useConsoleNotifications = () => {
         return `https://${isTestnet ? "subnets-test" : "subnets"}.avax.network/p-chain/tx/${txID}`;
     }
 
-
+    // TO-DO this should not be a thing. Core wallet should not be possible to be not set
     const sendCoreWalletNotSetNotification = () => {
         toast.error('Core wallet not set');
     }
@@ -36,7 +36,7 @@ const useConsoleNotifications = () => {
 
     const sendCreateChainNotifications = (promise: Promise<string>, isTestnet: boolean) => {
         toast.promise(promise, {
-            loading: 'Creating chain...',
+            loading: 'Creating Chain...',
             success: (txID: string) => ({
                 message: 'Chain created successfully',
                 action: {
