@@ -68,7 +68,7 @@ export default function CreateChain() {
             subnetOwners: [pChainAddress]
         });
 
-        sendCreateSubnetNotifications(createSubnetTx, isTestnet);
+        sendCreateSubnetNotifications(createSubnetTx);
 
         try {
             const txID = await createSubnetTx;
@@ -95,7 +95,7 @@ export default function CreateChain() {
             subnetAuth: [0],
         })
 
-        sendCreateChainNotifications(createChainTx, isTestnet);
+        sendCreateChainNotifications(createChainTx);
 
         try {
             const txID = await createChainTx;

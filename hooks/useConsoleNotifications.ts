@@ -1,3 +1,4 @@
+import { useWalletStore } from '@/components/toolbox/stores/walletStore';
 import { toast } from 'sonner';
 
 // TO-DO move somewhere better
@@ -6,13 +7,14 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
 }
 
 const useConsoleNotifications = () => {
+    const { isTestnet } = useWalletStore();
 
     // TO-DO this should not be a thing. Core wallet should not be possible to be not set
     const sendCoreWalletNotSetNotification = () => {
         toast.error('Core wallet not set');
     }
 
-    const sendCreateSubnetNotifications = (createSubnetTx: Promise<string>, isTestnet: boolean) => {
+    const sendCreateSubnetNotifications = (createSubnetTx: Promise<string>) => {
         toast.promise(createSubnetTx, {
             loading: 'Creating Subnet...',
             success: (txID: string) => ({
@@ -34,7 +36,7 @@ const useConsoleNotifications = () => {
             });
     };
 
-    const sendCreateChainNotifications = (createChainTx: Promise<string>, isTestnet: boolean) => {
+    const sendCreateChainNotifications = (createChainTx: Promise<string>) => {
         toast.promise(createChainTx, {
             loading: 'Creating Chain...',
             success: (txID: string) => ({
