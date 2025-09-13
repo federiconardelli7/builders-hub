@@ -58,10 +58,33 @@ const useConsoleNotifications = () => {
             });
     };
 
+    const sendConvertSubnetToL1Notifications = (convertSubnetToL1Tx: Promise<string>) => {
+        toast.promise(convertSubnetToL1Tx, {
+            loading: 'Signing ConvertSubnetToL1Tx with Core...',
+            success: (txID: string) => ({
+                message: 'Subnet converted to L1 successfully',
+                action: {
+                    label: 'Open in Explorer',
+                    onClick: () => window.open(getPChainTxExplorerURL(txID, isTestnet), '_blank')
+                }
+            }),
+            error: (error) => 'Failed to convert Subnet to L1: ' + error.message,
+        });
+
+        convertSubnetToL1Tx
+            .then((txID) => {
+                // TO-DO Add to History
+            })
+            .catch((error) => {
+                // TO-DO Add to History Error
+            });
+    };
+
     return {
         sendCoreWalletNotSetNotification,
         sendCreateSubnetNotifications,
         sendCreateChainNotifications,
+        sendConvertSubnetToL1Notifications,
     };
 };
 
