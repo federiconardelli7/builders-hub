@@ -1,6 +1,6 @@
 import { useWalletStore } from '@/components/toolbox/stores/walletStore';
 import { toast } from 'sonner';
-import { useHistory } from './use-history';
+import { useConsoleLog } from './use-console-log';
 
 // TO-DO move somewhere better
 const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
@@ -10,7 +10,7 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
 const useConsoleNotifications = () => {
     // Handle SSR/SSG - only access store on client
     const isTestnet = typeof window !== 'undefined' ? useWalletStore((s) => s.isTestnet) : false;
-    const { history, loading, addToHistory, clearHistory, getExplorerUrl } = useHistory();
+    const { logs, loading, addLog, getExplorerUrl } = useConsoleLog();
 
     // TO-DO this should not be a thing. Core wallet should not be possible to be not set
     const sendCoreWalletNotSetNotification = () => {
@@ -32,7 +32,7 @@ const useConsoleNotifications = () => {
 
         createSubnetTx
             .then((txID) => {
-                addToHistory({
+                addLog({
                     title: 'Subnet Created',
                     description: `Transaction ID: ${txID}`,
                     status: 'success',
@@ -44,7 +44,7 @@ const useConsoleNotifications = () => {
                 });
             })
             .catch((error) => {
-                addToHistory({
+                addLog({
                     title: 'Subnet Creation Failed',
                     description: error.message,
                     status: 'error',
@@ -72,7 +72,7 @@ const useConsoleNotifications = () => {
 
         createChainTx
             .then((txID) => {
-                addToHistory({
+                addLog({
                     title: 'Chain Created',
                     description: `Transaction ID: ${txID}`,
                     status: 'success',
@@ -85,7 +85,7 @@ const useConsoleNotifications = () => {
                 });
             })
             .catch((error) => {
-                addToHistory({
+                addLog({
                     title: 'Chain Creation Failed',
                     description: error.message,
                     status: 'error',
@@ -113,7 +113,7 @@ const useConsoleNotifications = () => {
 
         convertSubnetToL1Tx
             .then((txID) => {
-                addToHistory({
+                addLog({
                     title: 'Subnet Converted to L1',
                     description: `Transaction ID: ${txID}`,
                     status: 'success',
@@ -125,7 +125,7 @@ const useConsoleNotifications = () => {
                 });
             })
             .catch((error) => {
-                addToHistory({
+                addLog({
                     title: 'L1 Conversion Failed',
                     description: error.message,
                     status: 'error',
@@ -143,10 +143,9 @@ const useConsoleNotifications = () => {
         sendCreateSubnetNotifications,
         sendCreateChainNotifications,
         sendConvertSubnetToL1Notifications,
-        // History
-        history,
+        // Console Log Access
+        logs,
         loading,
-        clearHistory,
         getExplorerUrl
     };
 };

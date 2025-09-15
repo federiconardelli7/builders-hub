@@ -5,7 +5,6 @@ import { ConsoleSidebar } from "../../components/console/console-sidebar";
 import { SiteHeader } from "../../components/console/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "sonner";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -27,7 +26,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </SidebarInset>
       </SidebarProvider>
-      <Toaster position="bottom-right" richColors expand={true} visibleToasts={5} />
     </SessionProvider>
   );
 }

@@ -24,7 +24,7 @@ import { cn } from '@/lib/cn';
 
 export default function ConsoleHistoryPage() {
   const { data: session, status } = useSession();
-  const { history: fullHistory, getExplorerUrl, loading } = useConsoleNotifications();
+  const { logs: fullHistory, getExplorerUrl, loading } = useConsoleNotifications();
   const [searchTerm, setSearchTerm] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   
