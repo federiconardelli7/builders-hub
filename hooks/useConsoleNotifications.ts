@@ -10,7 +10,7 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
 const useConsoleNotifications = () => {
     // Handle SSR/SSG - only access store on client
     const isTestnet = typeof window !== 'undefined' ? useWalletStore((s) => s.isTestnet) : false;
-    const { history, loading, addToHistory, clearHistory, getExplorerUrl, isUsingLocalStorage } = useHistory();
+    const { history, loading, addToHistory, clearHistory, getExplorerUrl } = useHistory();
 
     // TO-DO this should not be a thing. Core wallet should not be possible to be not set
     const sendCoreWalletNotSetNotification = () => {
@@ -147,8 +147,7 @@ const useConsoleNotifications = () => {
         history,
         loading,
         clearHistory,
-        getExplorerUrl,
-        isUsingLocalStorage
+        getExplorerUrl
     };
 };
 

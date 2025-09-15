@@ -1,145 +1,101 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
 import type { Notification } from '@/types/console-history';
 
-const LOCAL_STORAGE_KEY = 'console-history-local';
-
 export const useHistory = () => {
-  // Handle SSR/SSG - useSession might return undefined during build
-  const sessionData = typeof window !== 'undefined' ? useSession() : null;
-  const session = sessionData?.data ?? null;
-  const status = sessionData?.status ?? 'unauthenticated';
   const [history, setHistory] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load history based on auth status
+  // Load history from API
   const loadHistory = useCallback(async () => {
     // Don't load during SSR/SSG
     if (typeof window === 'undefined') return;
     
     setLoading(true);
     
-    if (status === 'loading') return; // Wait for auth status
-    
     try {
-      if (session?.user) {
-        // User is logged in - use database
-        const response = await fetch('/api/console-history');
-        if (response.ok) {
-          const data = await response.json();
-          const transformedHistory = data.map((item: any) => ({
-            id: item.id,
-            timestamp: new Date(item.created_at),
-            status: item.status,
-            title: item.title,
-            description: item.description,
-            eventType: item.event_type,
-            data: item.data
-          }));
-          setHistory(transformedHistory);
-        }
+      const response = await fetch('/api/console-history');
+      if (response.ok) {
+        const data = await response.json();
+        const transformedHistory = data.map((item: any) => ({
+          id: item.id,
+          timestamp: new Date(item.created_at),
+          status: item.status,
+          title: item.title,
+          description: item.description,
+          eventType: item.event_type,
+          data: item.data
+        }));
+        setHistory(transformedHistory);
+      } else if (response.status === 401) {
+        // User not authenticated - this is expected, don't log error
+        setHistory([]);
       } else {
-        // User not logged in - use localStorage
-        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          // Convert stored timestamps back to Date objects
-          const transformedHistory = parsed.map((item: any) => ({
-            ...item,
-            timestamp: new Date(item.timestamp)
-          }));
-          setHistory(transformedHistory);
-        }
+        // Other errors should be logged
+        console.error('Error loading history:', response.statusText);
+        setHistory([]);
       }
     } catch (error) {
       console.error('Error loading history:', error);
+      setHistory([]);
     } finally {
       setLoading(false);
     }
-  }, [session, status]);
+  }, []);
 
-  // Load history when auth status changes
+  // Load history on mount
   useEffect(() => {
     // Don't run during SSR/SSG
     if (typeof window === 'undefined') return;
     
     loadHistory();
-    
-    // If user just logged in and has local history, offer to migrate it
-    if (session?.user && status === 'authenticated') {
-      const localHistory = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (localHistory) {
-        // Clear local storage after login since user now uses database
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-      }
-    }
-  }, [loadHistory, session, status]);
+  }, [loadHistory]);
 
   const addToHistory = async (item: Omit<Notification, 'id' | 'timestamp'>) => {
     // Don't add during SSR/SSG
     if (typeof window === 'undefined') return;
     
-    const newItem: Notification = {
-      ...item,
-      id: crypto.randomUUID(),
-      timestamp: new Date()
-    };
+    try {
+      const response = await fetch('/api/console-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: item.title,
+          description: item.description,
+          status: item.status,
+          eventType: item.eventType,
+          data: item.data
+        })
+      });
 
-    if (session?.user) {
-      // User is logged in - save to database
-      try {
-        const response = await fetch('/api/console-history', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            title: item.title,
-            description: item.description,
-            status: item.status,
-            eventType: item.eventType,
-            data: item.data
-          })
-        });
-
-        if (response.ok) {
-          const savedItem = await response.json();
-          const dbItem: Notification = {
-            id: savedItem.id,
-            timestamp: new Date(savedItem.created_at),
-            status: savedItem.status,
-            title: savedItem.title,
-            description: savedItem.description,
-            eventType: savedItem.event_type,
-            data: savedItem.data
-          };
-          setHistory(prev => [dbItem, ...prev]);
-        }
-      } catch (error) {
-        console.error('Error saving to database:', error);
-        // Fallback to local update
-        setHistory(prev => [newItem, ...prev]);
+      if (response.ok) {
+        const savedItem = await response.json();
+        const dbItem: Notification = {
+          id: savedItem.id,
+          timestamp: new Date(savedItem.created_at),
+          status: savedItem.status,
+          title: savedItem.title,
+          description: savedItem.description,
+          eventType: savedItem.event_type,
+          data: savedItem.data
+        };
+        setHistory(prev => [dbItem, ...prev]);
+      } else if (response.status === 401) {
+        // User not authenticated - silently fail
+        // The UI will show the login prompt
+      } else {
+        console.error('Failed to save to history:', response.statusText);
       }
-    } else {
-      // User not logged in - save to localStorage
-      const updated = [newItem, ...history];
-      setHistory(updated);
-      
-      // Keep only last 100 items in localStorage
-      const toStore = updated.slice(0, 100);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toStore));
+    } catch (error) {
+      console.error('Error saving to history:', error);
     }
   };
 
-  const clearHistory = () => {
-    // Don't clear during SSR/SSG
-    if (typeof window === 'undefined') return;
-    
-    // Only allow clearing localStorage history (for non-logged-in users)
-    if (!session?.user) {
-      setHistory([]);
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-    }
+  const clearHistory = async () => {
+    // This function is kept for interface compatibility but doesn't do anything
+    // since we no longer support clearing history from the client
+    console.warn('clearHistory is deprecated - history can only be managed server-side');
   };
 
   const getExplorerUrl = (id: string, type: 'tx' | 'address', network: string, chain: string = 'P'): string => {
@@ -155,10 +111,9 @@ export const useHistory = () => {
 
   return {
     history,
-    loading: loading || status === 'loading',
+    loading,
     addToHistory,
     clearHistory,
-    getExplorerUrl,
-    isUsingLocalStorage: !session?.user
+    getExplorerUrl
   };
 };
