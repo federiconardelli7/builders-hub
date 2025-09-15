@@ -16,6 +16,7 @@ When designing tokenomics for your Avalanche L1, it's crucial to understand the 
 | **Balance Storage** | Mapping in contract storage<br/>`mapping(address => balance)` | EVM Account state<br/>`account.balance` |
 | **Transfer Logic** | Handled by contract functions<br/>`transfer()`, `transferFrom()` | Handled by EVM opcodes<br/>`CALL`, `SELFDESTRUCT` |
 | **Smart Contract Awareness** | Built-in hooks for DeFi compatibility<br/>Allows programmatic approvals<br/>(e.g., Uniswap, Aave) | Can't call functions<br/>`approve()`, `transferFrom()` |
+| **Receiving in Functions** | No special modifier needed<br/>`function deposit(token, amount)` | Requires `payable` modifier<br/>`function deposit() payable` |
 
 ## The Protocol Limitation
 
@@ -47,18 +48,6 @@ When transferring ERC20 tokens to become native tokens on an L1:
 <Callout type="info">
 The conversion between ERC20 and native tokens is a one-way bridge when moving to an L1. Understanding these trade-offs is essential for designing your tokenomics.
 </Callout>
-
-## When to Use Each
-
-**Use Native Tokens when:**
-- You need a gas token for your L1
-- You want the simplest implementation
-- Smart contract interactions are limited
-
-**Use ERC20 Tokens when:**
-- You need DeFi composability
-- You require approval mechanisms
-- You want to integrate with existing protocols
 
 <Callout type="tip">
 Cross-chain native token functionality and advanced ERC20 features will be covered in detail in the **Cross-Chain L1 Native** course.
