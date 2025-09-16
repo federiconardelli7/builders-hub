@@ -445,6 +445,40 @@ const useConsoleNotifications = () => {
             });
     };
 
+    const sendAggregateSignaturesNotifications = (aggPromise: Promise<string>) => {
+        toast.promise(aggPromise, {
+            loading: 'Aggregating signatures...',
+            success: (signedMessage: string) => `Signatures aggregated successfully`,
+            error: (error) => 'Failed to aggregate signatures: ' + error.message,
+        });
+
+        aggPromise
+            .then((signedMessage) => {
+                addLog({
+                    title: 'Signatures Aggregated',
+                    description: `Signed Message: ${signedMessage.slice(0, 10)}...`,
+                    status: 'success',
+                    eventType: 'signatures_aggregated',
+                    data: { 
+                        signedMessage,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
+            })
+            .catch((error) => {
+                addLog({
+                    title: 'Signature Aggregation Failed',
+                    description: error.message,
+                    status: 'error',
+                    eventType: 'signatures_aggregated',
+                    data: { 
+                        error: error.message,
+                        network: isTestnet ? 'testnet' : 'mainnet'
+                    }
+                });
+            });
+    };
+
     return {
         sendCoreWalletNotSetNotification,
         sendCreateSubnetNotifications,
@@ -457,6 +491,7 @@ const useConsoleNotifications = () => {
         sendUpgradeProxyNotifications,
         sendInitializeNotifications,
         sendInitializeValidatorSetNotifications,
+        sendAggregateSignaturesNotifications,
         // Console Log Access
         logs,
         loading,

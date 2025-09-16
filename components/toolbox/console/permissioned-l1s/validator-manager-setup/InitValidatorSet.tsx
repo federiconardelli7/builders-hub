@@ -20,7 +20,6 @@ import { useAvaCloudSDK } from "@/components/toolbox/stores/useAvaCloudSDK";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
-import { toast } from 'sonner';
 
 const cb58ToHex = (cb58: string) => utils.bufferToHex(utils.base58check.decode(cb58));
 const add0x = (hex: string): `0x${string}` => hex.startsWith('0x') ? hex as `0x${string}` : `0x${hex}`;
@@ -42,7 +41,7 @@ export default function InitValidatorSet() {
     const [L1ConversionSignatureError, setL1ConversionSignatureError] = useState<string>("");
     const [isAggregating, setIsAggregating] = useState(false);
 
-    const { sendCoreWalletNotSetNotification, sendInitializeValidatorSetNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, sendInitializeValidatorSetNotifications, sendAggregateSignaturesNotifications } = useConsoleNotifications();
 
     async function aggSigs() {
         if (!coreWalletClient) {
@@ -52,7 +51,8 @@ export default function InitValidatorSet() {
 
         setL1ConversionSignatureError("");
         setIsAggregating(true);
-        try {
+
+        const aggPromise = (async () => {
             const { message, justification, signingSubnetId } = await coreWalletClient.extractWarpMessageFromPChainTx({ txId: conversionTxID });
 
             const { signedMessage } = await aggregateSignature({
@@ -62,10 +62,13 @@ export default function InitValidatorSet() {
                 quorumPercentage: 67,
             });
             setL1ConversionSignature(signedMessage);
-            toast.success('Signatures aggregated successfully');
-        } catch (error: unknown) {
-            console.error("Error aggregating signatures:", error);
-            toast.error('Failed to aggregate signatures: ' + (error as Error).message);
+            return signedMessage;
+        })();
+
+        sendAggregateSignaturesNotifications(aggPromise);
+
+        try {
+            await aggPromise;
         } finally {
             setIsAggregating(false);
         }
