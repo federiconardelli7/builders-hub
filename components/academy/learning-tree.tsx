@@ -84,10 +84,10 @@ const learningPaths: CourseNode[] = [
   },
 
  {
-   id: "privacy",
-   name: "Privacy",
+   id: "eerc-privacy",
+   name: "eERC",
    description: "Learn about eERC tokens to add privacy to your applications",
-   slug: "privacy",
+   slug: "eerc-privacy",
    category: "Privacy",
    dependencies: ["avalanche-fundamentals"],
    position: { x: 80, y: 150 },
