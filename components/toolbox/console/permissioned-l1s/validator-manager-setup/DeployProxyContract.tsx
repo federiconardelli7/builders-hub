@@ -10,17 +10,15 @@ import { Container } from "@/components/toolbox/components/Container";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput";
 import { Callout } from "fumadocs-ui/components/callout";
-import { Success } from "@/components/toolbox/components/Success";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { Checkbox } from "@/components/toolbox/components/Checkbox";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 const PROXYADMIN_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/ProxyAdmin.sol";
 const TRANSPARENT_PROXY_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 export default function DeployProxyContract() {
-    const [criticalError, setCriticalError] = useState<Error | null>(null);
-    const { coreWalletClient, publicClient, walletEVMAddress } = useWalletStore();
     const [isDeployingProxyAdmin, setIsDeployingProxyAdmin] = useState(false);
     const [isDeployingProxy, setIsDeployingProxy] = useState(false);
     const [implementationAddress, setImplementationAddress] = useState<string>("");
@@ -29,20 +27,20 @@ export default function DeployProxyContract() {
     const viemChain = useViemChainStore();
     const [acknowledged, setAcknowledged] = useState(false);
 
-    // Throw critical errors during render
-    if (criticalError) {
-        throw criticalError;
-    }
+    const { coreWalletClient, publicClient, walletEVMAddress } = useWalletStore();
+
+    const { sendCoreWalletNotSetNotification, sendDeployProxyAdminNotifications, sendDeployTransparentProxyNotifications } = useConsoleNotifications();
 
     async function deployProxyAdmin() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
         setIsDeployingProxyAdmin(true);
         setProxyAdminAddress("");
-        try {
+
+        const deployPromise = (async () => {
             if (!viemChain) throw new Error("Viem chain not found");
             await coreWalletClient.addChain({ chain: viemChain });
             await coreWalletClient.switchChain({ id: viemChain.id });
@@ -59,9 +57,14 @@ export default function DeployProxyContract() {
                 throw new Error('No contract address in receipt');
             }
 
-            setProxyAdminAddress(receipt.contractAddress);
-        } catch (error) {
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            return { hash, address: receipt.contractAddress };
+        })();
+
+        sendDeployProxyAdminNotifications(deployPromise, viemChain!);
+
+        try {
+            const { address } = await deployPromise;
+            setProxyAdminAddress(address);
         } finally {
             setIsDeployingProxyAdmin(false);
         }
@@ -69,25 +72,25 @@ export default function DeployProxyContract() {
 
     async function deployTransparentProxy() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
         setIsDeployingProxy(true);
         setProxyAddress("");
-        try {
+
+        const deployPromise = (async () => {
             if (!implementationAddress) throw new Error("Implementation address is required");
             if (!proxyAdminAddress) throw new Error("ProxyAdmin address is required");
             if (!viemChain) throw new Error("Viem chain not found");
 
             await coreWalletClient.addChain({ chain: viemChain });
-            await coreWalletClient.switchChain({ id: viemChain!.id });
+            await coreWalletClient.switchChain({ id: viemChain.id });
 
-            // Deploy the proxy using implementation address and proxy admin address
             const hash = await coreWalletClient.deployContract({
                 abi: TransparentUpgradeableProxyABI.abi as any,
                 bytecode: TransparentUpgradeableProxyABI.bytecode.object as `0x${string}`,
-                args: [implementationAddress, proxyAdminAddress, "0x"], // No initialization data
+                args: [implementationAddress, proxyAdminAddress, "0x"],
                 chain: viemChain,
                 account: walletEVMAddress as `0x${string}`
             });
@@ -98,9 +101,14 @@ export default function DeployProxyContract() {
                 throw new Error('No contract address in receipt');
             }
 
-            setProxyAddress(receipt.contractAddress);
-        } catch (error) {
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            return { hash, address: receipt.contractAddress };
+        })();
+
+        sendDeployTransparentProxyNotifications(deployPromise, viemChain!);
+
+        try {
+            const { address } = await deployPromise;
+            setProxyAddress(address);
         } finally {
             setIsDeployingProxy(false);
         }
@@ -151,18 +159,13 @@ export default function DeployProxyContract() {
                             variant="primary"
                             onClick={deployProxyAdmin}
                             loading={isDeployingProxyAdmin}
-                            disabled={isDeployingProxyAdmin || !!proxyAdminAddress || !acknowledged}
+                            disabled={isDeployingProxyAdmin || !acknowledged}
                             className="mt-4"
                         >
                             Deploy Proxy Admin
                         </Button>
 
-                        {proxyAdminAddress && (
-                            <Success
-                                label="ProxyAdmin Contract Deployed"
-                                value={proxyAdminAddress}
-                            />
-                        )}
+                        <p>Deployment Status: <code>{proxyAdminAddress || "Not deployed"}</code></p>
                     </Step>
                     <Step>
                         <h2 className="text-lg font-semibold">Deploy Transparent Proxy Contract</h2>
@@ -191,13 +194,7 @@ export default function DeployProxyContract() {
                         >
                             Deploy Proxy Contract
                         </Button>
-
-                        {proxyAddress && (
-                            <Success
-                                label="Proxy Contract Deployed"
-                                value={proxyAddress}
-                            />
-                        )}
+                        <p>Deployment Status: <code>{proxyAddress || "Not deployed"}</code></p>
 
                     </Step>
                 </Steps>

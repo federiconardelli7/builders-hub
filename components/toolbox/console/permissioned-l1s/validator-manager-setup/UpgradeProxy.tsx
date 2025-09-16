@@ -5,7 +5,6 @@ import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
-import { Success } from "@/components/toolbox/components/Success";
 import ProxyAdminABI from "@/contracts/openzeppelin-4.9/compiled/ProxyAdmin.json";
 import { Container } from "@/components/toolbox/components/Container";
 import { useToolboxStore } from "@/components/toolbox/stores/toolboxStore";
@@ -15,6 +14,7 @@ import { Input } from "@/components/toolbox/components/Input";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 // Storage slot with the admin of the proxy (following EIP1967)
 const ADMIN_SLOT = "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103";
@@ -33,6 +33,8 @@ export default function UpgradeProxy() {
     const viemChain = useViemChainStore();
 
     const [proxyAddress, setProxyAddress] = useState<string>("");
+
+    const { sendCoreWalletNotSetNotification, sendUpgradeProxyNotifications } = useConsoleNotifications();
 
     // Throw critical errors during render
     if (criticalError) {
@@ -125,7 +127,8 @@ export default function UpgradeProxy() {
 
     async function handleUpgrade() {
         if (!coreWalletClient) {
-            throw new Error('Core wallet not found');
+            sendCoreWalletNotSetNotification();
+            return;
         }
 
         if (!desiredImplementation) {
@@ -141,7 +144,8 @@ export default function UpgradeProxy() {
         }
 
         setIsUpgrading(true);
-        try {
+
+        const upgradePromise = (async () => {
             const hash = await coreWalletClient.writeContract({
                 address: proxyAdminAddress,
                 abi: ProxyAdminABI.abi,
@@ -152,8 +156,13 @@ export default function UpgradeProxy() {
 
             await publicClient.waitForTransactionReceipt({ hash });
             await checkCurrentImplementation();
-        } catch (error) {
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            return hash;
+        })();
+
+        sendUpgradeProxyNotifications(upgradePromise, viemChain!);
+
+        try {
+            await upgradePromise;
         } finally {
             setIsUpgrading(false);
         }
@@ -225,10 +234,9 @@ export default function UpgradeProxy() {
                 </Steps>
 
 
-                {!isUpgradeNeeded && currentImplementation && <Success
-                    label="Current Implementation"
-                    value={"No change needed"}
-                />}
+                {!isUpgradeNeeded && currentImplementation && (
+                    <p className="mt-4 text-green-600">No change needed - Already up to date</p>
+                )}
             </Container>
         </CheckWalletRequirements>
     );

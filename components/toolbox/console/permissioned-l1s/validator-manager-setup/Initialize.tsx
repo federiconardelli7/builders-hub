@@ -17,9 +17,9 @@ import { useCreateChainStore } from "@/components/toolbox/stores/createChainStor
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 export default function Initialize() {
-    const [criticalError, setCriticalError] = useState<Error | null>(null);
     const [proxyAddress, setProxyAddress] = useState<string>("");
     const { walletEVMAddress, coreWalletClient, publicClient } = useWalletStore();
     const [isChecking, setIsChecking] = useState(false);
@@ -34,10 +34,7 @@ export default function Initialize() {
     const [subnetId, setSubnetId] = useState("");
     const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
 
-    // Throw critical errors during render
-    if (criticalError) {
-        throw criticalError;
-    }
+    const { sendCoreWalletNotSetNotification, sendInitializeNotifications } = useConsoleNotifications();
 
     useEffect(() => {
         if (walletEVMAddress && !adminAddress) {
@@ -116,7 +113,7 @@ export default function Initialize() {
             }
         } catch (error) {
             console.error('Error checking initialization:', error);
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            // setCriticalError(error instanceof Error ? error : new Error(String(error))); // Removed criticalError
         } finally {
             setIsChecking(false);
         }
@@ -124,26 +121,24 @@ export default function Initialize() {
 
     async function handleInitialize() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
         setIsInitializing(true);
-        try {
+
+        const initPromise = (async () => {
             if (!proxyAddress) throw new Error('Proxy address is required');
             
             const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;
             const formattedAdmin = adminAddress as `0x${string}`;
 
-            // Create settings object with exact types from the ABI
             const settings = {
                 admin: formattedAdmin,
-                subnetID: formattedSubnetId, // Note: ABI shows it as subnetID (capital ID), not subnetId
+                subnetID: formattedSubnetId,
                 churnPeriodSeconds: BigInt(churnPeriodSeconds),
                 maximumChurnPercentage: Number(maximumChurnPercentage)
             };
-
-            console.log("Settings object:", settings);
 
             const hash = await coreWalletClient.writeContract({
                 address: proxyAddress as `0x${string}`,
@@ -155,9 +150,13 @@ export default function Initialize() {
 
             await publicClient.waitForTransactionReceipt({ hash });
             await checkIfInitialized();
-        } catch (error) {
-            console.error('Error initializing:', error);
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            return hash;
+        })();
+
+        sendInitializeNotifications(initPromise, viemChain!);
+
+        try {
+            await initPromise;
         } finally {
             setIsInitializing(false);
         }
@@ -258,6 +257,9 @@ export default function Initialize() {
                         value={jsonStringifyWithBigint(initEvent)}
                         showCheck={isInitialized}
                     />
+                )}
+                {isInitialized !== null && (
+                    <p className="mt-4">Initialization Status: {isInitialized ? 'Initialized' : 'Not Initialized'}</p>
                 )}
             </Container>
         </CheckWalletRequirements>
