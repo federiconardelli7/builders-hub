@@ -33,42 +33,7 @@ export const dynamicParams = true;
 //   return hackathons.map((hackathon) => ({
 //     id: hackathon.id,
 //   }));
-// }
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-  const { id } = await params;
-  
-  try {
-    const hackathon = await getHackathon(id);
-    
-    if (!hackathon) {
-      return createMetadata({
-        title: 'Hackathon Not Found',
-        description: 'The requested hackathon could not be found',
-      });
-    }
-
-    return createMetadata({
-      title: hackathon.title,
-      description: hackathon.description,
-      openGraph: {
-        images: `/api/og/hackathons/${id}`,
-      },
-      twitter: {
-        images: `/api/og/hackathons/${id}`,
-      },
-    });
-  } catch (error) {
-    return createMetadata({
-      title: 'Hackathons',
-      description: 'Join exciting blockchain hackathons and build the future on Avalanche',
-    });
-  }
-}
+// } 
 
 export async function generateMetadata({
   params,
