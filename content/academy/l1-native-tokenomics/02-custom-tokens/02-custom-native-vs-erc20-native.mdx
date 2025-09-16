@@ -14,8 +14,6 @@ Creating a **custom native token** gives you complete control over your blockcha
 
 ### Benefits of Custom Native Tokens
 
-- **Isolated Fees**: Your blockchain's transaction costs are independent from other chains in the ecosystem
-- **Valueless Gas**: You can make your native token valueless, providing a free Web2-like experience
 - **Custom Tokenomics**: Design token distribution, inflation, and utility to match your project's needs
 - **Business Model Flexibility**: Avoid the high costs of sponsoring transaction fees on other chains
 
@@ -34,7 +32,6 @@ You can also tie your native token's value to an **existing ERC20 token** (like 
 - **Price Stability**: Using a stablecoin like USDC ensures predictable gas costs
 - **No Token Creation**: Avoid the complexity of creating and managing a new token
 - **Familiar Asset**: Users already understand and trust the underlying asset
-- **Reduced Volatility**: Gas costs remain stable regardless of market conditions
 
 ### How It Works
 
@@ -45,6 +42,18 @@ When transferring ERC20 tokens to become native tokens on an L1:
 
 This is achieved by hard-coding that a native token can only be received by depositing the tied asset into a smart contract. When the native token changes hands (e.g., through transaction fees redistributed to validators), the new owner can redeem the tied asset.
 
+## L1 Native Tokenomics Decision Outline
+
+This **L1 Native Tokenomics** course focuses on implementing and creating an L1 with a **custom native token**. You'll learn how to:
+
+- Create custom token
+- Assign Initial Allocation
+- Use Wrapped Native Token pre-deployed contract
+- Configure Native Minting Rights
+- Configure Fee Configuration for Transactions
+
+*Using existing ERC20 tokens** or **another chain's native token** as your L1's native token will be covered in the **Cross-Chain L1 Native** course*.
+
 ## Native Token vs Staking Token
 
 It's important to understand that your **native token and staking token don't necessarily have to be the same**:
@@ -54,27 +63,8 @@ It's important to understand that your **native token and staking token don't ne
 
 This separation allows for more flexible tokenomics design and can optimize different aspects of your blockchain's economy.
 
-## Course Structure
-
-This **L1 Native Tokenomics** course focuses on implementing and creating an L1 with a **custom native token**. You'll learn how to:
-
-- Design custom tokenomics
-- Deploy native token contracts
-- Configure token allocation
-- Implement native token distribution
-
-### Other Courses
-
-**Using existing ERC20 tokens** or **another chain's native token** as your L1's native token will be covered in the **Cross-Chain L1 Native** course.
 
 **Validator management and staking tokenomics** will be covered in:
 - **Permissioned L1s** course: Learn about validator manager deployment options
 - **Permissionless L1s** course: Learn about staking tokenomics and validator economics
 
-<Callout type="info">
-The conversion between ERC20 and native tokens is a one-way bridge when moving to an L1. Understanding these trade-offs is essential for designing your tokenomics.
-</Callout>
-
-<Callout type="tip">
-Cross-chain native token functionality and advanced ERC20 features will be covered in detail in the **Cross-Chain L1 Native** course.
-</Callout>
