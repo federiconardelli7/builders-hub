@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 
 import { useState, useMemo } from 'react';
 import useConsoleNotifications from '@/hooks/useConsoleNotifications';
-import type { Notification } from '@/types/console-history';
+import type { Notification } from '@/types/console-log';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useWalletStore } from '@/components/toolbox/stores/walletStore';

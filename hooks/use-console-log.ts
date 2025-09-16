@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Notification } from '@/types/console-history';
+import type { ConsoleLog } from '@/types/console-log';
 
 /**
  * Hook for managing console log/history
@@ -7,7 +7,7 @@ import type { Notification } from '@/types/console-history';
  * History is persisted server-side for logged-in users
  */
 export const useConsoleLog = () => {
-  const [logs, setLogs] = useState<Notification[]>([]);
+  const [logs, setLogs] = useState<ConsoleLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch logs from API
@@ -53,7 +53,7 @@ export const useConsoleLog = () => {
   }, [fetchLogs]);
 
   // Add a new log entry
-  const addLog = async (item: Omit<Notification, 'id' | 'timestamp'>) => {
+  const addLog = async (item: Omit<ConsoleLog, 'id' | 'timestamp'>) => {
     // Don't add during SSR/SSG
     if (typeof window === 'undefined') return;
     
@@ -74,7 +74,7 @@ export const useConsoleLog = () => {
 
       if (response.ok) {
         const savedItem = await response.json();
-        const logItem: Notification = {
+        const logItem: ConsoleLog = {
           id: savedItem.id,
           timestamp: new Date(savedItem.created_at),
           status: savedItem.status,

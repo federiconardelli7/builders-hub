@@ -53,7 +53,7 @@ model User {
   hackathons          Hackathon[]
   badges              UserBadge[]
   managedTestnetNodes NodeRegistration[]
-  consoleHistory      ConsoleHistory[]
+  consoleLog          ConsoleLog[]
 }
 
 model VerificationToken {
@@ -198,7 +198,7 @@ model NodeRegistration {
   @@index([subnet_id])
 }
 
-model ConsoleHistory {
+model ConsoleLog {
   id          String   @id @default(uuid())
   user_id     String
   title       String

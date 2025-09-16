@@ -1,9 +1,9 @@
 // Simple notification type
-export type NotificationStatus = 'success' | 'error' | 'warning' | 'info';
-export interface Notification {
+export type ConsoleLogStatus = 'success' | 'error' | 'warning' | 'info';
+export interface ConsoleLog {
   id: string;
   timestamp: Date;
-  status: NotificationStatus;
+  status: ConsoleLogStatus;
   title: string;
   description?: string;
   eventType?: string; // Optional simple string for categorization
