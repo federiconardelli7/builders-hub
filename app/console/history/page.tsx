@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 
 import { useState, useMemo } from 'react';
 import useConsoleNotifications from '@/hooks/useConsoleNotifications';
-import type { Notification } from '@/types/console-log';
+import type { ConsoleLog } from '@/types/console-log';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useWalletStore } from '@/components/toolbox/stores/walletStore';
@@ -221,7 +221,7 @@ export default function ConsoleHistoryPage() {
     linkElement.click();
   };
 
-  const getExplorerLink = (notification: Notification): string | null => {
+  const getExplorerLink = (notification: ConsoleLog): string | null => {
     const data = notification.data as any;
     const network = data.network || 'testnet';
     
