@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized, please sign in to continue.' }, { status: 401 });
     }
-    const logs = await prisma.consoleHistory.findMany({
+    const logs = await prisma.consoleLog.findMany({
       where: { user_id: session.user.id },
       orderBy: { created_at: 'desc' },
       take: 100 // Limit to last 100 items
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
     const { title, description, status, eventType, data } = body;
 
-    const logEntry = await prisma.consoleHistory.create({
+    const logEntry = await prisma.consoleLog.create({
       data: {
         user_id: session?.user.id,
         title,
