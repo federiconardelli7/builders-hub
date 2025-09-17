@@ -47,7 +47,10 @@ export default function DeployProxyContract() {
             account: walletEVMAddress as `0x${string}`
         });
 
-        notify('deployProxyAdmin', deployPromise, viemChain ?? undefined);
+        notify({
+            type: 'deploy',
+            name: 'ProxyAdmin'
+        }, deployPromise, viemChain ?? undefined);
 
         const hash = await deployPromise;
         const receipt = await publicClient.waitForTransactionReceipt({ hash });
@@ -78,7 +81,10 @@ export default function DeployProxyContract() {
             account: walletEVMAddress as `0x${string}`
         });
 
-        notify('deployTransparentProxy', deployPromise, viemChain ?? undefined);
+        notify({
+            type: 'deploy',
+            name: 'TransparentUpgradeableProxy'
+        }, deployPromise, viemChain ?? undefined);
 
         const hash = await deployPromise;
         const receipt = await publicClient.waitForTransactionReceipt({ hash });

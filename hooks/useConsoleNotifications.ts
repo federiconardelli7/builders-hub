@@ -4,9 +4,9 @@ import { Chain } from 'viem';
 import usePChainNotifications from './usePChainNotifications';
 import useEVMNotifications from './useEVMNotifications';
 import { type PChainAction, PChainActionList } from './usePChainNotifications';
-import { type EVMAction } from './useEVMNotifications';
+import { type EVMNotificationOptions } from './useEVMNotifications';
 
-type ConsoleAction = PChainAction | EVMAction;
+type ConsoleAction = PChainAction | EVMNotificationOptions;
 
 const useConsoleNotifications = () => {
     const { logs, loading, getExplorerUrl } = useConsoleLog();
@@ -19,13 +19,14 @@ const useConsoleNotifications = () => {
     }
 
     const notify = <T>(action: ConsoleAction, promise: Promise<T>, viemChain?: Chain) => {
-        if (PChainActionList.includes(action)) {
+        if (typeof action === 'string' && PChainActionList.includes(action)) {
             notifyP(action as PChainAction, promise as Promise<string>);
-        } else {
-            if (!viemChain && action !== 'aggregateSignatures') {
-                throw new Error('viemChain is required for EVM actions');
+        } else if (typeof action === 'object' && 'type' in action) {
+            // Local operations don't require a chain
+            if (!viemChain && action.type !== 'local') {
+                throw new Error('viemChain is required for EVM deploy, call, and transfer actions');
             }
-            notifyE(action as EVMAction, promise, viemChain);
+            notifyE(action as EVMNotificationOptions, promise, viemChain);
         }
     };
 

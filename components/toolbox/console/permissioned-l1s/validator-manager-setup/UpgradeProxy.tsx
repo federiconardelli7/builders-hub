@@ -153,7 +153,10 @@ export default function UpgradeProxy() {
             chain: viemChain ?? undefined,
         });
 
-        notify('upgradeProxy', upgradePromise, viemChain ?? undefined);
+        notify({
+            type: 'call',
+            name: 'Upgrade Proxy'
+        }, upgradePromise, viemChain ?? undefined);
 
         try {
             const hash = await upgradePromise;

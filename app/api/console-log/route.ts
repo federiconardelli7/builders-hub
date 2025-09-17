@@ -34,16 +34,16 @@ export async function POST(req: NextRequest) {
     if (!body) {
       return NextResponse.json({ error: 'No body provided.' }, { status: 400 });
     }
-    if (!body.status || !body.eventType) {
-      return NextResponse.json({ error: 'Status and eventType are required.' }, { status: 400 });
+    if (!body.status || !body.actionPath) {
+      return NextResponse.json({ error: 'Status and actionPath are required.' }, { status: 400 });
     }
-    const { status, eventType, data } = body;
+    const { status, actionPath, data } = body;
 
     const logEntry = await prisma.consoleLog.create({
       data: {
         user_id: session?.user.id,
         status,
-        event_type: eventType,
+        action_path: actionPath,
         data
       }
     });

@@ -184,7 +184,10 @@ export default function ICMRelayer() {
                 gas: 21000n,
                 nonce: nextNonce,
             });
-            notify('sendNativeCoin', transactionPromise, viemChain ?? undefined);
+            notify({
+                type: 'transfer',
+                name: 'Send Native Coin'
+            }, transactionPromise, viemChain ?? undefined);
             const hash = await transactionPromise;
             await publicClient.waitForTransactionReceipt({ hash });
             await fetchBalances();

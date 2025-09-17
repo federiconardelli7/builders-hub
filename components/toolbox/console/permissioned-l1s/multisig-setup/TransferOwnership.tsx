@@ -105,7 +105,10 @@ export default function TransferOwnership() {
                 chain: viemChain ?? undefined,
             });
 
-            notify('transferOwnership', transferPromise, viemChain ?? undefined);
+            notify({
+                type: 'call',
+                name: 'Transfer Ownership'
+            }, transferPromise, viemChain ?? undefined);
 
             const hash = await transferPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });

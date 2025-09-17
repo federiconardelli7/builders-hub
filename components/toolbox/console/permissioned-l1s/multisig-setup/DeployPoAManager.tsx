@@ -102,7 +102,10 @@ export default function DeployPoAManager() {
                 account: walletEVMAddress as `0x${string}`
             });
 
-            notify('deployPoAManager', deployPromise, viemChain);
+            notify({
+                type: 'deploy',
+                name: 'PoAManager'
+            }, deployPromise, viemChain);
 
             const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });

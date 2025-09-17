@@ -3,13 +3,14 @@ import { toast } from 'sonner';
 import { useConsoleLog } from './use-console-log';
 import { PChainClient, createPChainClient } from '@avalanche-sdk/client';
 import { avalanche, avalancheFuji } from '@avalanche-sdk/client/chains';
+import { usePathname } from 'next/navigation';
 
 const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
     return `https://${isTestnet ? "subnets-test" : "subnets"}.avax.network/p-chain/tx/${txID}`;
 };
 
-export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1' | 'addPermissionlessValidator';
-export const PChainActionList = ['createSubnet', 'createChain', 'convertToL1', 'addPermissionlessValidator'];
+export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1' | 'addPermissionlessValidator' | 'registerL1Validator';
+export const PChainActionList = ['createSubnet', 'createChain', 'convertToL1', 'addPermissionlessValidator', 'registerL1Validator'];
 
 type PChainNotificationConfig = {
     loadingMessage: string;
@@ -43,6 +44,12 @@ const configs: Record<PChainAction, PChainNotificationConfig> = {
         errorMessagePrefix: 'Failed to add validator: ',
         eventType: 'validator_added',
     },
+    registerL1Validator: {
+        loadingMessage: 'Signing RegisterL1ValidatorTx with Core...',
+        successMessage: 'Validator registered successfully',
+        errorMessagePrefix: 'Failed to register validator: ',
+        eventType: 'validator_registered',
+    },
 };
 
 const waitForTransaction = async (client: PChainClient, txID: string, maxAttempts = 30, interval = 2000) => {
@@ -61,6 +68,7 @@ const waitForTransaction = async (client: PChainClient, txID: string, maxAttempt
 const usePChainNotifications = () => {
     const isTestnet = typeof window !== 'undefined' ? useWalletStore((s) => s.isTestnet) : false;
     const { addLog } = useConsoleLog();
+    const pathname = usePathname();
 
     const client: PChainClient = createPChainClient({ chain: isTestnet ? avalancheFuji : avalanche, transport: { type: 'http' } });
 
@@ -68,6 +76,25 @@ const usePChainNotifications = () => {
         const config = configs[action];
 
         const toastId = toast.loading(config.loadingMessage);
+        
+        // Extract the flow context from the current pathname
+        // Also handles /academy and /docs paths
+        const pathSegments = pathname?.split('/').filter(Boolean) || [];
+        
+        // Check for console, academy, or docs in the path
+        const rootSections = ['console', 'academy', 'docs'];
+        let flowPath = pathname;
+        
+        for (const section of rootSections) {
+            const sectionIndex = pathSegments.indexOf(section);
+            if (sectionIndex !== -1) {
+                flowPath = pathSegments.slice(sectionIndex + 1, -1).join('/');
+                break;
+            }
+        }
+        
+        // Create a contextual action path based on the flow and action
+        const actionPath = `${flowPath}/${config.eventType}`;
 
         promise
             .then(async (txID) => {
@@ -88,14 +115,14 @@ const usePChainNotifications = () => {
                         : { txID, network: isTestnet ? 'testnet' : 'mainnet' };
                     addLog({
                         status: 'success',
-                        eventType: config.eventType,
+                        actionPath,
                         data
                     });
                 } catch (error) {
                     toast.error(config.errorMessagePrefix + (error as Error).message, { id: toastId });
                     addLog({
                         status: 'error',
-                        eventType: config.eventType,
+                        actionPath,
                         data: { error: (error as Error).message, network: isTestnet ? 'testnet' : 'mainnet' }
                     });
                 }
@@ -104,7 +131,7 @@ const usePChainNotifications = () => {
                 toast.error(config.errorMessagePrefix + error.message, { id: toastId });
                 addLog({
                     status: 'error',
-                    eventType: config.eventType,
+                    actionPath,
                     data: { error: error.message, network: isTestnet ? 'testnet' : 'mainnet' }
                 });
             });

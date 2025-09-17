@@ -25,7 +25,7 @@ export const useConsoleLog = () => {
           id: item.id,
           timestamp: new Date(item.created_at),
           status: item.status,
-          eventType: item.event_type,
+          actionPath: item.action_path,
           data: item.data
         }));
         setLogs(transformedLogs);
@@ -63,7 +63,7 @@ export const useConsoleLog = () => {
         },
         body: JSON.stringify({
           status: item.status,
-          eventType: item.eventType,
+          actionPath: item.actionPath,
           data: item.data
         })
       });
@@ -74,7 +74,7 @@ export const useConsoleLog = () => {
           id: savedItem.id,
           timestamp: new Date(savedItem.created_at),
           status: savedItem.status,
-          eventType: savedItem.event_type,
+          actionPath: savedItem.action_path,
           data: savedItem.data
         };
         setLogs(prev => [logItem, ...prev]);

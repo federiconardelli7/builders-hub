@@ -61,7 +61,10 @@ export default function DeployICMDemo() {
                 chain: viemChain
             });
 
-            notify('deployICMDemo', deployPromise, viemChain ?? undefined);
+            notify({
+                type: 'deploy',
+                name: 'ICMDemo'
+            }, deployPromise, viemChain ?? undefined);
 
             const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });

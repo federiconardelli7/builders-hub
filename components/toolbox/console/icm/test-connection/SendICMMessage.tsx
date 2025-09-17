@@ -116,7 +116,10 @@ export default function SendICMMessage() {
                 chain: viemChain,
             });
 
-            notify('sendICMMessage', writePromise, viemChain ?? undefined);
+            notify({
+                type: 'call',
+                name: 'Send ICM Message'
+            }, writePromise, viemChain ?? undefined);
 
             const hash = await writePromise;
             console.log("Transaction hash:", hash);

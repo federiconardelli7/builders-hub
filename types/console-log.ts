@@ -4,6 +4,6 @@ export interface ConsoleLog {
   id: string;
   timestamp: Date;
   status: ConsoleLogStatus;
-  eventType: string;
+  actionPath?: string;
   data: Record<string, any>;
 }

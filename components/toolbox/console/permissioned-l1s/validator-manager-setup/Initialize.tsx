@@ -145,7 +145,10 @@ export default function Initialize() {
             chain: viemChain ?? undefined,
         });
 
-        notify('initialize', initPromise, viemChain ?? undefined);
+        notify({
+            type: 'call',
+            name: 'Initialize Validator Manager'
+        }, initPromise, viemChain ?? undefined);
 
         try {
             const hash = await initPromise;

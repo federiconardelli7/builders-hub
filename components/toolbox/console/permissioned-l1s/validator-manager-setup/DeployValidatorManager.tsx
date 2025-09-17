@@ -74,7 +74,10 @@ export default function DeployValidatorContracts() {
             account: walletEVMAddress as `0x${string}`
         });
 
-        notify('deployValidatorMessages', deployPromise, viemChain ?? undefined);
+        notify({
+            type: 'deploy',
+            name: 'ValidatorMessages Library'
+        }, deployPromise, viemChain ?? undefined);
 
         const hash = await deployPromise;
         const receipt = await publicClient.waitForTransactionReceipt({ hash });
@@ -106,7 +109,10 @@ export default function DeployValidatorContracts() {
             account: walletEVMAddress as `0x${string}`
         });
 
-        notify('deployValidatorManager', deployPromise, viemChain ?? undefined);
+        notify({
+            type: 'deploy',
+            name: 'ValidatorManager'
+        }, deployPromise, viemChain ?? undefined);
 
         const hash = await deployPromise;
         const receipt = await publicClient.waitForTransactionReceipt({ hash });

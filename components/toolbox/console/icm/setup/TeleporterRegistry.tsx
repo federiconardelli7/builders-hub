@@ -53,7 +53,10 @@ export default function TeleporterRegistry() {
                 account: walletEVMAddress as `0x${string}`,
                 chain: viemChain,
             });
-            notify('deployTeleporterRegistry', deployPromise, viemChain ?? undefined);
+            notify({
+                type: 'deploy',
+                name: 'TeleporterRegistry'
+            }, deployPromise, viemChain ?? undefined);
 
             const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });

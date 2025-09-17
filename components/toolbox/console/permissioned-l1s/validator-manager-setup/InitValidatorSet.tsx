@@ -65,7 +65,10 @@ export default function InitValidatorSet() {
             return signedMessage;
         })();
 
-        notify('aggregateSignatures', aggPromise);
+        notify({
+            type: 'local',
+            name: 'Aggregate Signatures'
+        }, aggPromise);
 
         try {
             await aggPromise;
@@ -144,7 +147,10 @@ export default function InitValidatorSet() {
                 chain: viemChain || undefined,
             });
 
-            notify('initializeValidatorSet', initPromise, viemChain ?? undefined);
+            notify({
+                type: 'call',
+                name: 'Initialize Validator Set'
+            }, initPromise, viemChain ?? undefined);
 
             try {
                 const hash = await initPromise;
@@ -162,17 +168,6 @@ export default function InitValidatorSet() {
                 setIsInitializing(false);
             }
         })();
-
-        // sendInitializeValidatorSetNotifications(initPromise, viemChain!); // This line is removed as per the new_code
-
-        // try { // This block is removed as per the new_code
-        //     const hash = await initPromise; // This line is removed as per the new_code
-        //     setTxHash(hash); // This line is removed as per the new_code
-        // } catch (err: unknown) { // This line is removed as per the new_code
-        //     setError((err as Error).message); // This line is removed as per the new_code
-        // } finally { // This line is removed as per the new_code
-        //     setIsInitializing(false); // This line is removed as per the new_code
-        // } // This block is removed as per the new_code
     };
 
     return (
