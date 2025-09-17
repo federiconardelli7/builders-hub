@@ -181,8 +181,7 @@ export default function ConsoleHistoryPage() {
     
     const search = searchTerm.toLowerCase();
     return fullHistory.filter(notification => 
-      notification.title.toLowerCase().includes(search) ||
-      notification.description?.toLowerCase().includes(search) ||
+      notification.eventType.toLowerCase().includes(search) ||
       JSON.stringify(notification.data).toLowerCase().includes(search)
     );
   }, [fullHistory, searchTerm]);
