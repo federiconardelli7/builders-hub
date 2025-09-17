@@ -121,7 +121,7 @@ const useEVMNotifications = () => {
                         };
                     }
 
-                    toast.success(`${messages.success} (Confirmed)`, {
+                    toast.success(`${messages.success}`, {
                         id: toastId,
                         action: {
                             label: 'Open in Explorer',

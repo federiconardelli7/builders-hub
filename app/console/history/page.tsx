@@ -181,7 +181,7 @@ export default function ConsoleHistoryPage() {
     
     const search = searchTerm.toLowerCase();
     return fullHistory.filter(notification => 
-      notification.eventType.toLowerCase().includes(search) ||
+      notification.actionPath?.toLowerCase().includes(search) ||
       JSON.stringify(notification.data).toLowerCase().includes(search)
     );
   }, [fullHistory, searchTerm]);
@@ -249,13 +249,13 @@ export default function ConsoleHistoryPage() {
     }
     
     // For subnet/chain creation, use the ID as transaction ID
-    if (data.subnetID && (notification.eventType === 'subnet_created')) {
+    if (data.subnetID && notification.actionPath?.includes('subnet_created')) {
       return getExplorerUrl(data.subnetID, 'tx', network, 'P');
     }
-    if (data.blockchainID && (notification.eventType === 'chain_created')) {
+    if (data.blockchainID && notification.actionPath?.includes('chain_created')) {
       return getExplorerUrl(data.blockchainID, 'tx', network, 'P');
     }
-    if (data.txID && (notification.eventType === 'l1_conversion')) {
+    if (data.txID && notification.actionPath?.includes('l1_conversion')) {
       return getExplorerUrl(data.txID, 'tx', network, 'P');
     }
     
@@ -263,60 +263,95 @@ export default function ConsoleHistoryPage() {
   };
 
   const getDisplayInfo = (log: ConsoleLog) => {
-    const { eventType, status, data } = log;
+    const { actionPath, status, data } = log;
     let title = '';
     let description = '';
 
     const network = data.network ? ` (${data.network})` : '';
 
-    switch (eventType) {
-      case 'subnet_created':
-        title = status === 'success' ? 'Subnet Created' : 'Subnet Creation Failed';
-        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
-        break;
-      case 'chain_created':
-        title = status === 'success' ? 'Chain Created' : 'Chain Creation Failed';
-        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
-        break;
-      case 'l1_conversion':
-        title = status === 'success' ? 'Subnet Converted to L1' : 'L1 Conversion Failed';
-        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
-        break;
-      case 'validator_messages_deployed':
-        title = status === 'success' ? 'ValidatorMessages Library Deployed' : 'ValidatorMessages Deployment Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
-        break;
-      case 'validator_manager_deployed':
-        title = status === 'success' ? 'ValidatorManager Contract Deployed' : 'ValidatorManager Deployment Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
-        break;
-      case 'proxy_admin_deployed':
-        title = status === 'success' ? 'ProxyAdmin Contract Deployed' : 'ProxyAdmin Deployment Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
-        break;
-      case 'transparent_proxy_deployed':
-        title = status === 'success' ? 'TransparentUpgradeableProxy Contract Deployed' : 'TransparentUpgradeableProxy Deployment Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
-        break;
-      case 'proxy_upgraded':
-        title = status === 'success' ? 'Proxy Upgraded' : 'Proxy Upgrade Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
-        break;
-      case 'validator_manager_initialized':
-        title = status === 'success' ? 'ValidatorManager Initialized' : 'ValidatorManager Initialization Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
-        break;
-      case 'validator_set_initialized':
-        title = status === 'success' ? 'Validator Set Initialized' : 'Validator Set Initialization Failed';
-        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
-        break;
-      case 'signatures_aggregated':
-        title = status === 'success' ? 'Signatures Aggregated' : 'Signature Aggregation Failed';
-        description = status === 'success' ? `Signed Message: ${data.signedMessage?.slice(0, 10)}...${network}` : data.error;
-        break;
-      default:
-        title = `${eventType ? eventType.replace(/_/g, ' ').toUpperCase() : 'Event'} ${status.toUpperCase()}`;
-        description = status === 'error' ? data.error : JSON.stringify(data);
+    // Parse the action path to extract context
+    // Format: "section/subsection/.../action_type/action_name"
+    const pathParts = actionPath?.split('/') || [];
+    
+    if (pathParts.length >= 2) {
+      // Get the last two parts: action_type and action_name
+      const actionName = pathParts[pathParts.length - 1] || '';
+      const actionType = pathParts[pathParts.length - 2] || '';
+      
+      // Format the action name for display
+      const formattedName = actionName
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, char => char.toUpperCase());
+      
+      // Generate title based on action type and status
+      const statusText = status === 'success' ? 'Success' : 'Failed';
+      
+      switch (actionType) {
+        case 'deploy':
+          title = `Deploy ${formattedName} - ${statusText}`;
+          break;
+        case 'call':
+          title = `${formattedName} - ${statusText}`;
+          break;
+        case 'transfer':
+          title = `Transfer ${formattedName} - ${statusText}`;
+          break;
+        case 'local':
+          title = `${formattedName} - ${statusText}`;
+          break;
+        default:
+          // For P-Chain actions or other types
+          title = `${formattedName} - ${statusText}`;
+      }
+    } else if (actionPath) {
+      // Fallback for simple action paths
+      const formattedAction = actionPath
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, char => char.toUpperCase());
+      title = `${formattedAction} - ${status === 'success' ? 'Success' : 'Failed'}`;
+    } else {
+      // No action path provided
+      title = `Event ${status.toUpperCase()}`;
+    }
+
+    // Generate description based on available data fields
+    if (status === 'error') {
+      description = data.error || 'Unknown error occurred';
+    } else {
+      const details = [];
+      
+      // Add relevant data fields to description
+      if (data.txHash) {
+        details.push(`Transaction: ${data.txHash.slice(0, 10)}...`);
+      }
+      if (data.txID) {
+        details.push(`Transaction ID: ${data.txID.slice(0, 10)}...`);
+      }
+      if (data.address) {
+        details.push(`Address: ${data.address}`);
+      }
+      if (data.subnetID) {
+        details.push(`Subnet ID: ${data.subnetID.slice(0, 10)}...`);
+      }
+      if (data.blockchainID) {
+        details.push(`Blockchain ID: ${data.blockchainID.slice(0, 10)}...`);
+      }
+      if (data.chainId) {
+        details.push(`Chain ID: ${data.chainId}`);
+      }
+      if (data.result && typeof data.result === 'string') {
+        const preview = data.result.length > 30 ? `${data.result.slice(0, 30)}...` : data.result;
+        details.push(`Result: ${preview}`);
+      }
+      
+      if (details.length > 0) {
+        description = details.join('\n') + network;
+      } else {
+        // If no specific fields, show a generic success message or stringify the data
+        description = Object.keys(data).length > 1 
+          ? `Details: ${JSON.stringify(data).slice(0, 100)}...` 
+          : `Operation completed successfully${network}`;
+      }
     }
 
     return { title, description };
@@ -448,6 +483,14 @@ export default function ConsoleHistoryPage() {
                               </code>
                             )}
                           </div>
+                          {/* Show action path as breadcrumb for context */}
+                          {notification.actionPath && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              <span className="font-mono opacity-70">
+                                {notification.actionPath.split('/').slice(0, -1).join(' / ')}
+                              </span>
+                            </div>
+                          )}
                           {description && (
                             <p className="text-xs text-muted-foreground mt-1">
                               {description}
