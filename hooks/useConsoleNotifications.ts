@@ -10,8 +10,6 @@ import { type EVMAction } from './useEVMNotifications';
 type ConsoleAction = PChainAction | EVMAction;
 
 const useConsoleNotifications = () => {
-    // Handle SSR/SSG - only access store on client
-    const isTestnet = typeof window !== 'undefined' ? useWalletStore((s) => s.isTestnet) : false;
     const { logs, loading, getExplorerUrl } = useConsoleLog();
     const notifyP = usePChainNotifications();
     const notifyE = useEVMNotifications();
