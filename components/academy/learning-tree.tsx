@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-import { ArrowRight, BookOpen, Code, Layers, ChevronDown, ArrowLeftRight, Coins } from "lucide-react";
+import { ArrowRight, BookOpen, Code, Layers, ChevronDown, ArrowLeftRight, Coins, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CourseNode {
@@ -49,7 +49,7 @@ const learningPaths: CourseNode[] = [
     slug: "interchain-messaging",
     category: "Interoperability",
     dependencies: ["avalanche-fundamentals"],
-    position: { x: 15, y: 350 },
+    position: { x: 50, y: 550 },
     mobileOrder: 3
   },
   {
@@ -59,7 +59,7 @@ const learningPaths: CourseNode[] = [
     slug: "permissioned-l1s",
     category: "L1 Development",
     dependencies: ["avalanche-fundamentals"],
-    position: { x: 40, y: 350 },
+    position: { x: 25, y: 550 },
     mobileOrder: 7
   },
   {
@@ -69,7 +69,7 @@ const learningPaths: CourseNode[] = [
     slug: "l1-tokenomics",
     category: "L1 Tokenomics",
     dependencies: ["avalanche-fundamentals"],
-    position: { x: 65, y: 350 },
+    position: { x: 75, y: 550 },
     mobileOrder: 6
   },
   {
@@ -79,18 +79,18 @@ const learningPaths: CourseNode[] = [
     slug: "customizing-evm",
     category: "VM Customization",
     dependencies: ["avalanche-fundamentals"],
-    position: { x: 90, y: 350 },
+    position: { x: 80, y: 300 },
     mobileOrder: 8
   },
 
  {
    id: "encrypted-erc",
-   name: "eERC",
+   name: "Encrypted ERC",
    description: "Learn about eERC tokens to add privacy to your applications",
    slug: "encrypted-erc",
    category: "Privacy",
    dependencies: ["avalanche-fundamentals"],
-   position: { x: 80, y: 150 },
+   position: { x: 20, y: 300 },
    mobileOrder: 9
  },
 
@@ -103,7 +103,7 @@ const learningPaths: CourseNode[] = [
     slug: "interchain-token-transfer",
     category: "Interoperability",
     dependencies: ["interchain-messaging"],
-    position: { x: 5, y: 550 },
+    position: { x: 35, y: 750 },
     mobileOrder: 4
   },
   {
@@ -113,7 +113,7 @@ const learningPaths: CourseNode[] = [
     slug: "icm-chainlink",
     category: "Interoperability",
     dependencies: ["interchain-messaging"],
-    position: { x: 35, y: 550 },
+    position: { x: 65, y: 750 },
     mobileOrder: 5
   },
 ];
@@ -148,6 +148,12 @@ const categoryStyles = {
     icon: Code,
     lightBg: "bg-orange-50",
     darkBg: "dark:bg-orange-950/30"
+  },
+  "Privacy": {
+    gradient: "from-indigo-500 to-indigo-600",
+    icon: Shield,
+    lightBg: "bg-indigo-50",
+    darkBg: "dark:bg-indigo-950/30"
   }
 };
 
