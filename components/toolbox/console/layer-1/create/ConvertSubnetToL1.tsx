@@ -35,7 +35,7 @@ export default function ConvertSubnetToL1() {
 
     const [isConverting, setIsConverting] = useState(false);
     
-    const { sendCoreWalletNotSetNotification, sendConvertSubnetToL1Notifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     // TO-DO do we need this?
     const [rawPChainBalanceNavax, setRawPChainBalanceNavax] = useState<bigint | null>(null);
@@ -75,7 +75,7 @@ export default function ConvertSubnetToL1() {
             validators
         });
 
-        sendConvertSubnetToL1Notifications(convertSubnetToL1Tx);
+        notify('convertToL1', convertSubnetToL1Tx);
 
         try {
             const txID = await convertSubnetToL1Tx;
