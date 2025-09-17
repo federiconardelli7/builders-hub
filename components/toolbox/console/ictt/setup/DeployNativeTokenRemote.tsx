@@ -170,7 +170,10 @@ export default function DeployNativeTokenRemote() {
                 chain: viemChain,
                 account: walletEVMAddress as `0x${string}`
             });
-            notify('deployNativeTokenRemote', deployPromise, viemChain ?? undefined);
+            notify({
+                type: 'deploy',
+                name: 'NativeTokenRemote'
+            }, deployPromise, viemChain ?? undefined);
 
             const receipt = await publicClient.waitForTransactionReceipt({ hash: await deployPromise });
 
