@@ -1,4 +1,3 @@
-import { useWalletStore } from '@/components/toolbox/stores/walletStore';
 import { toast } from 'sonner';
 import { useConsoleLog } from './use-console-log';
 import { Chain } from 'viem';
