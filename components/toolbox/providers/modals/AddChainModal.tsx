@@ -207,7 +207,7 @@ export function AddChainModal() {
             });
             
             await coreWalletClient.switchChain({
-                id: chainData.evmChainId,
+                id: chainData.evmChainId
             });
 
             addL1(chainData);
