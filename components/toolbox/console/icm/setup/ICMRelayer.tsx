@@ -16,6 +16,7 @@ import { Container } from '@/components/toolbox/components/Container';
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
 import { CheckWalletRequirements } from '@/components/toolbox/components/CheckWalletRequirements';
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements';
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 
 export default function ICMRelayer() {
@@ -23,7 +24,7 @@ export default function ICMRelayer() {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { coreWalletClient, isTestnet, walletEVMAddress } = useWalletStore();
     const { l1List } = useL1ListStore()();
-
+    const { notify } = useConsoleNotifications();
     // Initialize state with one-time calculation
     const [selectedSources, setSelectedSources] = useState<string[]>(() => {
         return [...new Set([selectedL1?.id, l1List[0]?.id].filter(Boolean) as string[])];
@@ -176,15 +177,16 @@ export default function ICMRelayer() {
                 blockTag: 'pending',
             });
 
-            const txHash = await coreWalletClient.sendTransaction({
+            const transactionPromise = coreWalletClient.sendTransaction({
                 to: relayerAddress as `0x${string}`,
                 value: parseEther('1'),
                 chain: viemChain,
                 gas: 21000n,
                 nonce: nextNonce,
             });
-
-            await publicClient.waitForTransactionReceipt({ hash: txHash as `0x${string}` });
+            notify('sendNativeCoin', transactionPromise, viemChain ?? undefined);
+            const hash = await transactionPromise;
+            await publicClient.waitForTransactionReceipt({ hash });
             await fetchBalances();
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));

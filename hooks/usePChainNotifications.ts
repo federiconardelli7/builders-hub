@@ -8,7 +8,8 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
     return `https://${isTestnet ? "subnets-test" : "subnets"}.avax.network/p-chain/tx/${txID}`;
 };
 
-export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1';
+export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1' | 'addPermissionlessValidator';
+export const PChainActionList = ['createSubnet', 'createChain', 'convertToL1', 'addPermissionlessValidator'];
 
 type PChainNotificationConfig = {
     loadingMessage: string;
@@ -35,6 +36,12 @@ const configs: Record<PChainAction, PChainNotificationConfig> = {
         successMessage: 'Subnet converted to L1 successfully',
         errorMessagePrefix: 'Failed to convert Subnet to L1: ',
         eventType: 'l1_conversion',
+    },
+    addPermissionlessValidator: {
+        loadingMessage: 'Signing AddPermissionlessValidatorTx with Core...',
+        successMessage: 'Validator added successfully',
+        errorMessagePrefix: 'Failed to add validator: ',
+        eventType: 'validator_added',
     },
 };
 

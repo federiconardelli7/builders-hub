@@ -23,7 +23,13 @@ export type EVMAction =
   | 'upgradeProxy'
   | 'initialize'
   | 'initializeValidatorSet'
-  | 'aggregateSignatures';
+  | 'aggregateSignatures'
+  | 'deployPoAManager'
+  | 'transferOwnership'
+  | 'deployTeleporterRegistry'
+  | 'deployICMDemo'
+  | 'sendICMMessage'
+  | 'sendNativeCoin';
 
 type EVMNotificationConfig = {
     loadingMessage: string;
@@ -89,6 +95,48 @@ const configs: Record<EVMAction, EVMNotificationConfig> = {
         errorMessagePrefix: 'Failed to aggregate signatures: ',
         eventType: 'signatures_aggregated',
         needsConfirmation: false,
+    },
+    deployPoAManager: {
+        loadingMessage: 'Deploying PoAManager contract...',
+        successMessage: 'PoAManager contract deployed',
+        errorMessagePrefix: 'Failed to deploy PoAManager contract: ',
+        eventType: 'poa_manager_deployed',
+        needsConfirmation: true,
+    },
+    transferOwnership: {
+        loadingMessage: 'Transferring ownership...',
+        successMessage: 'Ownership transferred successfully',
+        errorMessagePrefix: 'Failed to transfer ownership: ',
+        eventType: 'ownership_transferred',
+        needsConfirmation: true,
+    },
+    deployTeleporterRegistry: {
+        loadingMessage: 'Deploying TeleporterRegistry contract...',
+        successMessage: 'TeleporterRegistry contract deployed',
+        errorMessagePrefix: 'Failed to deploy TeleporterRegistry contract: ',
+        eventType: 'teleporter_registry_deployed',
+        needsConfirmation: true,
+    },
+    deployICMDemo: {
+        loadingMessage: 'Deploying ICMDemo contract...',
+        successMessage: 'ICMDemo contract deployed',
+        errorMessagePrefix: 'Failed to deploy ICMDemo contract: ',
+        eventType: 'icm_demo_deployed',
+        needsConfirmation: true,
+    },
+    sendICMMessage: {
+        loadingMessage: 'Sending ICM message...',
+        successMessage: 'ICM message sent successfully',
+        errorMessagePrefix: 'Failed to send ICM message: ',
+        eventType: 'icm_message_sent',
+        needsConfirmation: true,
+    },
+    sendNativeCoin: {
+        loadingMessage: 'Sending native coin...',
+        successMessage: 'Native coin sent successfully',
+        errorMessagePrefix: 'Failed to send native coin: ',
+        eventType: 'native_coin_sent',
+        needsConfirmation: true,
     },
 };
 

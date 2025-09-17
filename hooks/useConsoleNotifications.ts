@@ -3,7 +3,7 @@ import { useConsoleLog } from './use-console-log';
 import { Chain } from 'viem';
 import usePChainNotifications from './usePChainNotifications';
 import useEVMNotifications from './useEVMNotifications';
-import { type PChainAction } from './usePChainNotifications';
+import { type PChainAction, PChainActionList } from './usePChainNotifications';
 import { type EVMAction } from './useEVMNotifications';
 
 type ConsoleAction = PChainAction | EVMAction;
@@ -19,7 +19,7 @@ const useConsoleNotifications = () => {
     }
 
     const notify = <T>(action: ConsoleAction, promise: Promise<T>, viemChain?: Chain) => {
-        if (['createSubnet', 'createChain', 'convertToL1'].includes(action)) {
+        if (PChainActionList.includes(action)) {
             notifyP(action as PChainAction, promise as Promise<string>);
         } else {
             if (!viemChain && action !== 'aggregateSignatures') {
