@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import { EVMAddressInput } from "./EVMAddressInput";
 import { ResultField } from "./ResultField";
 import allowListAbi from "../../../contracts/precompiles/AllowList.json";
+import { useConnectedWallet } from "../contexts/ConnectedWalletContext";
 
 // Component for setting Enabled permissions
 export function SetEnabledComponent({
@@ -19,8 +20,9 @@ export function SetEnabledComponent({
   precompileType?: string;
   abi?: any;
 }) {
-  const { coreWalletClient, publicClient, walletEVMAddress, walletChainId } =
+  const { publicClient, walletEVMAddress, walletChainId } =
     useWalletStore();
+  const { coreWalletClient } = useConnectedWallet();
   const viemChain = useViemChainStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [enabledAddress, setEnabledAddress] = useState<string>("");
@@ -28,16 +30,11 @@ export function SetEnabledComponent({
   const [error, setError] = useState<string | null>(null);
 
   const handleSetEnabled = async () => {
-    if (!coreWalletClient) {
-      setError('Core wallet not found');
-      return;
-    }
-
     setIsProcessing(true);
     setError(null);
 
     try {
-      const hash = await (coreWalletClient as any).writeContract({
+      const hash = await coreWalletClient.writeContract({
         address: precompileAddress as `0x${string}`,
         abi: abi,
         functionName: "setEnabled",
@@ -75,7 +72,6 @@ export function SetEnabledComponent({
   const canSetEnabled = Boolean(
     enabledAddress &&
     walletEVMAddress &&
-    coreWalletClient &&
     !isProcessing
   );
 
@@ -129,8 +125,9 @@ export function SetManagerComponent({
   precompileType?: string;
   abi?: any;
 }) {
-  const { coreWalletClient, publicClient, walletEVMAddress, walletChainId } =
+  const { publicClient, walletEVMAddress, walletChainId } =
     useWalletStore();
+  const { coreWalletClient } = useConnectedWallet();
   const viemChain = useViemChainStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [managerAddress, setManagerAddress] = useState<string>("");
@@ -138,11 +135,6 @@ export function SetManagerComponent({
   const [error, setError] = useState<string | null>(null);
 
   const handleSetManager = async () => {
-    if (!coreWalletClient) {
-      setError('Core wallet not found');
-      return;
-    }
-
     setIsProcessing(true);
     setError(null);
 
@@ -185,7 +177,6 @@ export function SetManagerComponent({
   const canSetManager = Boolean(
     managerAddress &&
     walletEVMAddress &&
-    coreWalletClient &&
     !isProcessing
   );
 
@@ -239,8 +230,9 @@ export function SetAdminComponent({
   precompileType?: string;
   abi?: any;
 }) {
-  const { coreWalletClient, publicClient, walletEVMAddress, walletChainId } =
+  const { publicClient, walletEVMAddress, walletChainId } =
     useWalletStore();
+  const { coreWalletClient } = useConnectedWallet();
   const viemChain = useViemChainStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [adminAddress, setAdminAddress] = useState<string>("");
@@ -248,11 +240,6 @@ export function SetAdminComponent({
   const [error, setError] = useState<string | null>(null);
 
   const handleSetAdmin = async () => {
-
-    if (!coreWalletClient) {
-      setError('Core wallet not found');
-      return;
-    }
 
     setIsProcessing(true);
     setError(null);
@@ -296,7 +283,6 @@ export function SetAdminComponent({
   const canSetAdmin = Boolean(
     adminAddress &&
     walletEVMAddress &&
-    coreWalletClient &&
     !isProcessing
   );
 
@@ -350,8 +336,9 @@ export function RemoveAllowListComponent({
   precompileType?: string;
   abi?: any;
 }) {
-  const { coreWalletClient, publicClient, walletEVMAddress, walletChainId } =
+  const { publicClient, walletEVMAddress, walletChainId } =
     useWalletStore();
+  const { coreWalletClient } = useConnectedWallet();
   const viemChain = useViemChainStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [removeAddress, setRemoveAddress] = useState<string>("");
@@ -359,12 +346,6 @@ export function RemoveAllowListComponent({
   const [error, setError] = useState<string | null>(null);
 
   const handleRemove = async () => {
-
-    if (!coreWalletClient) {
-      setError('Core wallet not found');
-      return;
-    }
-
     setIsProcessing(true);
     setError(null);
 
@@ -407,7 +388,6 @@ export function RemoveAllowListComponent({
   const canRemove = Boolean(
     removeAddress &&
     walletEVMAddress &&
-    coreWalletClient &&
     !isProcessing
   );
 

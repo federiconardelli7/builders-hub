@@ -12,7 +12,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { Success } from "@/components/toolbox/components/Success"
 import { AmountInput } from "@/components/toolbox/components/AmountInput"
 import { StepCard, StepIndicator } from "@/components/toolbox/components/StepCard"
-import { useWallet } from "@/components/toolbox/hooks/useWallet"
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext"
 
 export default function CrossChainTransfer({
     suggestedAmount = "0.0",
@@ -56,13 +56,8 @@ export default function CrossChainTransfer({
         throw criticalError;
     }
 
-    const {
-        coreWalletClient,
-        updateCChainBalance,
-        updatePChainBalance
-    } = useWalletStore()
-
-    const { avalancheWalletClient } = useWallet();
+    const { avalancheWalletClient } = useConnectedWallet();
+    const { updateCChainBalance, updatePChainBalance } = useWalletStore();
 
     const isTestnet = useWalletStore((s) => s.isTestnet);
     const cChainBalance = useWalletStore((s) => s.balances.cChain);
@@ -94,7 +89,7 @@ export default function CrossChainTransfer({
 
     // Fetch UTXOs from both chains
     const fetchUTXOs = useCallback(async () => {
-        if (!pChainAddress || !walletEVMAddress || isFetchingRef.current) return false;
+        if (isFetchingRef.current) return false;
 
         isFetchingRef.current = true;
 
@@ -154,15 +149,12 @@ export default function CrossChainTransfer({
 
     // Initial fetch of UTXOs and balances
     useEffect(() => {
-        if (avalancheWalletClient && walletEVMAddress) {
-            fetchUTXOs();
-            onBalanceChanged();
-        }
+        fetchUTXOs();
+        onBalanceChanged();
     }, [avalancheWalletClient, walletEVMAddress, pChainAddress, fetchUTXOs, onBalanceChanged])
 
     // Persistent polling for pending export UTXOs
     useEffect(() => {
-        if (!walletEVMAddress || !pChainAddress) return;
         let interval: NodeJS.Timeout | undefined;
         let stopped = false;
         const poll = async () => {
@@ -213,11 +205,6 @@ export default function CrossChainTransfer({
     // Add handlers for buttons
     const handleExport = async () => {
         if (!validateAmount()) return;
-
-        if (!pChainAddress || !coreWalletClient || !avalancheWalletClient) {
-            setError("Wallet not connected or required data missing.");
-            return;
-        }
 
         setCurrentStep(3); // Move to step 3 when export is initiated
         setExportLoading(true);
@@ -278,11 +265,6 @@ export default function CrossChainTransfer({
     }
 
     const handleImport = async () => {
-        if (!pChainAddress || !coreWalletClient || !avalancheWalletClient) {
-            setImportError("Wallet not connected or required data missing.");
-            return;
-        }
-
         setImportLoading(true);
         setImportError(null);
 
