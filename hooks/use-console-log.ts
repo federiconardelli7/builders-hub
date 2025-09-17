@@ -25,8 +25,6 @@ export const useConsoleLog = () => {
           id: item.id,
           timestamp: new Date(item.created_at),
           status: item.status,
-          title: item.title,
-          description: item.description,
           eventType: item.event_type,
           data: item.data
         }));
@@ -64,8 +62,6 @@ export const useConsoleLog = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: item.title,
-          description: item.description,
           status: item.status,
           eventType: item.eventType,
           data: item.data
@@ -78,8 +74,6 @@ export const useConsoleLog = () => {
           id: savedItem.id,
           timestamp: new Date(savedItem.created_at),
           status: savedItem.status,
-          title: savedItem.title,
-          description: savedItem.description,
           eventType: savedItem.event_type,
           data: savedItem.data
         };

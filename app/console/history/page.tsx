@@ -263,6 +263,66 @@ export default function ConsoleHistoryPage() {
     return null;
   };
 
+  const getDisplayInfo = (log: ConsoleLog) => {
+    const { eventType, status, data } = log;
+    let title = '';
+    let description = '';
+
+    const network = data.network ? ` (${data.network})` : '';
+
+    switch (eventType) {
+      case 'subnet_created':
+        title = status === 'success' ? 'Subnet Created' : 'Subnet Creation Failed';
+        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
+        break;
+      case 'chain_created':
+        title = status === 'success' ? 'Chain Created' : 'Chain Creation Failed';
+        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
+        break;
+      case 'l1_conversion':
+        title = status === 'success' ? 'Subnet Converted to L1' : 'L1 Conversion Failed';
+        description = status === 'success' ? `Transaction ID: ${data.txID}${network}` : data.error;
+        break;
+      case 'validator_messages_deployed':
+        title = status === 'success' ? 'ValidatorMessages Library Deployed' : 'ValidatorMessages Deployment Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
+        break;
+      case 'validator_manager_deployed':
+        title = status === 'success' ? 'ValidatorManager Contract Deployed' : 'ValidatorManager Deployment Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
+        break;
+      case 'proxy_admin_deployed':
+        title = status === 'success' ? 'ProxyAdmin Contract Deployed' : 'ProxyAdmin Deployment Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
+        break;
+      case 'transparent_proxy_deployed':
+        title = status === 'success' ? 'TransparentUpgradeableProxy Contract Deployed' : 'TransparentUpgradeableProxy Deployment Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}\nAddress: ${data.address}${network}` : data.error;
+        break;
+      case 'proxy_upgraded':
+        title = status === 'success' ? 'Proxy Upgraded' : 'Proxy Upgrade Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
+        break;
+      case 'validator_manager_initialized':
+        title = status === 'success' ? 'ValidatorManager Initialized' : 'ValidatorManager Initialization Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
+        break;
+      case 'validator_set_initialized':
+        title = status === 'success' ? 'Validator Set Initialized' : 'Validator Set Initialization Failed';
+        description = status === 'success' ? `Transaction Hash: ${data.txHash}${network}` : data.error;
+        break;
+      case 'signatures_aggregated':
+        title = status === 'success' ? 'Signatures Aggregated' : 'Signature Aggregation Failed';
+        description = status === 'success' ? `Signed Message: ${data.signedMessage?.slice(0, 10)}...${network}` : data.error;
+        break;
+      default:
+        title = `${eventType ? eventType.replace(/_/g, ' ').toUpperCase() : 'Event'} ${status.toUpperCase()}`;
+        description = status === 'error' ? data.error : JSON.stringify(data);
+    }
+
+    return { title, description };
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
       {/* Simple Header */}
@@ -341,11 +401,12 @@ export default function ConsoleHistoryPage() {
                 )}
                 
                 {filteredHistory.map((notification) => {
+                  const { title, description } = getDisplayInfo(notification);
                   const explorerUrl = getExplorerLink(notification);
                   const data = notification.data as any;
                   
                   // Extract the main identifier (tx hash, address, etc)
-                  const mainId = data.txHash || data.txID || data.contractAddress || data.subnetID || data.blockchainID;
+                  const mainId = data.txHash || data.txID || data.address || data.signedMessage;
                   const mainIdStr = mainId ? String(mainId) : '';
                   const shortId = mainIdStr.length > 14 ? `${mainIdStr.slice(0, 8)}...${mainIdStr.slice(-6)}` : mainIdStr;
                   
@@ -370,7 +431,7 @@ export default function ConsoleHistoryPage() {
                               "text-sm font-medium",
                               notification.status === 'error' && "text-destructive"
                             )}>
-                              {notification.title}
+                              {title}
                             </span>
                             {data.network && (
                               <span className={cn(
@@ -388,9 +449,9 @@ export default function ConsoleHistoryPage() {
                               </code>
                             )}
                           </div>
-                          {notification.description && (
+                          {description && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {notification.description}
+                              {description}
                             </p>
                           )}
                         </div>

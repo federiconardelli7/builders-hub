@@ -201,8 +201,6 @@ model NodeRegistration {
 model ConsoleLog {
   id          String   @id @default(uuid())
   user_id     String
-  title       String
-  description String?
   status      String   // success, error, warning, info
   event_type  String?  // subnet_created, chain_created, etc.
   data        Json?    // Flexible JSON data

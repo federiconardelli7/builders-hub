@@ -29,7 +29,7 @@ export default function DeployProxyContract() {
 
     const { coreWalletClient, publicClient, walletEVMAddress } = useWalletStore();
 
-    const { sendCoreWalletNotSetNotification, sendDeployProxyAdminNotifications, sendDeployTransparentProxyNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     async function deployProxyAdmin() {
         if (!coreWalletClient) {
@@ -40,34 +40,22 @@ export default function DeployProxyContract() {
         setIsDeployingProxyAdmin(true);
         setProxyAdminAddress("");
 
-        const deployPromise = (async () => {
-            if (!viemChain) throw new Error("Viem chain not found");
-            await coreWalletClient.addChain({ chain: viemChain });
-            await coreWalletClient.switchChain({ id: viemChain.id });
-            const hash = await coreWalletClient.deployContract({
-                abi: ProxyAdminABI.abi as any,
-                bytecode: ProxyAdminABI.bytecode.object as `0x${string}`,
-                chain: viemChain,
-                account: walletEVMAddress as `0x${string}`
-            });
+        const deployPromise = coreWalletClient.deployContract({
+            abi: ProxyAdminABI.abi as any,
+            bytecode: ProxyAdminABI.bytecode.object as `0x${string}`,
+            chain: viemChain ?? undefined,
+            account: walletEVMAddress as `0x${string}`
+        });
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        notify('deployProxyAdmin', deployPromise, viemChain ?? undefined);
 
-            if (!receipt.contractAddress) {
-                throw new Error('No contract address in receipt');
-            }
-
-            return { hash, address: receipt.contractAddress };
-        })();
-
-        sendDeployProxyAdminNotifications(deployPromise, viemChain!);
-
-        try {
-            const { address } = await deployPromise;
-            setProxyAdminAddress(address);
-        } finally {
-            setIsDeployingProxyAdmin(false);
+        const hash = await deployPromise;
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        if (!receipt.contractAddress) {
+            throw new Error('No contract address in receipt');
         }
+        setProxyAdminAddress(receipt.contractAddress);
+        setIsDeployingProxyAdmin(false);
     }
 
     async function deployTransparentProxy() {
@@ -79,39 +67,26 @@ export default function DeployProxyContract() {
         setIsDeployingProxy(true);
         setProxyAddress("");
 
-        const deployPromise = (async () => {
-            if (!implementationAddress) throw new Error("Implementation address is required");
-            if (!proxyAdminAddress) throw new Error("ProxyAdmin address is required");
-            if (!viemChain) throw new Error("Viem chain not found");
+        if (!implementationAddress) throw new Error("Implementation address is required");
+        if (!proxyAdminAddress) throw new Error("ProxyAdmin address is required");
 
-            await coreWalletClient.addChain({ chain: viemChain });
-            await coreWalletClient.switchChain({ id: viemChain.id });
+        const deployPromise = coreWalletClient.deployContract({
+            abi: TransparentUpgradeableProxyABI.abi as any,
+            bytecode: TransparentUpgradeableProxyABI.bytecode.object as `0x${string}`,
+            args: [implementationAddress, proxyAdminAddress, "0x"],
+            chain: viemChain ?? undefined,
+            account: walletEVMAddress as `0x${string}`
+        });
 
-            const hash = await coreWalletClient.deployContract({
-                abi: TransparentUpgradeableProxyABI.abi as any,
-                bytecode: TransparentUpgradeableProxyABI.bytecode.object as `0x${string}`,
-                args: [implementationAddress, proxyAdminAddress, "0x"],
-                chain: viemChain,
-                account: walletEVMAddress as `0x${string}`
-            });
+        notify('deployTransparentProxy', deployPromise, viemChain ?? undefined);
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-            if (!receipt.contractAddress) {
-                throw new Error('No contract address in receipt');
-            }
-
-            return { hash, address: receipt.contractAddress };
-        })();
-
-        sendDeployTransparentProxyNotifications(deployPromise, viemChain!);
-
-        try {
-            const { address } = await deployPromise;
-            setProxyAddress(address);
-        } finally {
-            setIsDeployingProxy(false);
+        const hash = await deployPromise;
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        if (!receipt.contractAddress) {
+            throw new Error('No contract address in receipt');
         }
+        setProxyAddress(receipt.contractAddress);
+        setIsDeployingProxy(false);
     }
 
     return (

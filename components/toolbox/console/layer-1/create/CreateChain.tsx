@@ -48,7 +48,7 @@ export default function CreateChain() {
     const [showVMIdInput, setShowVMIdInput] = useState<boolean>(false);
     const [vmId, setVmId] = useState<string>(SUBNET_EVM_VM_ID);
 
-    const { sendCoreWalletNotSetNotification, sendCreateSubnetNotifications, sendCreateChainNotifications } = useConsoleNotifications();
+    const { notify, sendCoreWalletNotSetNotification } = useConsoleNotifications();
 
 
     // Wrapper function to handle subnet ID changes properly
@@ -68,7 +68,7 @@ export default function CreateChain() {
             subnetOwners: [pChainAddress]
         });
 
-        sendCreateSubnetNotifications(createSubnetTx);
+        notify('createSubnet', createSubnetTx);
 
         try {
             const txID = await createSubnetTx;
@@ -95,7 +95,7 @@ export default function CreateChain() {
             subnetAuth: [0],
         })
 
-        sendCreateChainNotifications(createChainTx);
+        notify('createChain', createChainTx);
 
         try {
             const txID = await createChainTx;

@@ -34,7 +34,7 @@ export default function Initialize() {
     const [subnetId, setSubnetId] = useState("");
     const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
 
-    const { sendCoreWalletNotSetNotification, sendInitializeNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     useEffect(() => {
         if (walletEVMAddress && !adminAddress) {
@@ -127,36 +127,30 @@ export default function Initialize() {
 
         setIsInitializing(true);
 
-        const initPromise = (async () => {
-            if (!proxyAddress) throw new Error('Proxy address is required');
-            
-            const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;
-            const formattedAdmin = adminAddress as `0x${string}`;
+        const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;
+        const formattedAdmin = adminAddress as `0x${string}`;
 
-            const settings = {
-                admin: formattedAdmin,
-                subnetID: formattedSubnetId,
-                churnPeriodSeconds: BigInt(churnPeriodSeconds),
-                maximumChurnPercentage: Number(maximumChurnPercentage)
-            };
+        const settings = {
+            admin: formattedAdmin,
+            subnetID: formattedSubnetId,
+            churnPeriodSeconds: BigInt(churnPeriodSeconds),
+            maximumChurnPercentage: Number(maximumChurnPercentage)
+        };
 
-            const hash = await coreWalletClient.writeContract({
-                address: proxyAddress as `0x${string}`,
-                abi: ValidatorManagerABI.abi,
-                functionName: 'initialize',
-                args: [settings],
-                chain: viemChain,
-            });
+        const initPromise = coreWalletClient.writeContract({
+            address: proxyAddress as `0x${string}`,
+            abi: ValidatorManagerABI.abi,
+            functionName: 'initialize',
+            args: [settings],
+            chain: viemChain ?? undefined,
+        });
 
-            await publicClient.waitForTransactionReceipt({ hash });
-            await checkIfInitialized();
-            return hash;
-        })();
-
-        sendInitializeNotifications(initPromise, viemChain!);
+        notify('initialize', initPromise, viemChain ?? undefined);
 
         try {
-            await initPromise;
+            const hash = await initPromise;
+            await publicClient.waitForTransactionReceipt({ hash });
+            await checkIfInitialized();
         } finally {
             setIsInitializing(false);
         }

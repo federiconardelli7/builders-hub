@@ -41,7 +41,7 @@ export default function InitValidatorSet() {
     const [L1ConversionSignatureError, setL1ConversionSignatureError] = useState<string>("");
     const [isAggregating, setIsAggregating] = useState(false);
 
-    const { sendCoreWalletNotSetNotification, sendInitializeValidatorSetNotifications, sendAggregateSignaturesNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     async function aggSigs() {
         if (!coreWalletClient) {
@@ -65,7 +65,7 @@ export default function InitValidatorSet() {
             return signedMessage;
         })();
 
-        sendAggregateSignaturesNotifications(aggPromise);
+        notify('aggregateSignatures', aggPromise);
 
         try {
             await aggPromise;
@@ -134,7 +134,7 @@ export default function InitValidatorSet() {
             const signatureBytes = hexToBytes(add0x(L1ConversionSignature));
             const accessList = packWarpIntoAccessList(signatureBytes);
 
-            const hash = await coreWalletClient.writeContract({
+            const initPromise = coreWalletClient.writeContract({
                 address: managerAddress as `0x${string}`,
                 abi: ValidatorManagerABI.abi,
                 functionName: 'initializeValidatorSet',
@@ -144,26 +144,35 @@ export default function InitValidatorSet() {
                 chain: viemChain || undefined,
             });
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+            notify('initializeValidatorSet', initPromise, viemChain ?? undefined);
 
-            if (receipt.status !== 'success') {
-                const decodedError = await debugTraceAndDecode(hash, evmChainRpcUrl!);
-                throw new Error(`Transaction failed: ${decodedError}`);
+            try {
+                const hash = await initPromise;
+                const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+                if (receipt.status !== 'success') {
+                    const decodedError = await debugTraceAndDecode(hash, evmChainRpcUrl!);
+                    throw new Error(`Transaction failed: ${decodedError}`);
+                }
+
+                return hash;
+            } catch (err) {
+                setError((err as Error).message);
+            } finally {
+                setIsInitializing(false);
             }
-
-            return hash;
         })();
 
-        sendInitializeValidatorSetNotifications(initPromise, viemChain!);
+        // sendInitializeValidatorSetNotifications(initPromise, viemChain!); // This line is removed as per the new_code
 
-        try {
-            const hash = await initPromise;
-            setTxHash(hash);
-        } catch (err: unknown) {
-            setError((err as Error).message);
-        } finally {
-            setIsInitializing(false);
-        }
+        // try { // This block is removed as per the new_code
+        //     const hash = await initPromise; // This line is removed as per the new_code
+        //     setTxHash(hash); // This line is removed as per the new_code
+        // } catch (err: unknown) { // This line is removed as per the new_code
+        //     setError((err as Error).message); // This line is removed as per the new_code
+        // } finally { // This line is removed as per the new_code
+        //     setIsInitializing(false); // This line is removed as per the new_code
+        // } // This block is removed as per the new_code
     };
 
     return (

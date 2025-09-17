@@ -32,7 +32,7 @@ export default function DeployValidatorContracts() {
     const [isDeployingManager, setIsDeployingManager] = useState(false);
     const viemChain = useViemChainStore();
 
-    const { sendCoreWalletNotSetNotification, sendDeployValidatorMessagesNotifications, sendDeployValidatorManagerNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     const getLinkedBytecode = () => {
         if (!validatorMessagesLibAddress) {
@@ -63,34 +63,27 @@ export default function DeployValidatorContracts() {
         setIsDeployingMessages(true);
         setValidatorMessagesLibAddress("");
 
-        const deployPromise = (async () => {
-            if (!viemChain) throw new Error("Viem chain not found");
-            await coreWalletClient.addChain({ chain: viemChain });
-            await coreWalletClient.switchChain({ id: viemChain.id });
-            const hash = await coreWalletClient.deployContract({
-                abi: ValidatorMessagesABI.abi as any,
-                bytecode: ValidatorMessagesABI.bytecode.object as `0x${string}`,
-                chain: viemChain,
-                account: walletEVMAddress as `0x${string}`
-            });
+        
+        if (!viemChain) throw new Error("Viem chain not found");
+        await coreWalletClient.addChain({ chain: viemChain });
+        await coreWalletClient.switchChain({ id: viemChain.id });
+        const deployPromise = coreWalletClient.deployContract({
+            abi: ValidatorMessagesABI.abi as any,
+            bytecode: ValidatorMessagesABI.bytecode.object as `0x${string}`,
+            chain: viemChain,
+            account: walletEVMAddress as `0x${string}`
+        });
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        notify('deployValidatorMessages', deployPromise, viemChain ?? undefined);
 
-            if (!receipt.contractAddress) {
-                throw new Error('No contract address in receipt');
-            }
-
-            return { hash, address: receipt.contractAddress };
-        })();
-
-        sendDeployValidatorMessagesNotifications(deployPromise, viemChain!);
-
-        try {
-            const { address } = await deployPromise;
-            setValidatorMessagesLibAddress(address);
-        } finally {
-            setIsDeployingMessages(false);
+        const hash = await deployPromise;
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        if (!receipt.contractAddress) {
+            throw new Error('No contract address in receipt');
         }
+        setValidatorMessagesLibAddress(receipt.contractAddress as string);
+        setIsDeployingMessages(false);
+
     }
 
     async function deployValidatorManager() {
@@ -102,36 +95,26 @@ export default function DeployValidatorContracts() {
         setIsDeployingManager(true);
         setValidatorManagerAddress("");
 
-        const deployPromise = (async () => {
-            if (!viemChain) throw new Error("Viem chain not found");
-            await coreWalletClient.addChain({ chain: viemChain });
-            await coreWalletClient.switchChain({ id: viemChain.id });
+        if (!viemChain) throw new Error("Viem chain not found");
+        await coreWalletClient.addChain({ chain: viemChain });
+        await coreWalletClient.switchChain({ id: viemChain.id });
+        const deployPromise = coreWalletClient.deployContract({
+            abi: ValidatorManagerABI.abi as any,
+            bytecode: getLinkedBytecode(),
+            args: [0],
+            chain: viemChain,
+            account: walletEVMAddress as `0x${string}`
+        });
 
-            const hash = await coreWalletClient.deployContract({
-                abi: ValidatorManagerABI.abi as any,
-                bytecode: getLinkedBytecode(),
-                args: [0],
-                chain: viemChain,
-                account: walletEVMAddress as `0x${string}`
-            });
+        notify('deployValidatorManager', deployPromise, viemChain ?? undefined);
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-            if (!receipt.contractAddress) {
-                throw new Error('No contract address in receipt');
-            }
-
-            return { hash, address: receipt.contractAddress };
-        })();
-
-        sendDeployValidatorManagerNotifications(deployPromise, viemChain!);
-
-        try {
-            const { address } = await deployPromise;
-            setValidatorManagerAddress(address);
-        } finally {
-            setIsDeployingManager(false);
+        const hash = await deployPromise;
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        if (!receipt.contractAddress) {
+            throw new Error('No contract address in receipt');
         }
+        setValidatorManagerAddress(receipt.contractAddress as string);
+        setIsDeployingManager(false);
     }
 
     return (

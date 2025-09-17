@@ -4,8 +4,6 @@ export interface ConsoleLog {
   id: string;
   timestamp: Date;
   status: ConsoleLogStatus;
-  title: string;
-  description?: string;
-  eventType?: string; // Optional simple string for categorization
-  data?: Record<string, any>; // Flexible data object
+  eventType: string;
+  data: Record<string, any>;
 }

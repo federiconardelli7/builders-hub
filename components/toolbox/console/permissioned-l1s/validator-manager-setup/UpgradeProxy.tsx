@@ -34,7 +34,7 @@ export default function UpgradeProxy() {
 
     const [proxyAddress, setProxyAddress] = useState<string>("");
 
-    const { sendCoreWalletNotSetNotification, sendUpgradeProxyNotifications } = useConsoleNotifications();
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     // Throw critical errors during render
     if (criticalError) {
@@ -145,24 +145,20 @@ export default function UpgradeProxy() {
 
         setIsUpgrading(true);
 
-        const upgradePromise = (async () => {
-            const hash = await coreWalletClient.writeContract({
-                address: proxyAdminAddress,
-                abi: ProxyAdminABI.abi,
-                functionName: 'upgrade',
-                args: [proxyAddress, desiredImplementation as `0x${string}`],
-                chain: viemChain,
-            });
+        const upgradePromise = coreWalletClient.writeContract({
+            address: proxyAdminAddress,
+            abi: ProxyAdminABI.abi,
+            functionName: 'upgrade',
+            args: [proxyAddress, desiredImplementation as `0x${string}`],
+            chain: viemChain ?? undefined,
+        });
 
-            await publicClient.waitForTransactionReceipt({ hash });
-            await checkCurrentImplementation();
-            return hash;
-        })();
-
-        sendUpgradeProxyNotifications(upgradePromise, viemChain!);
+        notify('upgradeProxy', upgradePromise, viemChain ?? undefined);
 
         try {
-            await upgradePromise;
+            const hash = await upgradePromise;
+            await publicClient.waitForTransactionReceipt({ hash });
+            await checkCurrentImplementation();
         } finally {
             setIsUpgrading(false);
         }
