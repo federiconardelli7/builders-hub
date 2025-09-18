@@ -108,7 +108,7 @@ const usePChainNotifications = () => {
 
                 try {
                     await waitForTransaction(client, txID);
-                    toast.success(`${config.successMessage} (Confirmed)`, {
+                    toast.success(`${config.successMessage}`, {
                         id: toastId,
                         action: {
                             label: 'Open in Explorer',
