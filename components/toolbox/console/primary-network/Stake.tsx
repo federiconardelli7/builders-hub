@@ -175,7 +175,7 @@ export default function Stake() {
         signature: validator!.nodePOP.proofOfPossession,
       })
 
-      const stakePromise = sendXPTransaction(avalancheClient.pChain, {
+      const stakePromise = sendXPTransaction(avalancheWalletClient.pChain, {
         tx: tx,
         chainAlias: 'P',
       }).then(result => result.txHash);
