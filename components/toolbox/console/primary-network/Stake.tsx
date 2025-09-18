@@ -8,8 +8,7 @@ import { CheckWalletRequirements } from '@/components/toolbox/components/CheckWa
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements'
 import { useWalletStore } from '@/components/toolbox/stores/walletStore'
 import { Success } from '@/components/toolbox/components/Success'
-import { createAvalancheWalletClient } from '@avalanche-sdk/client'
-import { avalanche, avalancheFuji } from '@avalanche-sdk/client/chains'
+import { useWallet } from '@/components/toolbox/hooks/useWallet'
 import { prepareAddPermissionlessValidatorTxn } from '@avalanche-sdk/client/methods/wallet/pChain'
 import { sendXPTransaction } from '@avalanche-sdk/client/methods/wallet'
 import { AlertCircle } from 'lucide-react'
@@ -49,6 +48,7 @@ const BUFFER_MINUTES = 5
 
 export default function Stake() {
   const { coreWalletClient, pChainAddress, isTestnet, avalancheNetworkID, walletEVMAddress } = useWalletStore()
+  const { avalancheWalletClient } = useWallet();
 
   const [validator, setValidator] = useState<ConvertToL1Validator | null>(null)
   const [stakeInAvax, setStakeInAvax] = useState<string>("")
@@ -66,19 +66,6 @@ export default function Stake() {
   const config = onFuji ? NETWORK_CONFIG.fuji : NETWORK_CONFIG.mainnet
   const networkName = onFuji ? 'Fuji' : 'Mainnet'
 
-  const avalancheClient = useMemo(() => {
-    if (typeof window === 'undefined' || !window?.avalanche || !walletEVMAddress) {
-      return;
-    }
-    return createAvalancheWalletClient({
-      chain: isTestnet ? avalancheFuji : avalanche,
-      transport: {
-        type: "custom",
-        provider: window.avalanche!,
-      },
-      account: walletEVMAddress as `0x${string}`
-    })
-  }, [isTestnet, walletEVMAddress]);
 
   // Initialize defaults
   if (!stakeInAvax) {
@@ -166,7 +153,7 @@ export default function Stake() {
       return
     }
 
-    if (!avalancheClient) {
+    if (!avalancheWalletClient) {
       setError("Avalanche client not found")
       return
     }
@@ -175,7 +162,7 @@ export default function Stake() {
       setIsSubmitting(true)
 
       const endUnix = Math.floor(new Date(endTime).getTime() / 1000)
-      const { tx } = await prepareAddPermissionlessValidatorTxn(avalancheClient.pChain, {
+      const { tx } = await prepareAddPermissionlessValidatorTxn(avalancheWalletClient.pChain, {
         nodeId: validator!.nodeID,
         stakeInAvax: Number(stakeInAvax),
         end: endUnix,
