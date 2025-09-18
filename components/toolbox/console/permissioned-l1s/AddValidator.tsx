@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { Container } from '@/components/toolbox/components/Container';
 import { Button } from '@/components/toolbox/components/Button';
 import { AlertCircle } from 'lucide-react';
 import SelectSubnetId from '@/components/toolbox/components/SelectSubnetId';
@@ -17,8 +16,9 @@ import { ValidatorListInput, ConvertToL1Validator } from '@/components/toolbox/c
 import { useCreateChainStore } from '@/components/toolbox/stores/createChainStore';
 import { useWalletStore } from '@/components/toolbox/stores/walletStore';
 import { getPChainBalance } from '@/components/toolbox/coreViem/methods/getPChainbalance';
-import { CheckWalletRequirements } from '@/components/toolbox/components/CheckWalletRequirements';
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements';
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from '../../components/WithConsoleToolMetadata';
+import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalletContext';
 
 // Helper functions for BigInt serialization
 const serializeValidators = (validators: ConvertToL1Validator[]) => {
@@ -39,7 +39,7 @@ const deserializeValidators = (serializedValidators: any[]): ConvertToL1Validato
 
 const STORAGE_KEY = 'addValidator_validators';
 
-const AddValidatorExpert: React.FC = () => {
+const AddValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
   const [isValidatorManagerDetailsExpanded, setIsValidatorManagerDetailsExpanded] = useState<boolean>(false);
@@ -51,7 +51,8 @@ const AddValidatorExpert: React.FC = () => {
   const [evmTxHash, setEvmTxHash] = useState<string>('');
 
   // Form state with local persistence
-  const { walletEVMAddress, pChainAddress, coreWalletClient, isTestnet } = useWalletStore();
+  const { walletEVMAddress, pChainAddress, isTestnet } = useWalletStore();
+  const { coreWalletClient } = useConnectedWallet();
   const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
   const [subnetIdL1, setSubnetIdL1] = useState<string>(createChainStoreSubnetId || "");
   const [resetKey, setResetKey] = useState<number>(0);
@@ -182,11 +183,7 @@ const AddValidatorExpert: React.FC = () => {
   };
 
   return (
-    <CheckWalletRequirements configKey={[
-      WalletRequirementsConfigKey.EVMChainBalance,
-      WalletRequirementsConfigKey.PChainBalance
-    ]}>
-      <Container title="Add New Validator" description="Add a validator to your L1 by following these steps in order.">
+    <>
         <div className="space-y-6">
           {globalError && (
             <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
@@ -325,6 +322,7 @@ const AddValidatorExpert: React.FC = () => {
                 onSuccess={(message) => {
                   setGlobalSuccess(message);
                   setGlobalError(null);
+                  onSuccess?.();
                 }}
                 onError={(message) => setGlobalError(message)}
               />
@@ -344,9 +342,17 @@ const AddValidatorExpert: React.FC = () => {
             </Button>
           )}
         </div>
-      </Container>
-    </CheckWalletRequirements>
+    </>
   );
 };
 
-export default AddValidatorExpert;
+const metadata: ConsoleToolMetadata = {
+  title: "Add New Validator",
+  description: "Add a validator to your L1 by following these steps in order",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance,
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+};
+
+export default withConsoleToolMetadata(AddValidatorExpert, metadata);

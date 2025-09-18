@@ -3,9 +3,9 @@
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/toolbox/components/Button'
 import { Input } from '@/components/toolbox/components/Input'
-import { Container } from '@/components/toolbox/components/Container'
-import { CheckWalletRequirements } from '@/components/toolbox/components/CheckWalletRequirements'
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements'
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from '../../components/WithConsoleToolMetadata'
+import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalletContext'
 import { useWalletStore } from '@/components/toolbox/stores/walletStore'
 import { Success } from '@/components/toolbox/components/Success'
 import { useWallet } from '@/components/toolbox/hooks/useWallet'
@@ -45,8 +45,9 @@ const MAX_END_SECONDS = 365 * 24 * 60 * 60 // 1 year
 const DEFAULT_DELEGATOR_REWARD_PERCENTAGE = "2"
 const BUFFER_MINUTES = 5
 
-export default function Stake() {
-  const { coreWalletClient, pChainAddress, isTestnet, avalancheNetworkID, walletEVMAddress } = useWalletStore()
+function Stake({ onSuccess }: BaseConsoleToolProps) {
+  const { pChainAddress, isTestnet, avalancheNetworkID, walletEVMAddress } = useWalletStore()
+  const { coreWalletClient } = useConnectedWallet()
   const { avalancheWalletClient } = useWallet();
 
   const [validator, setValidator] = useState<ConvertToL1Validator | null>(null)
@@ -178,6 +179,7 @@ export default function Stake() {
       })
       await avalancheWalletClient.waitForTxn(txResult);
       setTxId(txResult.txHash)
+      onSuccess?.()
 
     } catch (e: any) {
       setError(e.message)
@@ -194,11 +196,7 @@ export default function Stake() {
   }
 
   return (
-    <CheckWalletRequirements configKey={[WalletRequirementsConfigKey.PChainBalance]}>
-      <Container
-        title="Become a Validator"
-        description="Stake AVAX to become a validator on the Primary Network"
-      >
+    <>
         <div className="space-y-6">
           <Steps>
             <Step>
@@ -338,7 +336,16 @@ export default function Stake() {
             Stake {networkName} Validator
           </Button>
         </div>
-      </Container>
-    </CheckWalletRequirements>
+    </>
   )
 }
+
+const metadata: ConsoleToolMetadata = {
+  title: "Stake on Primary Network",
+  description: "Stake AVAX as a validator on Avalanche's Primary Network to secure the network and earn rewards",
+  walletRequirements: [
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+}
+
+export default withConsoleToolMetadata(Stake, metadata)

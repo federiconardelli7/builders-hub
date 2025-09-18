@@ -12,16 +12,17 @@ import { RefreshCw } from 'lucide-react';
 
 import versions from '@/scripts/versions.json';
 import { Note } from '@/components/toolbox/components/Note';
-import { Container } from '@/components/toolbox/components/Container';
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
-import { CheckWalletRequirements } from '@/components/toolbox/components/CheckWalletRequirements';
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements';
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from '../../../components/WithConsoleToolMetadata';
+import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalletContext';
 
 
-export default function ICMRelayer() {
+function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
     const selectedL1 = useSelectedL1()();
     const [criticalError, setCriticalError] = useState<Error | null>(null);
-    const { coreWalletClient, isTestnet, walletEVMAddress } = useWalletStore();
+    const { isTestnet, walletEVMAddress } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const { l1List } = useL1ListStore()();
 
     // Initialize state with one-time calculation
@@ -199,13 +200,7 @@ export default function ICMRelayer() {
     }, []);
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.EVMChainBalance,
-        ]}>
-            <Container
-                title="ICM Relayer"
-                description="Configure the ICM Relayer for cross-chain message delivery."
-            >
+        <>
                 <Input
                     label="Relayer EVM Address"
                     value={relayerAddress || ''}
@@ -317,10 +312,19 @@ export default function ICMRelayer() {
                     code={relayerDockerCommand()}
                     lang="sh"
                 />
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
 }
+
+const metadata: ConsoleToolMetadata = {
+    title: "ICM Relayer",
+    description: "Configure the ICM Relayer for cross-chain message delivery",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+export default withConsoleToolMetadata(ICMRelayer, metadata);
 
 const genConfigCommand = (
     sources: {

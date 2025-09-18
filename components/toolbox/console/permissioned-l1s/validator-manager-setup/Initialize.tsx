@@ -9,19 +9,20 @@ import { AbiEvent } from 'viem';
 import ValidatorManagerABI from "@/contracts/icm-contracts/compiled/ValidatorManager.json";
 import { utils } from "@avalabs/avalanchejs";
 import SelectSubnetId from "@/components/toolbox/components/SelectSubnetId";
-import { Container } from "@/components/toolbox/components/Container";
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput";
 import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { useCreateChainStore } from "@/components/toolbox/stores/createChainStore";
 import { Step, Steps } from "fumadocs-ui/components/steps";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
-export default function Initialize() {
+function Initialize({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const [proxyAddress, setProxyAddress] = useState<string>("");
-    const { walletEVMAddress, coreWalletClient, publicClient } = useWalletStore();
+    const { walletEVMAddress, publicClient } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const [isChecking, setIsChecking] = useState(false);
     const [isInitializing, setIsInitializing] = useState(false);
     const [isInitialized, setIsInitialized] = useState<boolean | null>(null);
@@ -164,13 +165,7 @@ export default function Initialize() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.EVMChainBalance,
-        ]}>
-            <Container
-                title="Initial Validator Manager Configuration"
-                description="This will initialize the ValidatorManager contract with the initial configuration."
-            >
+        <div>
                 <Steps>
                     <Step>
                         <h2 className="text-lg font-semibold">Select the Validator Manager</h2>
@@ -259,11 +254,20 @@ export default function Initialize() {
                         showCheck={isInitialized}
                     />
                 )}
-            </Container>
-        </CheckWalletRequirements>
+        </div>
 
     );
+}
+
+const metadata: ConsoleToolMetadata = {
+    title: "Initial Validator Manager Configuration",
+    description: "Initialize the ValidatorManager contract with the initial configuration",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
 };
+
+export default withConsoleToolMetadata(Initialize, metadata);
 
 function jsonStringifyWithBigint(value: unknown) {
     return JSON.stringify(value, (_, v) =>

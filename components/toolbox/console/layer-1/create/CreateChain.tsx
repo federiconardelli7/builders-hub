@@ -4,7 +4,6 @@ import { useCreateChainStore } from "@/components/toolbox/stores/createChainStor
 import { useState } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Input } from "@/components/toolbox/components/Input";
-import { Container } from "@/components/toolbox/components/Container";
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import GenesisBuilder from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
 import { Step, Steps } from "fumadocs-ui/components/steps";
@@ -13,8 +12,9 @@ import { Success } from "@/components/toolbox/components/Success";
 import { RadioGroup } from "@/components/toolbox/components/RadioGroup";
 import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
 const generateRandomName = () => {
     //makes sure the name doesn't contain a dash
@@ -27,7 +27,7 @@ const generateRandomName = () => {
 }
 
 
-export default function CreateChain() {
+function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const {
         subnetId,
@@ -36,7 +36,8 @@ export default function CreateChain() {
         genesisData,
         setChainName,
     } = useCreateChainStore()();
-    const { coreWalletClient, pChainAddress } = useWalletStore();
+    const { pChainAddress } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
 
     const [isCreatingSubnet, setIsCreatingSubnet] = useState(false);
     const [createdSubnetId, setCreatedSubnetId] = useState("");
@@ -115,13 +116,7 @@ export default function CreateChain() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.PChainBalance
-        ]}>
-            <Container
-                title="Create Chain"
-                description="Create a subnet and add a new blockchain with custom parameters and genesis data."
-            >
+        <>
                 <Steps>
                     <Step>
                         <h2 className="text-lg font-semibold">Step 1: Create a Subnet</h2>
@@ -222,7 +217,16 @@ export default function CreateChain() {
                     label="Chain Created Successfully"
                     value={createdChainId}
                 />}
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
+}
+
+const metadata: ConsoleToolMetadata = {
+    title: "Create Chain",
+    description: "Create a subnet and add a new blockchain with custom parameters and genesis data",
+    walletRequirements: [
+        WalletRequirementsConfigKey.PChainBalance
+    ]
 };
+
+export default withConsoleToolMetadata(CreateChain, metadata);

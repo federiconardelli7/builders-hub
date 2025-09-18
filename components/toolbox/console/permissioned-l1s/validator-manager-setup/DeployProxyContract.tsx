@@ -6,21 +6,22 @@ import { useState } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import ProxyAdminABI from "@/contracts/openzeppelin-4.9/compiled/ProxyAdmin.json";
 import TransparentUpgradeableProxyABI from "@/contracts/openzeppelin-4.9/compiled/TransparentUpgradeableProxy.json";
-import { Container } from "@/components/toolbox/components/Container";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput";
 import { Callout } from "fumadocs-ui/components/callout";
 import { Success } from "@/components/toolbox/components/Success";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import { Checkbox } from "@/components/toolbox/components/Checkbox";
 
 const PROXYADMIN_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/ProxyAdmin.sol";
 const TRANSPARENT_PROXY_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-export default function DeployProxyContract() {
+function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
-    const { coreWalletClient, publicClient, walletEVMAddress } = useWalletStore();
+    const { publicClient, walletEVMAddress } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const [isDeployingProxyAdmin, setIsDeployingProxyAdmin] = useState(false);
     const [isDeployingProxy, setIsDeployingProxy] = useState(false);
     const [implementationAddress, setImplementationAddress] = useState<string>("");
@@ -60,6 +61,7 @@ export default function DeployProxyContract() {
             }
 
             setProxyAdminAddress(receipt.contractAddress);
+            onSuccess?.();
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
@@ -107,13 +109,7 @@ export default function DeployProxyContract() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.EVMChainBalance,
-        ]}>
-            <Container
-                title="Deploy Proxy Contracts"
-                description="Deploy ProxyAdmin and TransparentUpgradeableProxy contracts to the EVM network."
-            >
+        <>
                 <p className="my-3">
                     <a href="https://github.com/OpenZeppelin/openzeppelin-contracts/tree/release-v4.9/contracts/proxy/transparent"
                         target="_blank"
@@ -201,7 +197,16 @@ export default function DeployProxyContract() {
 
                     </Step>
                 </Steps>
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
 }
+
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Proxy Contracts",
+    description: "Deploy ProxyAdmin and TransparentUpgradeableProxy contracts to the EVM network",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+export default withConsoleToolMetadata(DeployProxyContract, metadata);

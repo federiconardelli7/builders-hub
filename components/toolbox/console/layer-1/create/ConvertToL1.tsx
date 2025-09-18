@@ -5,7 +5,6 @@ import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { type ConvertToL1Validator } from "@/components/toolbox/components/ValidatorListInput";
-import { Container } from "@/components/toolbox/components/Container";
 import { ValidatorListInput } from "@/components/toolbox/components/ValidatorListInput";
 import InputChainId from "@/components/toolbox/components/InputChainId";
 import SelectSubnet, { SubnetSelection } from "@/components/toolbox/components/SelectSubnet";
@@ -13,10 +12,11 @@ import { Callout } from "fumadocs-ui/components/callout";
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput";
 import { getPChainBalance } from "@/components/toolbox/coreViem/methods/getPChainbalance";
 import { Success } from "@/components/toolbox/components/Success";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
-export default function ConvertToL1() {
+function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
     const {
         subnetId: storeSubnetId,
         chainID: storeChainID,
@@ -33,7 +33,8 @@ export default function ConvertToL1() {
     const [chainID, setChainID] = useState(storeChainID);
     const [isConverting, setIsConverting] = useState(false);
     const [validators, setValidators] = useState<ConvertToL1Validator[]>([]);
-    const { coreWalletClient, pChainAddress, isTestnet } = useWalletStore();
+    const { pChainAddress, isTestnet } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
     const [rawPChainBalanceNavax, setRawPChainBalanceNavax] = useState<bigint | null>(null);
@@ -80,6 +81,7 @@ export default function ConvertToL1() {
             });
 
             setConvertToL1TxId(txID);
+            onSuccess?.();
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
@@ -88,13 +90,7 @@ export default function ConvertToL1() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.PChainBalance
-        ]}>
-            <Container
-                title="Convert Subnet to L1"
-                description="This will convert your Subnet to an L1."
-            >
+        <>
                 <div className="space-y-4">
                     <SelectSubnet
                         value={selection.subnetId}
@@ -150,7 +146,16 @@ export default function ConvertToL1() {
                     label="Subnet to L1 Conversion Successful"
                     value={convertToL1TxId}
                 />
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
+}
+
+const metadata: ConsoleToolMetadata = {
+    title: "Convert Subnet to L1",
+    description: "Convert your existing Subnet to an L1 with validator management",
+    walletRequirements: [
+        WalletRequirementsConfigKey.PChainBalance
+    ]
 };
+
+export default withConsoleToolMetadata(ConvertToL1, metadata);

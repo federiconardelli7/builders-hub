@@ -7,11 +7,11 @@ import { Button } from "@/components/toolbox/components/Button";
 import { keccak256 } from 'viem';
 import ValidatorManagerABI from "@/contracts/icm-contracts/compiled/ValidatorManager.json";
 import ValidatorMessagesABI from "@/contracts/icm-contracts/compiled/ValidatorMessages.json";
-import { Container } from "@/components/toolbox/components/Container";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { Success } from "@/components/toolbox/components/Success";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import versions from '@/scripts/versions.json';
 
 const ICM_COMMIT = versions["ava-labs/icm-contracts"];
@@ -25,10 +25,11 @@ function calculateLibraryHash(libraryPath: string) {
     return hash.slice(0, 34);
 }
 
-export default function DeployValidatorContracts() {
+function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { validatorMessagesLibAddress, setValidatorMessagesLibAddress, setValidatorManagerAddress, validatorManagerAddress } = useToolboxStore();
-    const { coreWalletClient, publicClient, walletEVMAddress } = useWalletStore();
+    const { publicClient, walletEVMAddress } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const [isDeployingMessages, setIsDeployingMessages] = useState(false);
     const [isDeployingManager, setIsDeployingManager] = useState(false);
     const viemChain = useViemChainStore();
@@ -119,6 +120,7 @@ export default function DeployValidatorContracts() {
             }
 
             setValidatorManagerAddress(receipt.contractAddress);
+            onSuccess?.();
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
@@ -127,13 +129,7 @@ export default function DeployValidatorContracts() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.EVMChainBalance,
-        ]}>
-            <Container
-                title="Deploy Validator Contracts"
-                description="Deploy the ValidatorMessages library and ValidatorManager contract to the EVM network."
-            >
+        <>
                 <div className="space-y-4">
                     <Steps>
                         <Step>
@@ -193,7 +189,16 @@ export default function DeployValidatorContracts() {
                         </Step>
                     </Steps>
                 </div>
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
 }
+
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Validator Contracts",
+    description: "Deploy the ValidatorMessages library and ValidatorManager contract to the EVM network",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+export default withConsoleToolMetadata(DeployValidatorContracts, metadata);

@@ -7,19 +7,20 @@ import { useState } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
 import { http, createPublicClient } from "viem";
-import { Container } from "@/components/toolbox/components/Container";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
-import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
-export default function DeployWrappedNative() {
+function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
     const { wrappedNativeTokenAddress: wrappedNativeTokenAddressStore, setWrappedNativeTokenAddress } = useToolboxStore();
     const selectedL1 = useSelectedL1()();
     const wrappedNativeTokenAddress = wrappedNativeTokenAddressStore || selectedL1?.wrappedTokenAddress;
 
-    const { coreWalletClient, walletEVMAddress } = useWalletStore();
+    const { walletEVMAddress } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
     const { walletChainId } = useWalletStore();
@@ -58,6 +59,7 @@ export default function DeployWrappedNative() {
             }
 
             setWrappedNativeTokenAddress(receipt.contractAddress);
+            onSuccess?.();
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
@@ -66,10 +68,7 @@ export default function DeployWrappedNative() {
     }
 
     return (
-        <CheckWalletRequirements configKey={[
-            WalletRequirementsConfigKey.EVMChainBalance
-        ]}>
-            <Container title="Deploy Wrapped Native Token" description="Deploy a Wrapped Native token contract for testing. If a wrapped native token like WAVAX is already available on this chain, you can skip this step and reference that token directly in your configuration.">
+        <>
                 <div className="space-y-4">
                     <div className="">
                         This will deploy an Wrapped Native token contract to your connected network (Chain ID: <code>{walletChainId}</code>).
@@ -92,7 +91,16 @@ export default function DeployWrappedNative() {
                         value={wrappedNativeTokenAddress || ""}
                     />
                 </div>
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
 }
+
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Wrapped Native Token",
+    description: "Deploy a Wrapped Native token contract for testing and ICTT integration",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+export default withConsoleToolMetadata(DeployWrappedNative, metadata);
