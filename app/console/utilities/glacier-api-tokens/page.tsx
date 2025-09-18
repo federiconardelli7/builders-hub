@@ -4,11 +4,15 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 
 // TODO: replace with proper secret management
-const JWT_SECRET = "DEVELOPMENT_SECRET_PLEASE_CHANGE_919341";
 
 export default async function Page() {
   const session = await getAuthSession();
 
+  if (!process.env.DATA_API_JWT_SECRET) {
+    throw new Error("DATA_API_JWT_SECRET is not set");
+  }
+
+  const JWT_SECRET = process.env.DATA_API_JWT_SECRET as string;
   // If not authenticated , redirect to login
   if (!session) {
     redirect("/login?callbackUrl=/console/utilities/glacier-api-tokens");
@@ -18,8 +22,7 @@ export default async function Page() {
   const glacierJwt = jwt.sign(
     {
       sub: session.user.id,
-      aud: "glacier-api",
-      iss: "builder-hub",
+      iss: "https://build.avax.network/",
       email: session.user.email,
     },
     JWT_SECRET,

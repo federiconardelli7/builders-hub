@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Container } from "@/components/toolbox/components/Container";
 import { Button } from "@/components/toolbox/components/Button";
-import { Plus } from "lucide-react";
+import { Plus, AlertCircle } from "lucide-react";
 
 import { GlacierApiClient } from './api';
 import { ApiKeyListItem, CreateApiKeyResponse } from './types';
@@ -32,17 +32,22 @@ export default function TokenManagement({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [createdKey, setCreatedKey] = useState<CreateApiKeyResponse | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   // Delete dialog state
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<ApiKeyListItem | null>(null);
   const [deletingKeys, setDeletingKeys] = useState<Set<string>>(new Set());
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
 
   // Load API keys
   const fetchApiKeys = async () => {
     setIsLoading(true);
     setError(null);
+    // Clear other errors when refreshing since this is a user-initiated action
+    setCreateError(null);
+    setDeleteError(null);
 
     try {
       const response = await apiClient.listApiKeys();
@@ -59,6 +64,7 @@ export default function TokenManagement({
   // Create API key
   const handleCreateApiKey = async (alias: string) => {
     setIsCreating(true);
+    setCreateError(null);
 
     try {
       const response = await apiClient.createApiKey({ alias });
@@ -68,7 +74,10 @@ export default function TokenManagement({
       // Refresh the list
       await fetchApiKeys();
     } catch (err) {
-      throw err; // Let the modal handle the error
+      console.error('Failed to create API key:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create API key';
+      setCreateError(errorMessage);
+      throw err; // Let the modal handle the error too
     } finally {
       setIsCreating(false);
     }
@@ -80,6 +89,7 @@ export default function TokenManagement({
     if (apiKey) {
       setKeyToDelete(apiKey);
       setShowDeleteDialog(true);
+      setDeleteError(null); // Clear any previous delete errors
     }
   };
 
@@ -87,23 +97,24 @@ export default function TokenManagement({
     if (!keyToDelete) return;
 
     setDeletingKeys(prev => new Set(prev).add(keyToDelete.keyId));
+    setDeleteError(null);
 
     try {
       await apiClient.deleteApiKey(keyToDelete.keyId);
       // Refresh the list
       await fetchApiKeys();
+      setShowDeleteDialog(false);
+      setKeyToDelete(null);
     } catch (err) {
       console.error('Failed to delete API key:', err);
-      // For now, just log the error - the user will see the key still exists in the list
-      // TODO: Add proper error handling UI if needed
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete API key';
+      setDeleteError(errorMessage);
     } finally {
       setDeletingKeys(prev => {
         const newSet = new Set(prev);
         newSet.delete(keyToDelete.keyId);
         return newSet;
       });
-      setShowDeleteDialog(false);
-      setKeyToDelete(null);
     }
   };
 
@@ -119,7 +130,10 @@ export default function TokenManagement({
       {/* Create API Key Modal */}
       <CreateApiKeyModal
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={() => {
+          setShowCreateModal(false);
+          setCreateError(null); // Clear create error when modal closes
+        }}
         onSubmit={handleCreateApiKey}
         isCreating={isCreating}
         maxKeysReached={maxKeysReached}
@@ -140,6 +154,7 @@ export default function TokenManagement({
         onCancel={() => {
           setShowDeleteDialog(false);
           setKeyToDelete(null);
+          setDeleteError(null); // Clear delete error when dialog closes
         }}
         isDeleting={deletingKeys.has(keyToDelete?.keyId || '')}
       />
@@ -160,7 +175,10 @@ export default function TokenManagement({
               </p>
             </div>
             <Button
-              onClick={() => setShowCreateModal(true)}
+              onClick={() => {
+                setShowCreateModal(true);
+                setCreateError(null); // Clear any previous create errors
+              }}
               className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 !w-auto"
               size="sm"
             >
@@ -169,6 +187,32 @@ export default function TokenManagement({
             </Button>
           </div>
         </div>
+
+        {/* Create Error Display */}
+        {createError && (
+          <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="flex gap-2 items-start">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Failed to create API key</h4>
+                <p className="text-sm text-red-700 dark:text-red-300">{createError}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Error Display */}
+        {deleteError && (
+          <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="flex gap-2 items-start">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Failed to delete API key</h4>
+                <p className="text-sm text-red-700 dark:text-red-300">{deleteError}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* API Keys List */}
         <div className="not-prose">
@@ -179,7 +223,10 @@ export default function TokenManagement({
             maxApiKeysAllowed={maxApiKeysAllowed}
             deletingKeys={deletingKeys}
             onRefresh={fetchApiKeys}
-            onShowCreateForm={() => setShowCreateModal(true)}
+            onShowCreateForm={() => {
+              setShowCreateModal(true);
+              setCreateError(null); // Clear any previous create errors
+            }}
             onDeleteKey={handleDeleteApiKey}
           />
         </div>

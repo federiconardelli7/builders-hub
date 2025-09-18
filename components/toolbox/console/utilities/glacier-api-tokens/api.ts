@@ -5,7 +5,7 @@ import {
     ApiKeyDetailsResponse,
 } from './types';
 
-const GLACIER_API_ENDPOINT = "https://mock-auth-server.fly.dev";
+const DATA_API_ENDPOINT = 'https://data-api-dev.avax.network/v1';
 
 export class GlacierApiClient {
     constructor(private jwt: string) { }
@@ -14,7 +14,7 @@ export class GlacierApiClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<T> {
-        const response = await fetch(`${GLACIER_API_ENDPOINT}${endpoint}`, {
+        const response = await fetch(`${DATA_API_ENDPOINT}${endpoint}`, {
             ...options,
             headers: {
                 'Authorization': `Bearer ${this.jwt}`,
@@ -32,7 +32,13 @@ export class GlacierApiClient {
             );
         }
 
-        return response.json();
+        // Handle empty responses (like DELETE operations)
+        const text = await response.text();
+        if (!text) {
+            return null as T;
+        }
+
+        return JSON.parse(text);
     }
 
     async listApiKeys(): Promise<ListApiKeysResponse> {
@@ -47,11 +53,11 @@ export class GlacierApiClient {
     }
 
     async getApiKeyDetails(keyId: string): Promise<ApiKeyDetailsResponse> {
-        return this.makeRequest<ApiKeyDetailsResponse>(`/internal/dt-api-keys:${keyId}`);
+        return this.makeRequest<ApiKeyDetailsResponse>(`/internal/dt-api-keys/${keyId}`);
     }
 
     async deleteApiKey(keyId: string): Promise<void> {
-        await this.makeRequest(`/internal/dt-api-keys:${keyId}`, {
+        await this.makeRequest(`/internal/dt-api-keys/${keyId}`, {
             method: 'DELETE',
         });
     }
