@@ -63,32 +63,6 @@ const data = {
   ],
   navGroups: [
     {
-      title: "Layer 1",
-      icon: Box,
-      items: [
-        {
-          title: "Create New L1",
-          url: "/console/layer-1/create",
-          icon: Layers,
-        },
-        {
-          title: "L1 Node Setup",
-          url: "/console/layer-1/l1-node-setup",
-          icon: Server,
-        },
-        {
-          title: "L1 Validator Balance",
-          url: "/console/layer-1/l1-validator-balance",
-          icon: Coins,
-        },
-        {
-          title: "Explorer Setup",
-          url: "/console/layer-1/explorer-setup",
-          icon: Telescope,
-        },
-      ],
-    },
-    {
       title: "Primary Network",
       icon: Network,
       items: [
@@ -121,6 +95,32 @@ const data = {
           title: "AVAX Unit Converter",
           url: "/console/primary-network/unit-converter",
           icon: Calculator,
+        },
+      ],
+    },
+    {
+      title: "Layer 1",
+      icon: Box,
+      items: [
+        {
+          title: "Create New L1",
+          url: "/console/layer-1/create",
+          icon: Layers,
+        },
+        {
+          title: "L1 Node Setup",
+          url: "/console/layer-1/l1-node-setup",
+          icon: Server,
+        },
+        {
+          title: "L1 Validator Balance",
+          url: "/console/layer-1/l1-validator-balance",
+          icon: Coins,
+        },
+        {
+          title: "Explorer Setup",
+          url: "/console/layer-1/explorer-setup",
+          icon: Telescope,
         },
       ],
     },
