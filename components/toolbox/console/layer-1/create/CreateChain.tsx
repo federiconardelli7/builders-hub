@@ -15,6 +15,7 @@ import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { useWallet } from "@/components/toolbox/hooks/useWallet";
 
 const generateRandomName = () => {
     //makes sure the name doesn't contain a dash
@@ -67,6 +68,7 @@ export default function CreateChain() {
             return;
         }
 
+
         setIsCreatingSubnet(true);
 
         try {
@@ -89,6 +91,7 @@ export default function CreateChain() {
             return;
         }
 
+
         setIsCreatingChain(true);
 
         try {
@@ -98,8 +101,8 @@ export default function CreateChain() {
                 vmId,
                 fxIds: [],
                 genesisData: localGenesisData,
-                subnetAuth: [0],
-            })
+                subnetAuth: [0]
+            });
 
             setChainID(txID);
             setChainName(localChainName);
