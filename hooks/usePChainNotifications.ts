@@ -9,8 +9,8 @@ const getPChainTxExplorerURL = (txID: string, isTestnet: boolean) => {
     return `https://${isTestnet ? "subnets-test" : "subnets"}.avax.network/p-chain/tx/${txID}`;
 };
 
-export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1' | 'addPermissionlessValidator' | 'registerL1Validator';
-export const PChainActionList = ['createSubnet', 'createChain', 'convertToL1', 'addPermissionlessValidator', 'registerL1Validator'];
+export type PChainAction = 'createSubnet' | 'createChain' | 'convertToL1' | 'addPermissionlessValidator' | 'registerL1Validator' | 'setL1ValidatorWeight';
+export const PChainActionList = ['createSubnet', 'createChain', 'convertToL1', 'addPermissionlessValidator', 'registerL1Validator', 'setL1ValidatorWeight'];
 
 type PChainNotificationConfig = {
     loadingMessage: string;
@@ -50,9 +50,15 @@ const configs: Record<PChainAction, PChainNotificationConfig> = {
         errorMessagePrefix: 'Failed to register validator: ',
         eventType: 'validator_registered',
     },
+    setL1ValidatorWeight: {
+        loadingMessage: 'Signing SetL1ValidatorWeightTx with Core...',
+        successMessage: 'Validator weight set successfully',
+        errorMessagePrefix: 'Failed to set validator weight: ',
+        eventType: 'validator_weight_set',
+    },
 };
 
-const waitForTransaction = async (client: PChainClient, txID: string, maxAttempts = 30, interval = 2000) => {
+const waitForTransaction = async (client: PChainClient, txID: string, maxAttempts = 10, interval = 300) => {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const receipt = await client.getTxStatus({ txID });
         if (receipt.status === 'Committed') {
@@ -76,15 +82,15 @@ const usePChainNotifications = () => {
         const config = configs[action];
 
         const toastId = toast.loading(config.loadingMessage);
-        
+
         // Extract the flow context from the current pathname
         // Also handles /academy and /docs paths
         const pathSegments = pathname?.split('/').filter(Boolean) || [];
-        
+
         // Check for console, academy, or docs in the path
         const rootSections = ['console', 'academy', 'docs'];
         let flowPath = pathname;
-        
+
         for (const section of rootSections) {
             const sectionIndex = pathSegments.indexOf(section);
             if (sectionIndex !== -1) {
@@ -92,7 +98,7 @@ const usePChainNotifications = () => {
                 break;
             }
         }
-        
+
         // Create a contextual action path based on the flow and action
         const actionPath = `${flowPath}/${config.eventType}`;
 
@@ -110,7 +116,7 @@ const usePChainNotifications = () => {
                         }
                     });
 
-                    const data = action === 'createChain' 
+                    const data = action === 'createChain'
                         ? { txID, blockchainID: txID, network: isTestnet ? 'testnet' : 'mainnet' }
                         : { txID, network: isTestnet ? 'testnet' : 'mainnet' };
                     addLog({
