@@ -14,6 +14,7 @@ import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { useWallet } from "@/components/toolbox/hooks/useWallet";
 
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
@@ -62,6 +63,7 @@ export default function CreateChain() {
             return;
         }
 
+
         setIsCreatingSubnet(true);
 
         const createSubnetTx = coreWalletClient.createSubnet({
@@ -84,6 +86,7 @@ export default function CreateChain() {
             return;
         }
 
+
         setIsCreatingChain(true);
 
         const createChainTx = coreWalletClient.createChain({
@@ -99,7 +102,6 @@ export default function CreateChain() {
 
         try {
             const txID = await createChainTx;
-
             setChainID(txID);
             setChainName(localChainName);
             setLocalChainName(generateRandomName());
