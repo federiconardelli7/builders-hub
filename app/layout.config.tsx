@@ -265,16 +265,6 @@ export const academyMenu: LinkItemType = {
       },
     },
     {
-      icon: <Shield />,
-      text: 'Privacy Tokens',
-      description:
-        'Explore eERC privacy tokens: scoped permissions, safer approvals, revocation, and minimized data exposure.',
-      url: '/academy/privacy',
-      menu: {
-        className: 'lg:col-start-3 lg:row-start-2',
-      },
-    },
-    {
       icon: <ArrowUpRight />,
       text: 'Check All Courses',
       description:
