@@ -15,10 +15,12 @@ import WrapNativeToken from "./wrappedNativeToken/WrapNativeToken";
 import UnwrapNativeToken from "./wrappedNativeToken/UnwrapNativeToken";
 import DisplayNativeBalance from "./wrappedNativeToken/DisplayNativeBalance";
 import DisplayWrappedBalance from "./wrappedNativeToken/DisplayWrappedBalance";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 // Pre-deployed wrapped native token address (from genesis)
 // This is the standard address used in the pre-installed contracts section
 const PREDEPLOYED_WRAPPED_NATIVE_ADDRESS = '0x1111111111111111111111111111111111111111';
+
 
 export default function DeployWrappedNative() {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
@@ -30,6 +32,7 @@ export default function DeployWrappedNative() {
     const [isCheckingToken, setIsCheckingToken] = useState(false);
 
     const { coreWalletClient, walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
+    const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
     
@@ -123,15 +126,19 @@ export default function DeployWrappedNative() {
                 transport: http(viemChain.rpcUrls.default.http[0] || "")
             });
 
-            const hash = await coreWalletClient.deployContract({
+            const deployPromise = coreWalletClient.deployContract({
                 abi: WrappedNativeToken.abi as any,
                 bytecode: WrappedNativeToken.bytecode.object as `0x${string}`,
                 args: ["WNT"],
                 chain: viemChain,
                 account: walletEVMAddress as `0x${string}`
             });
+            notify({
+                type: 'deploy',
+                name: 'WrappedNativeToken'
+            }, deployPromise, viemChain ?? undefined);
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+            const receipt = await publicClient.waitForTransactionReceipt({ hash: await deployPromise });
 
             if (!receipt.contractAddress) {
                 throw new Error('No contract address in receipt');
