@@ -16,6 +16,7 @@ import { networkIDs } from '@avalabs/avalanchejs'
 import { AddValidatorControls } from '@/components/toolbox/components/ValidatorListInput/AddValidatorControls'
 import type { ConvertToL1Validator } from '@/components/toolbox/components/ValidatorListInput'
 import { Steps, Step } from 'fumadocs-ui/components/steps'
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 // Network-specific constants
 const NETWORK_CONFIG = {
@@ -58,6 +59,8 @@ function Stake({ onSuccess }: BaseConsoleToolProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [txId, setTxId] = useState<string>("")
+
+  const { notify } = useConsoleNotifications();
 
   // Determine network configuration
   const onFuji = isTestnet === true || avalancheNetworkID === networkIDs.FujiID
@@ -173,14 +176,16 @@ function Stake({ onSuccess }: BaseConsoleToolProps) {
         signature: validator!.nodePOP.proofOfPossession,
       })
 
-      const txResult = await sendXPTransaction(avalancheWalletClient.pChain, {
+      const stakePromise = sendXPTransaction(avalancheWalletClient.pChain, {
         tx: tx,
         chainAlias: 'P',
-      })
-      await avalancheWalletClient.waitForTxn(txResult);
-      setTxId(txResult.txHash)
-      onSuccess?.()
+      }).then(result => result.txHash);
 
+      notify('addPermissionlessValidator', stakePromise);
+
+      const txHash = await stakePromise;
+      setTxId(txHash)
+      onSuccess?.()
     } catch (e: any) {
       setError(e.message)
     } finally {

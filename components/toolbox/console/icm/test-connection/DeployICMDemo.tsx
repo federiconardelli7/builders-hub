@@ -9,6 +9,7 @@ import ICMDemoABI from "@/contracts/example-contracts/compiled/ICMDemo.json";
 import TeleporterMessengerAddress from '@/contracts/icm-contracts-releases/v1.0.0/TeleporterMessenger_Contract_Address_v1.0.0.txt.json';
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
@@ -23,7 +24,7 @@ function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {
     const [isTeleporterDeployed, setIsTeleporterDeployed] = useState(false);
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const selectedL1 = useSelectedL1()();
-
+    const { notify } = useConsoleNotifications();
     // Throw critical errors during render
     if (criticalError) {
         throw criticalError;
@@ -54,13 +55,19 @@ function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {
         setIsDeploying(true);
         setIcmReceiverAddress("");
         try {
-            const hash = await coreWalletClient.deployContract({
+            const deployPromise = coreWalletClient.deployContract({
                 abi: ICMDemoABI.abi as any,
                 bytecode: ICMDemoABI.bytecode.object as `0x${string}`,
                 account: walletEVMAddress as `0x${string}`,
                 chain: viemChain
             });
 
+            notify({
+                type: 'deploy',
+                name: 'ICMDemo'
+            }, deployPromise, viemChain ?? undefined);
+
+            const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
             if (!receipt.contractAddress) {

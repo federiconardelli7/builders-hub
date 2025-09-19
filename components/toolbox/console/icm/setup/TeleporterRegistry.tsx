@@ -13,6 +13,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import versions from '@/scripts/versions.json';
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 const ICM_COMMIT = versions["ava-labs/icm-contracts"];
 const TELEPORTER_REGISTRY_SOURCE_URL = `https://github.com/ava-labs/icm-contracts/blob/${ICM_COMMIT}/contracts/teleporter/registry/TeleporterRegistry.sol`;
@@ -26,7 +27,7 @@ function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
     const [isDeploying, setIsDeploying] = useState(false);
     const viemChain = useViemChainStore();
     const selectedL1 = useSelectedL1()();
-
+    const { notify } = useConsoleNotifications();
     // Throw critical errors during render
     if (criticalError) {
         throw criticalError;
@@ -44,7 +45,7 @@ function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
             // Get messenger address
             const messengerAddress = TeleporterMessengerAddress.content.trim();
 
-            const hash = await coreWalletClient.deployContract({
+            const deployPromise = coreWalletClient.deployContract({
                 bytecode: TeleporterRegistryBytecode.content.trim() as `0x${string}`,
                 abi: TeleporterRegistryManualyCompiled.abi as any,
                 args: [
@@ -53,7 +54,12 @@ function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
                 account: walletEVMAddress as `0x${string}`,
                 chain: viemChain,
             });
+            notify({
+                type: 'deploy',
+                name: 'TeleporterRegistry'
+            }, deployPromise, viemChain ?? undefined);
 
+            const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
             if (!receipt.contractAddress) {

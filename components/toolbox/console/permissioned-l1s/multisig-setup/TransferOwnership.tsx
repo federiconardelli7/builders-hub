@@ -15,6 +15,7 @@ import { AlertCircle, Info } from "lucide-react";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
@@ -43,7 +44,7 @@ function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
         isLoadingOwnership,
         isOwnerContract
     } = validatorManagerData;
-
+    const { notify } = useConsoleNotifications();
     // Ownership check
     const isCurrentUserOwner = contractOwner && walletEVMAddress &&
         contractOwner.toLowerCase() === walletEVMAddress.toLowerCase();
@@ -98,14 +99,20 @@ function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
 
         setIsTransferring(true);
         try {
-            const hash = await coreWalletClient.writeContract({
+            const transferPromise = coreWalletClient.writeContract({
                 to: validatorManagerAddress,
                 abi: ValidatorManagerABI.abi,
                 functionName: 'transferOwnership',
                 args: [newOwnerAddress],
-                chain: viemChain,
+                chain: viemChain ?? undefined,
             });
 
+            notify({
+                type: 'call',
+                name: 'Transfer Ownership'
+            }, transferPromise, viemChain ?? undefined);
+
+            const hash = await transferPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
             if (!receipt.status || receipt.status !== 'success') {

@@ -17,9 +17,9 @@ import { Step, Steps } from "fumadocs-ui/components/steps";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 function Initialize({ onSuccess }: BaseConsoleToolProps) {
-    const [criticalError, setCriticalError] = useState<Error | null>(null);
     const [proxyAddress, setProxyAddress] = useState<string>("");
     const { walletEVMAddress, publicClient } = useWalletStore();
     const { coreWalletClient } = useConnectedWallet();
@@ -35,10 +35,7 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
     const [subnetId, setSubnetId] = useState("");
     const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
 
-    // Throw critical errors during render
-    if (criticalError) {
-        throw criticalError;
-    }
+    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     useEffect(() => {
         if (walletEVMAddress && !adminAddress) {
@@ -117,7 +114,7 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
             }
         } catch (error) {
             console.error('Error checking initialization:', error);
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+            // setCriticalError(error instanceof Error ? error : new Error(String(error))); // Removed criticalError
         } finally {
             setIsChecking(false);
         }
@@ -125,40 +122,39 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
 
     async function handleInitialize() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
         setIsInitializing(true);
+
+        const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;
+        const formattedAdmin = adminAddress as `0x${string}`;
+
+        const settings = {
+            admin: formattedAdmin,
+            subnetID: formattedSubnetId,
+            churnPeriodSeconds: BigInt(churnPeriodSeconds),
+            maximumChurnPercentage: Number(maximumChurnPercentage)
+        };
+
+        const initPromise = coreWalletClient.writeContract({
+            address: proxyAddress as `0x${string}`,
+            abi: ValidatorManagerABI.abi,
+            functionName: 'initialize',
+            args: [settings],
+            chain: viemChain ?? undefined,
+        });
+
+        notify({
+            type: 'call',
+            name: 'Initialize Validator Manager'
+        }, initPromise, viemChain ?? undefined);
+
         try {
-            if (!proxyAddress) throw new Error('Proxy address is required');
-            
-            const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;
-            const formattedAdmin = adminAddress as `0x${string}`;
-
-            // Create settings object with exact types from the ABI
-            const settings = {
-                admin: formattedAdmin,
-                subnetID: formattedSubnetId, // Note: ABI shows it as subnetID (capital ID), not subnetId
-                churnPeriodSeconds: BigInt(churnPeriodSeconds),
-                maximumChurnPercentage: Number(maximumChurnPercentage)
-            };
-
-            console.log("Settings object:", settings);
-
-            const hash = await coreWalletClient.writeContract({
-                address: proxyAddress as `0x${string}`,
-                abi: ValidatorManagerABI.abi,
-                functionName: 'initialize',
-                args: [settings],
-                chain: viemChain,
-            });
-
+            const hash = await initPromise;
             await publicClient.waitForTransactionReceipt({ hash });
             await checkIfInitialized();
-        } catch (error) {
-            console.error('Error initializing:', error);
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
             setIsInitializing(false);
         }
@@ -253,6 +249,9 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
                         value={jsonStringifyWithBigint(initEvent)}
                         showCheck={isInitialized}
                     />
+                )}
+                {isInitialized !== null && (
+                    <p className="mt-4">Initialization Status: {isInitialized ? 'Initialized' : 'Not Initialized'}</p>
                 )}
         </div>
 

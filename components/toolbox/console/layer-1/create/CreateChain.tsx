@@ -8,13 +8,15 @@ import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import GenesisBuilder from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import generateName from 'boring-name-generator'
-import { Success } from "@/components/toolbox/components/Success";
 import { RadioGroup } from "@/components/toolbox/components/RadioGroup";
 import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+
 
 const generateRandomName = () => {
     //makes sure the name doesn't contain a dash
@@ -28,7 +30,6 @@ const generateRandomName = () => {
 
 
 function CreateChain({ onSuccess }: BaseConsoleToolProps) {
-    const [criticalError, setCriticalError] = useState<Error | null>(null);
     const {
         subnetId,
         setChainID,
@@ -36,14 +37,12 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
         genesisData,
         setChainName,
     } = useCreateChainStore()();
+
     const { pChainAddress } = useWalletStore();
     const { coreWalletClient } = useConnectedWallet();
 
     const [isCreatingSubnet, setIsCreatingSubnet] = useState(false);
-    const [createdSubnetId, setCreatedSubnetId] = useState("");
-
     const [isCreatingChain, setIsCreatingChain] = useState(false);
-    const [createdChainId, setCreatedChainId] = useState("");
 
     const [localGenesisData, setLocalGenesisData] = useState<string>(genesisData);
     const [localChainName, setLocalChainName] = useState<string>(generateRandomName());
@@ -51,34 +50,32 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     const [showVMIdInput, setShowVMIdInput] = useState<boolean>(false);
     const [vmId, setVmId] = useState<string>(SUBNET_EVM_VM_ID);
 
-    // Throw critical errors during render
-    if (criticalError) {
-        throw criticalError;
-    }
+    const { notify, sendCoreWalletNotSetNotification } = useConsoleNotifications();
+
 
     // Wrapper function to handle subnet ID changes properly
     const handleSubnetIdChange = (newSubnetId: string) => {
         setSubnetID(newSubnetId);
     };
 
-
     async function handleCreateSubnet() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
+
         setIsCreatingSubnet(true);
 
-        try {
-            const txID = await coreWalletClient.createSubnet({
-                subnetOwners: [pChainAddress]
-            });
+        const createSubnetTx = coreWalletClient.createSubnet({
+            subnetOwners: [pChainAddress]
+        });
 
+        notify('createSubnet', createSubnetTx);
+
+        try {
+            const txID = await createSubnetTx;
             setSubnetID(txID);
-            setCreatedSubnetId(txID);
-        } catch (error) {
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
             setIsCreatingSubnet(false);
         }
@@ -86,30 +83,30 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
 
     async function handleCreateChain() {
         if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
+            sendCoreWalletNotSetNotification();
             return;
         }
 
+
         setIsCreatingChain(true);
 
-        try {
-            const txID = await coreWalletClient.createChain({
-                chainName: localChainName,
-                subnetId: subnetId,
-                vmId,
-                fxIds: [],
-                genesisData: localGenesisData,
-                subnetAuth: [0],
-            })
+        const createChainTx = coreWalletClient.createChain({
+            chainName: localChainName,
+            subnetId: subnetId,
+            vmId,
+            fxIds: [],
+            genesisData: localGenesisData,
+            subnetAuth: [0],
+        })
 
+        notify('createChain', createChainTx);
+
+        try {
+            const txID = await createChainTx;
             setChainID(txID);
             setChainName(localChainName);
-
-            setCreatedChainId(txID);
-
             setLocalChainName(generateRandomName());
-        } catch (error) {
-            setCriticalError(error instanceof Error ? error : new Error(String(error)));
+
         } finally {
             setIsCreatingChain(false);
         }
@@ -139,14 +136,6 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
                                 Create Subnet
                             </Button>
                         </div>
-                        {createdSubnetId && (
-                            <div className="mt-4">
-                                <Success
-                                    label="Subnet Created Successfully"
-                                    value={createdSubnetId}
-                                />
-                            </div>
-                        )}
                     </Step>
                     <Step>
                         <h2 className="text-lg font-semibold">Step 2: Create a Chain</h2>
@@ -213,10 +202,6 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
                         </Button>
                     </Step>
                 </Steps>
-                {createdChainId && <Success
-                    label="Chain Created Successfully"
-                    value={createdChainId}
-                />}
         </>
     );
 }

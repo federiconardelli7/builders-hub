@@ -1,7 +1,6 @@
 "use client";
 
 import { useToolboxStore, useViemChainStore, getToolboxStore } from "@/components/toolbox/stores/toolboxStore";
-import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
@@ -15,6 +14,7 @@ import { useEffect } from "react";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 const predeployedDemos: Record<string, string> = {
     //fuji
@@ -33,7 +33,7 @@ function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
     const viemChain = useViemChainStore();
     const [isQuerying, setIsQuerying] = useState(false);
     const [lastReceivedMessage, setLastReceivedMessage] = useState<number>();
-
+    const { notify } = useConsoleNotifications();
     // Throw critical errors during render
     if (criticalError) {
         throw criticalError;
@@ -110,11 +110,17 @@ function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
                 account: coreWalletClient.account,
             });
 
-            const hash = await coreWalletClient.writeContract({
+            const writePromise = coreWalletClient.writeContract({
                 ...request,
                 chain: viemChain,
             });
 
+            notify({
+                type: 'call',
+                name: 'Send ICM Message'
+            }, writePromise, viemChain ?? undefined);
+
+            const hash = await writePromise;
             console.log("Transaction hash:", hash);
             setLastTxId(hash);
             onSuccess?.();

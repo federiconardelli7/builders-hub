@@ -11,6 +11,7 @@ import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
@@ -21,6 +22,8 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
 
     const { walletEVMAddress } = useWalletStore();
     const { coreWalletClient } = useConnectedWallet();
+    
+    const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
     const { walletChainId } = useWalletStore();
@@ -44,15 +47,19 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                 transport: http(viemChain.rpcUrls.default.http[0] || "")
             });
 
-            const hash = await coreWalletClient.deployContract({
+            const deployPromise = coreWalletClient.deployContract({
                 abi: WrappedNativeToken.abi as any,
                 bytecode: WrappedNativeToken.bytecode.object as `0x${string}`,
                 args: ["WNT"],
                 chain: viemChain,
                 account: walletEVMAddress as `0x${string}`
             });
+            notify({
+                type: 'deploy',
+                name: 'WrappedNativeToken'
+            }, deployPromise, viemChain ?? undefined);
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+            const receipt = await publicClient.waitForTransactionReceipt({ hash: await deployPromise });
 
             if (!receipt.contractAddress) {
                 throw new Error('No contract address in receipt');

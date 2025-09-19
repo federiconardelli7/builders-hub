@@ -16,6 +16,7 @@ import { ValidatorManagerDetails } from "@/components/toolbox/components/Validat
 import { useCreateChainStore } from "@/components/toolbox/stores/createChainStore";
 import SelectSafeWallet, { SafeSelection } from "@/components/toolbox/components/SelectSafeWallet";
 
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
@@ -42,7 +43,7 @@ function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
     const [safeError, setSafeError] = useState<string | null>(null);
 
     const viemChain = useViemChainStore();
-
+    const { notify } = useConsoleNotifications();
     const {
         validatorManagerAddress,
         error: validatorManagerError,
@@ -89,12 +90,13 @@ function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
 
         setIsDeploying(true);
         setPoaManagerAddress("");
+
         try {
             if (!viemChain) throw new Error("Viem chain not found");
             await coreWalletClient.addChain({ chain: viemChain });
             await coreWalletClient.switchChain({ id: viemChain!.id });
 
-            const hash = await coreWalletClient.deployContract({
+            const deployPromise = coreWalletClient.deployContract({
                 abi: PoAManagerABI.abi as any,
                 bytecode: PoAManagerABI.bytecode.object as `0x${string}`,
                 args: [ownerAddress as `0x${string}`, validatorManagerAddress as `0x${string}`],
@@ -102,6 +104,12 @@ function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
                 account: walletEVMAddress as `0x${string}`
             });
 
+            notify({
+                type: 'deploy',
+                name: 'PoAManager'
+            }, deployPromise, viemChain);
+
+            const hash = await deployPromise;
             const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
             if (!receipt.contractAddress) {
