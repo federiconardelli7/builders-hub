@@ -25,9 +25,19 @@ import {
 import CreateNodeForm from "./CreateNodeForm";
 import SuccessMessage from "./SuccessMessage";
 import NodesList from "./NodesList";
+import { useManagedTestnetNodes } from "@/hooks/useManagedTestnetNodes";
 
 export default function ManagedTestnetNodes() {
     const { avalancheNetworkID, isTestnet } = useWalletStore();
+    const {
+        nodes,
+        isLoadingNodes,
+        nodesError,
+        deletingNodes,
+        fetchNodes,
+        createNode,
+        deleteNode
+    } = useManagedTestnetNodes();
 
     // Shared state
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
@@ -37,12 +47,7 @@ export default function ManagedTestnetNodes() {
 
     // Create node state
     const [registrationResponse, setRegistrationResponse] = useState<RegisterSubnetResponse | null>(null);
-
-    // Manage nodes state
-    const [nodes, setNodes] = useState<NodeRegistration[]>([]);
-    const [isLoadingNodes, setIsLoadingNodes] = useState(true);
-    const [nodesError, setNodesError] = useState<string | null>(null);
-    const [deletingNodes, setDeletingNodes] = useState<Set<string>>(new Set());
+    const [isRegistering, setIsRegistering] = useState(false);
 
     // Show create form state
     const [showCreateForm, setShowCreateForm] = useState(false);
@@ -67,100 +72,37 @@ export default function ManagedTestnetNodes() {
         setShowCreateForm(false);
     };
 
-    const handleRegistration = (response: RegisterSubnetResponse) => {
-        setRegistrationResponse(response);
-        setShowCreateForm(false);
-        fetchNodes();
-    };
-
-    // Manage nodes logic
-    const fetchNodes = async () => {
-        setIsLoadingNodes(true);
-        setNodesError(null);
-
+    const handleRegistration = async (subnetId: string, blockchainId: string) => {
+        setIsRegistering(true);
         try {
-            const response = await fetch('/api/managed-testnet-nodes', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const data = await response.json();
-
-            if (!response.ok || data.error) {
-                throw new Error(data.message || data.error || 'Failed to fetch nodes');
-            }
-
-            if (data.nodes) {
-                setNodes(data.nodes);
-            }
+            const response = await createNode(subnetId, blockchainId);
+            setRegistrationResponse(response);
+            setShowCreateForm(false);
+            fetchNodes();
         } catch (error) {
-            console.error("Failed to fetch nodes:", error);
-            setNodesError(error instanceof Error ? error.message : 'Failed to fetch nodes');
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            if (errorMessage.includes('Authentication required') || errorMessage.includes('401')) {
+                handleError("Authentication Required", "Please sign in to create nodes.", true);
+            } else {
+                handleError("Registration Failed", errorMessage);
+            }
         } finally {
-            setIsLoadingNodes(false);
+            setIsRegistering(false);
         }
     };
 
     const handleDeleteNode = async (node: NodeRegistration) => {
-        // If node_index is missing, allow account-only removal
-        if (node.node_index === null || node.node_index === undefined) {
-            try {
-                const response = await fetch(`/api/managed-testnet-nodes?id=${encodeURIComponent(node.id)}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await response.json();
-                if (!response.ok || data.error) {
-                    throw new Error(data.message || data.error || 'Failed to remove node from account');
-                }
-                setAlertDialogTitle("Removed from Account");
-                setAlertDialogMessage(data.message || "This node has been removed from your account.");
-                setIsLoginError(false);
-                setIsAlertDialogOpen(true);
-                fetchNodes();
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Failed to remove node from account';
-                setAlertDialogTitle("Remove Failed");
-                setAlertDialogMessage(errorMessage);
-                setIsLoginError(false);
-                setIsAlertDialogOpen(true);
-            }
-            return;
-        }
-
-        setDeletingNodes(prev => new Set(prev).add(node.id));
-
         try {
-            const response = await fetch(`/api/managed-testnet-nodes/${node.subnet_id}/${node.node_index}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-
-            if (!response.ok || data.error) {
-                throw new Error(data.message || data.error || 'Failed to delete node');
-            }
-
+            const message = await deleteNode(node);
             setAlertDialogTitle("Node Deleted");
-            setAlertDialogMessage(data.message || "The node has been successfully removed from the subnet.");
+            setAlertDialogMessage(message);
             setIsLoginError(false);
             setIsAlertDialogOpen(true);
-
-            // Refresh the nodes list
-            fetchNodes();
         } catch (error) {
-            console.error('Failed to delete node:', error);
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete node';
-
-            // Check for authentication errors
             if (errorMessage.includes('Authentication required') || errorMessage.includes('401')) {
                 setAlertDialogTitle("Authentication Required");
-                setAlertDialogMessage("Please sign in to delete nodes. Use the login button above to authenticate.");
+                setAlertDialogMessage("Please sign in to delete nodes.");
                 setIsLoginError(true);
             } else {
                 setAlertDialogTitle("Delete Failed");
@@ -168,15 +110,8 @@ export default function ManagedTestnetNodes() {
                 setIsLoginError(false);
             }
             setIsAlertDialogOpen(true);
-        } finally {
-            setDeletingNodes(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(node.id);
-                return newSet;
-            });
         }
     };
-
 
     // Load nodes when component mounts
     useEffect(() => {
@@ -255,14 +190,14 @@ export default function ManagedTestnetNodes() {
                     </div>
                 </div>
 
-
                 {/* Create Node Form */}
                 {showCreateForm && (
                     <CreateNodeForm
                         onClose={() => setShowCreateForm(false)}
-                        onRegister={handleRegistration}
+                        onSubmit={handleRegistration}
                         onError={handleError}
                         avalancheNetworkID={avalancheNetworkID}
+                        isRegistering={isRegistering}
                     />
                 )}
 
