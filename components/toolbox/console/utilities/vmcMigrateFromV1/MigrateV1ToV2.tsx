@@ -13,6 +13,14 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
+const metadata: ConsoleToolMetadata = {
+  title: "Migrate Validator from V1 to V2",
+  description: "Migrate validators from the Validator Manager contract v1 to v2",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance
+  ]
+};
+
 function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
   const { publicClient } = useWalletStore();
   const { coreWalletClient } = useConnectedWallet();
@@ -223,13 +231,5 @@ function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
     </>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Migrate Validator from V1 to V2",
-  description: "Migrate validators from the Validator Manager contract v1 to v2",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance
-  ]
-};
 
 export default withConsoleToolMetadata(MigrateV1ToV2, metadata);

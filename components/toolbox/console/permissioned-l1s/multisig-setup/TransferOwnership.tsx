@@ -17,6 +17,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Transfer Validator Manager Ownership",
+    description: "Transfer the ownership of the Validator Manager to a new address (EOA, StakingManager, or PoAManager)",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { publicClient, walletEVMAddress } = useWalletStore();
@@ -220,14 +228,6 @@ function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Transfer Validator Manager Ownership",
-    description: "Transfer the ownership of the Validator Manager to a new address (EOA, StakingManager, or PoAManager)",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(TransferOwnership, metadata);
 

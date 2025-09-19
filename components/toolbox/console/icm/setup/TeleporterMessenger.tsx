@@ -20,6 +20,14 @@ const MINIMUM_BALANCE = parseEther('11');
 const ICM_COMMIT = versions["ava-labs/icm-contracts"];
 const TELEPORTER_MESSENGER_SOURCE_URL = `https://github.com/ava-labs/icm-contracts/blob/${ICM_COMMIT}/contracts/teleporter/TeleporterMessenger.sol`;
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy ICM Messenger",
+    description: "Deploy the ICM messenger contract to your L1 to enable cross-L1 messaging and applications like ICTT",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 const TopUpComponent = ({
     deployerAddress,
     onTopUp
@@ -253,13 +261,5 @@ function TeleporterMessenger({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy ICM Messenger",
-    description: "Deploy the ICM messenger contract to your L1 to enable cross-L1 messaging and applications like ICTT",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(TeleporterMessenger, metadata);

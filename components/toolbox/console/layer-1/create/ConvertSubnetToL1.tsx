@@ -17,6 +17,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Convert Subnet to L1",
+    description: "Convert your existing Subnet to an L1 with validator management",
+    walletRequirements: [
+        WalletRequirementsConfigKey.PChainBalance
+    ]
+};
+
 function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
     const {
         subnetId: storeSubnetId,
@@ -145,13 +153,5 @@ function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Convert Subnet to L1",
-    description: "Convert your existing Subnet to an L1 with validator management",
-    walletRequirements: [
-        WalletRequirementsConfigKey.PChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(ConvertToL1, metadata);

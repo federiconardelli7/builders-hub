@@ -20,6 +20,13 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { DockerInstallation } from '@/components/toolbox/components/DockerInstallation';
 
+const metadata: ConsoleToolMetadata = {
+    title: "ICM Relayer",
+    description: "Configure the ICM Relayer for cross-chain message delivery",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
 
 function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
     const selectedL1 = useSelectedL1()();
@@ -361,14 +368,6 @@ function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
         </Steps>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "ICM Relayer",
-    description: "Configure the ICM Relayer for cross-chain message delivery",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(ICMRelayer, metadata);
 

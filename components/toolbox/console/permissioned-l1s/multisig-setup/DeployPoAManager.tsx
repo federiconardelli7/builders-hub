@@ -21,6 +21,14 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy PoA Manager",
+    description: "Deploy and initialize the PoAManager contract to manage Proof of Authority validators",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const {
@@ -309,13 +317,5 @@ function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy PoA Manager",
-    description: "Deploy and initialize the PoAManager contract to manage Proof of Authority validators",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(DeployPoAManager, metadata);

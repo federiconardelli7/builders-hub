@@ -9,6 +9,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 const DEFAULT_TRANSACTION_ALLOWLIST_ADDRESS =
   "0x0200000000000000000000000000000000000002";
 
+const metadata: ConsoleToolMetadata = {
+  title: "Transaction Allowlist",
+  description: "Manage addresses allowed to send transactions on your L1",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance
+  ]
+};
+
 function TransactionAllowlist({ onSuccess }: BaseConsoleToolProps) {
   return (
     <CheckPrecompile
@@ -23,13 +31,5 @@ function TransactionAllowlist({ onSuccess }: BaseConsoleToolProps) {
     </CheckPrecompile>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Transaction Allowlist",
-  description: "Manage addresses allowed to send transactions on your L1",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance
-  ]
-};
 
 export default withConsoleToolMetadata(TransactionAllowlist, metadata);

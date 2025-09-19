@@ -46,6 +46,14 @@ const MAX_END_SECONDS = 365 * 24 * 60 * 60 // 1 year
 const DEFAULT_DELEGATOR_REWARD_PERCENTAGE = "2"
 const BUFFER_MINUTES = 5
 
+const metadata: ConsoleToolMetadata = {
+  title: "Stake on Primary Network",
+  description: "Stake AVAX as a validator on Avalanche's Primary Network to secure the network and earn rewards",
+  walletRequirements: [
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+}
+
 function Stake({ onSuccess }: BaseConsoleToolProps) {
   const { pChainAddress, isTestnet, avalancheNetworkID, walletEVMAddress } = useWalletStore()
   const { coreWalletClient } = useConnectedWallet()
@@ -343,14 +351,6 @@ function Stake({ onSuccess }: BaseConsoleToolProps) {
         </div>
     </>
   )
-}
-
-const metadata: ConsoleToolMetadata = {
-  title: "Stake on Primary Network",
-  description: "Stake AVAX as a validator on Avalanche's Primary Network to secure the network and earn rewards",
-  walletRequirements: [
-    WalletRequirementsConfigKey.PChainBalance
-  ]
 }
 
 export default withConsoleToolMetadata(Stake, metadata)

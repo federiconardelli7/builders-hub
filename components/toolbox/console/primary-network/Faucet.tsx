@@ -51,6 +51,14 @@ function EVMFaucetCard({ chain }: { chain: L1ListItem }) {
   );
 }
 
+const metadata: ConsoleToolMetadata = {
+  title: "Testnet Faucet",
+  description: "Request free test tokens for Fuji testnet and Avalanche L1s",
+  walletRequirements: [
+    WalletRequirementsConfigKey.TestnetRequired
+  ]
+};
+
 function Faucet({ onSuccess }: BaseConsoleToolProps) {
   const l1List = useL1List();
   const EVMChainsWithBuilderHubFaucet = l1List.filter(
@@ -139,13 +147,5 @@ function Faucet({ onSuccess }: BaseConsoleToolProps) {
       </div>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Testnet Faucet",
-  description: "Request free test tokens for Fuji testnet and Avalanche L1s",
-  walletRequirements: [
-    WalletRequirementsConfigKey.TestnetRequired
-  ]
-};
 
 export default withConsoleToolMetadata(Faucet, metadata);

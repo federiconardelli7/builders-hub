@@ -18,6 +18,15 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata"
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext"
 
+const metadata: ConsoleToolMetadata = {
+  title: "Remove Validator",
+  description: "Remove a validator from an Avalanche L1 by following these steps in order",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance,
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+}
+
 const RemoveValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null)
@@ -221,15 +230,6 @@ const RemoveValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) =>
         </div>
     </>
   )
-}
-
-const metadata: ConsoleToolMetadata = {
-  title: "Remove Validator",
-  description: "Remove a validator from an Avalanche L1 by following these steps in order",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance,
-    WalletRequirementsConfigKey.PChainBalance
-  ]
 }
 
 export default withConsoleToolMetadata(RemoveValidatorExpert, metadata)

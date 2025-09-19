@@ -18,6 +18,14 @@ import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalle
 const DEFAULT_NATIVE_MINTER_ADDRESS =
   "0x0200000000000000000000000000000000000001";
 
+const metadata: ConsoleToolMetadata = {
+  title: "Native Minter",
+  description: "Mint native tokens (AVAX) to any address on your L1",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance
+  ]
+};
+
 function NativeMinter({ onSuccess }: BaseConsoleToolProps) {
   const { publicClient, walletEVMAddress } = useWalletStore();
   const { coreWalletClient } = useConnectedWallet();
@@ -118,13 +126,5 @@ function NativeMinter({ onSuccess }: BaseConsoleToolProps) {
     </CheckPrecompile>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Native Minter",
-  description: "Mint native tokens (AVAX) to any address on your L1",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance
-  ]
-};
 
 export default withConsoleToolMetadata(NativeMinter, metadata);

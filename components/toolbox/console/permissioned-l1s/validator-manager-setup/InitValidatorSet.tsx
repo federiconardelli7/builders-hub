@@ -24,6 +24,14 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 const cb58ToHex = (cb58: string) => utils.bufferToHex(utils.base58check.decode(cb58));
 const add0x = (hex: string): `0x${string}` => hex.startsWith('0x') ? hex as `0x${string}` : `0x${hex}`;
 
+const metadata: ConsoleToolMetadata = {
+    title: "Initialize Validator Set",
+    description: "Initialize the ValidatorManager contract with the initial validator set",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function InitValidatorSet({ onSuccess }: BaseConsoleToolProps) {
     const [conversionTxID, setConversionTxID] = useState<string>("");
     const [L1ConversionSignature, setL1ConversionSignature] = useState<string>("");
@@ -236,14 +244,6 @@ function InitValidatorSet({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Initialize Validator Set",
-    description: "Initialize the ValidatorManager contract with the initial validator set",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(InitValidatorSet, metadata);
 

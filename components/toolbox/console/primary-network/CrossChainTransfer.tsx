@@ -18,6 +18,14 @@ interface CrossChainTransferProps extends BaseConsoleToolProps {
     suggestedAmount?: string;
 }
 
+const metadata: ConsoleToolMetadata = {
+    title: "Cross-Chain Transfer",
+    description: "Transfer AVAX between Platform (P) and Contract (C) chains.",
+    walletRequirements: [
+        WalletRequirementsConfigKey.CoreWalletConnected
+    ]
+};
+
 function CrossChainTransfer({
     suggestedAmount = "0.0",
     onSuccess
@@ -646,13 +654,5 @@ function CrossChainTransfer({
         </div>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Cross-Chain Transfer",
-    description: "Transfer AVAX between Platform (P) and Contract (C) chains.",
-    walletRequirements: [
-        WalletRequirementsConfigKey.CoreWalletConnected
-    ]
-};
 
 export default withConsoleToolMetadata(CrossChainTransfer, metadata);

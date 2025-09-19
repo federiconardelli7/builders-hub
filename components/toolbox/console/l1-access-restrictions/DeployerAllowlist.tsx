@@ -9,6 +9,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 const DEFAULT_DEPLOYER_ALLOWLIST_ADDRESS =
   "0x0200000000000000000000000000000000000000";
 
+const metadata: ConsoleToolMetadata = {
+  title: "Deployer Allowlist",
+  description: "Control which addresses can deploy smart contracts on your L1",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance
+  ]
+};
+
 function DeployerAllowlist({ onSuccess }: BaseConsoleToolProps) {
   return (
     <CheckPrecompile
@@ -23,13 +31,5 @@ function DeployerAllowlist({ onSuccess }: BaseConsoleToolProps) {
     </CheckPrecompile>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Deployer Allowlist",
-  description: "Control which addresses can deploy smart contracts on your L1",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance
-  ]
-};
 
 export default withConsoleToolMetadata(DeployerAllowlist, metadata);

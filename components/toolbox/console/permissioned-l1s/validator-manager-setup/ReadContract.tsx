@@ -30,6 +30,14 @@ const serializeValue = (value: any): any => {
   return value
 }
 
+const metadata: ConsoleToolMetadata = {
+  title: "Read Contract",
+  description: "Read and view contract data from the ValidatorManager",
+  walletRequirements: [
+    WalletRequirementsConfigKey.CoreWalletConnected
+  ]
+}
+
 function ReadContract({ onSuccess }: BaseConsoleToolProps) {
   const [criticalError, setCriticalError] = useState<Error | null>(null);
   const [proxyAddress, setProxyAddress] = useState<string>("");
@@ -253,14 +261,6 @@ function ReadContract({ onSuccess }: BaseConsoleToolProps) {
         )}
     </div>
   )
-}
-
-const metadata: ConsoleToolMetadata = {
-  title: "Read Contract",
-  description: "Read and view contract data from the ValidatorManager",
-  walletRequirements: [
-    WalletRequirementsConfigKey.CoreWalletConnected
-  ]
 }
 
 export default withConsoleToolMetadata(ReadContract, metadata)

@@ -19,6 +19,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Initial Validator Manager Configuration",
+    description: "Initialize the ValidatorManager contract with the initial configuration",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function Initialize({ onSuccess }: BaseConsoleToolProps) {
     const [proxyAddress, setProxyAddress] = useState<string>("");
     const { walletEVMAddress, publicClient } = useWalletStore();
@@ -257,14 +265,6 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
 
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Initial Validator Manager Configuration",
-    description: "Initialize the ValidatorManager contract with the initial configuration",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(Initialize, metadata);
 

@@ -19,6 +19,14 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 // Storage slot with the admin of the proxy (following EIP1967)
 const ADMIN_SLOT = "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Upgrade Proxy Implementation",
+    description: "Upgrade the proxy implementation to the desired implementation",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function UpgradeProxy({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { validatorManagerAddress } = useToolboxStore();
@@ -235,13 +243,5 @@ function UpgradeProxy({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Upgrade Proxy Implementation",
-    description: "Upgrade the proxy implementation to the desired implementation",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(UpgradeProxy, metadata);

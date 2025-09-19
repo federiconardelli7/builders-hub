@@ -39,6 +39,15 @@ const deserializeValidators = (serializedValidators: any[]): ConvertToL1Validato
 
 const STORAGE_KEY = 'addValidator_validators';
 
+const metadata: ConsoleToolMetadata = {
+  title: "Add New Validator",
+  description: "Add a validator to your L1 by following these steps in order",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance,
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+};
+
 const AddValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
@@ -344,15 +353,6 @@ const AddValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
         </div>
     </>
   );
-};
-
-const metadata: ConsoleToolMetadata = {
-  title: "Add New Validator",
-  description: "Add a validator to your L1 by following these steps in order",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance,
-    WalletRequirementsConfigKey.PChainBalance
-  ]
 };
 
 export default withConsoleToolMetadata(AddValidatorExpert, metadata);

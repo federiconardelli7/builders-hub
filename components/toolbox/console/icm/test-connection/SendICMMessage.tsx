@@ -21,6 +21,14 @@ const predeployedDemos: Record<string, string> = {
     "yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp": "0x05c474824e7d2cc67cf22b456f7cf60c0e3a1289"
 }
 
+const metadata: ConsoleToolMetadata = {
+    title: "Send ICM Message",
+    description: "Send a test message between L1s using Avalanche's Inter-Chain Messaging (ICM) protocol",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { icmReceiverAddress, setIcmReceiverAddress } = useToolboxStore();
@@ -238,13 +246,5 @@ function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Send ICM Message",
-    description: "Send a test message between L1s using Avalanche's Inter-Chain Messaging (ICM) protocol",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(SendICMMessage, metadata);

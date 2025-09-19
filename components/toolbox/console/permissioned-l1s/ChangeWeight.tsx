@@ -17,6 +17,15 @@ import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from '../../components/WithConsoleToolMetadata';
 import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalletContext';
 
+const metadata: ConsoleToolMetadata = {
+  title: "Change Consensus Weight of Validators",
+  description: "Modify a validator's consensus weight to determine their influence in the network",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance,
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+};
+
 const ChangeWeightStateless: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [globalSuccess, setGlobalSuccess] = useState<string | null>(null);
@@ -223,15 +232,6 @@ const ChangeWeightStateless: React.FC<BaseConsoleToolProps> = ({ onSuccess }) =>
         </div>
     </>
   );
-};
-
-const metadata: ConsoleToolMetadata = {
-  title: "Change Consensus Weight of Validators",
-  description: "Modify a validator's consensus weight to determine their influence in the network",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance,
-    WalletRequirementsConfigKey.PChainBalance
-  ]
 };
 
 export default withConsoleToolMetadata(ChangeWeightStateless, metadata);

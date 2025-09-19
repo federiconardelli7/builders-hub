@@ -17,6 +17,14 @@ import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalle
 const DEFAULT_FEE_MANAGER_ADDRESS =
   "0x0200000000000000000000000000000000000003";
 
+const metadata: ConsoleToolMetadata = {
+  title: "Fee Manager",
+  description: "Configure dynamic fee parameters and manage allowlist for your L1",
+  walletRequirements: [
+    WalletRequirementsConfigKey.EVMChainBalance
+  ]
+};
+
 function FeeManager({ onSuccess }: BaseConsoleToolProps) {
   const { publicClient, walletEVMAddress } = useWalletStore();
   const { coreWalletClient } = useConnectedWallet();
@@ -275,13 +283,5 @@ function FeeManager({ onSuccess }: BaseConsoleToolProps) {
       </CheckPrecompile>
   );
 }
-
-const metadata: ConsoleToolMetadata = {
-  title: "Fee Manager",
-  description: "Configure dynamic fee parameters and manage allowlist for your L1",
-  walletRequirements: [
-    WalletRequirementsConfigKey.EVMChainBalance
-  ]
-};
 
 export default withConsoleToolMetadata(FeeManager, metadata);

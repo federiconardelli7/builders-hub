@@ -18,6 +18,13 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 const ICM_COMMIT = versions["ava-labs/icm-contracts"];
 const TELEPORTER_REGISTRY_SOURCE_URL = `https://github.com/ava-labs/icm-contracts/blob/${ICM_COMMIT}/contracts/teleporter/registry/TeleporterRegistry.sol`;
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy ICM Registry",
+    description: "Deploy the ICM Registry contract to your L1",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
 
 function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
@@ -101,13 +108,5 @@ function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy ICM Registry",
-    description: "Deploy the ICM Registry contract to your L1",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(TeleporterRegistry, metadata);

@@ -11,12 +11,10 @@ import generateName from 'boring-name-generator'
 import { RadioGroup } from "@/components/toolbox/components/RadioGroup";
 import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
-import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
-
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
-
+import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 
 const generateRandomName = () => {
     //makes sure the name doesn't contain a dash
@@ -28,6 +26,13 @@ const generateRandomName = () => {
     throw new Error("Could not generate a name with a dash after 1000 attempts");
 }
 
+const metadata: ConsoleToolMetadata = {
+    title: "Create Chain",
+    description: "Create a subnet and add a new blockchain with custom parameters and genesis data",
+    walletRequirements: [
+        WalletRequirementsConfigKey.PChainBalance
+    ]
+};
 
 function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     const {
@@ -205,13 +210,5 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Create Chain",
-    description: "Create a subnet and add a new blockchain with custom parameters and genesis data",
-    walletRequirements: [
-        WalletRequirementsConfigKey.PChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(CreateChain, metadata);

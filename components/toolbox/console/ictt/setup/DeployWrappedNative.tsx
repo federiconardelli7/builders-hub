@@ -13,6 +13,14 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Wrapped Native Token",
+    description: "Deploy a Wrapped Native token contract for testing and ICTT integration",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
@@ -101,13 +109,5 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy Wrapped Native Token",
-    description: "Deploy a Wrapped Native token contract for testing and ICTT integration",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(DeployWrappedNative, metadata);

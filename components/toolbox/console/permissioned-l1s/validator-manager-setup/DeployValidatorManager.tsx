@@ -25,6 +25,14 @@ function calculateLibraryHash(libraryPath: string) {
     return hash.slice(0, 34);
 }
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Validator Contracts",
+    description: "Deploy the ValidatorMessages library and ValidatorManager contract to the EVM network",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {
     const { validatorMessagesLibAddress, setValidatorMessagesLibAddress, setValidatorManagerAddress, validatorManagerAddress } = useToolboxStore();
     const { publicClient, walletEVMAddress } = useWalletStore();
@@ -178,13 +186,5 @@ function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy Validator Contracts",
-    description: "Deploy the ValidatorMessages library and ValidatorManager contract to the EVM network",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(DeployValidatorContracts, metadata);

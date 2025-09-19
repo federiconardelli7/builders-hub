@@ -18,6 +18,14 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 const PROXYADMIN_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/ProxyAdmin.sol";
 const TRANSPARENT_PROXY_SOURCE_URL = "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Proxy Contracts",
+    description: "Deploy ProxyAdmin and TransparentUpgradeableProxy contracts to the EVM network",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
 function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {
     const [isDeployingProxyAdmin, setIsDeployingProxyAdmin] = useState(false);
     const [isDeployingProxy, setIsDeployingProxy] = useState(false);
@@ -203,13 +211,5 @@ function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {
         </>
     );
 }
-
-const metadata: ConsoleToolMetadata = {
-    title: "Deploy Proxy Contracts",
-    description: "Deploy ProxyAdmin and TransparentUpgradeableProxy contracts to the EVM network",
-    walletRequirements: [
-        WalletRequirementsConfigKey.EVMChainBalance
-    ]
-};
 
 export default withConsoleToolMetadata(DeployProxyContract, metadata);

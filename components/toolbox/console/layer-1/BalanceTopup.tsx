@@ -22,6 +22,14 @@ interface AvalancheResponse {
   [key: string]: any;
 }
 
+const metadata: ConsoleToolMetadata = {
+  title: "Validator Balance Increase",
+  description: "Increase the balance of a validator to extend its validation period and maintain network participation",
+  walletRequirements: [
+    WalletRequirementsConfigKey.PChainBalance
+  ]
+}
+
 function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
 
   const [amount, setAmount] = useState<string>("")
@@ -337,14 +345,6 @@ function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
         )}
     </div>
   )
-}
-
-const metadata: ConsoleToolMetadata = {
-  title: "Validator Balance Increase",
-  description: "Increase the balance of a validator to extend its validation period and maintain network participation",
-  walletRequirements: [
-    WalletRequirementsConfigKey.PChainBalance
-  ]
 }
 
 export default withConsoleToolMetadata(ValidatorBalanceIncrease, metadata)
