@@ -2,7 +2,6 @@
 
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useState, useEffect } from "react";
-import { Container } from "@/components/toolbox/components/Container";
 import { Button } from "@/components/toolbox/components/Button";
 import {
     Plus,
@@ -45,7 +44,6 @@ function ManagedTestnetNodesBase() {
     const { notify } = useConsoleNotifications();
 
     // Create node state
-    const [registrationResponse, setRegistrationResponse] = useState<RegisterSubnetResponse | null>(null);
     const [isRegistering, setIsRegistering] = useState(false);
 
     // Show create form state
@@ -55,9 +53,7 @@ function ManagedTestnetNodesBase() {
         setIsRegistering(true);
         try {
             const createPromise = createNode(subnetId, blockchainId);
-            notify({ name: "Node Creation", type: "local" }, createPromise);
-            const response = await createPromise;
-            setRegistrationResponse(response);
+            notify({ name: "Managed Testnet Node Creation", type: "local" }, createPromise);
             setShowCreateForm(false);
             fetchNodes();
         } catch (error) {
@@ -105,20 +101,12 @@ function ManagedTestnetNodesBase() {
     // If not on testnet, show disabled message
     if (!isTestnet) {
         return (
-            <Container
-                title="Hosted L1 Testnet Nodes"
-                description="We recommend using cloud-hosted Avalanche nodes with open ports for testing, as running a node locally can be challenging and may introduce security risks when configuring the required ports. To simplify the process, the Avalanche Builder Hub provides free access to hosted testnet nodes, allowing developers to quickly experiment without managing their own infrastructure. This service is completely free to use, but you'll need to create an Avalanche Builder Account to get started."
-            >
-                <TestnetOnly />
-            </Container>
+            <TestnetOnly />
         );
     }
 
     return (
-        <Container
-            title="Hosted L1 Testnet Nodes"
-            description="Free cloud-hosted Avalanche nodes for testing. Create an Avalanche Builder Account to get started."
-        >
+        <>
             {/* Stats Section */}
             <div className="mb-8 not-prose">
                 <div className="flex items-center justify-between mb-6">
@@ -161,7 +149,7 @@ function ManagedTestnetNodesBase() {
                     deletingNodes={deletingNodes}
                 />
             </div>
-        </Container>
+        </>
     );
 }
 
