@@ -5,17 +5,7 @@ import { useState, useEffect } from "react";
 import { Container } from "@/components/toolbox/components/Container";
 import { Button } from "@/components/toolbox/components/Button";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle
-} from "@/components/toolbox/components/AlertDialog";
-import {
     Plus,
-    X,
 } from "lucide-react";
 
 import {
@@ -23,11 +13,25 @@ import {
     RegisterSubnetResponse
 } from "./types";
 import CreateNodeForm from "./CreateNodeForm";
-import SuccessMessage from "./SuccessMessage";
 import NodesList from "./NodesList";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { useManagedTestnetNodes } from "@/hooks/useManagedTestnetNodes";
+import { toast } from "@/hooks/use-toast";
+import TestnetOnly from "./TestnetOnly";
+import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 
-export default function ManagedTestnetNodes() {
+const metadata: ConsoleToolMetadata = {
+    title: "Managed Testnet Nodes",
+    description: "Manage your hosted testnet nodes.",
+    walletRequirements: []
+};
+
+function ManagedTestnetNodesBase() {
+    // Load nodes when component mounts
+      useEffect(() => {
+        fetchNodes();
+    }, []);
+    
     const { avalancheNetworkID, isTestnet } = useWalletStore();
     const {
         nodes,
@@ -38,12 +42,7 @@ export default function ManagedTestnetNodes() {
         createNode,
         deleteNode
     } = useManagedTestnetNodes();
-
-    // Shared state
-    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-    const [alertDialogTitle, setAlertDialogTitle] = useState("Error");
-    const [alertDialogMessage, setAlertDialogMessage] = useState("");
-    const [isLoginError, setIsLoginError] = useState(false);
+    const { notify } = useConsoleNotifications();
 
     // Create node state
     const [registrationResponse, setRegistrationResponse] = useState<RegisterSubnetResponse | null>(null);
@@ -52,39 +51,29 @@ export default function ManagedTestnetNodes() {
     // Show create form state
     const [showCreateForm, setShowCreateForm] = useState(false);
 
-    const handleLogin = () => {
-        window.location.href = "/login";
-    };
-
-    const handleError = (title: string, message: string, isLoginError: boolean = false) => {
-        setAlertDialogTitle(title);
-        setAlertDialogMessage(message);
-        setIsLoginError(isLoginError);
-        setIsAlertDialogOpen(true);
-    };
-
-    const handleReset = () => {
-        setRegistrationResponse(null);
-        setIsAlertDialogOpen(false);
-        setAlertDialogTitle("Error");
-        setAlertDialogMessage("");
-        setIsLoginError(false);
-        setShowCreateForm(false);
-    };
-
     const handleRegistration = async (subnetId: string, blockchainId: string) => {
         setIsRegistering(true);
         try {
-            const response = await createNode(subnetId, blockchainId);
+            const createPromise = createNode(subnetId, blockchainId);
+            notify({ name: "Node Creation", type: "local" }, createPromise);
+            const response = await createPromise;
             setRegistrationResponse(response);
             setShowCreateForm(false);
             fetchNodes();
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             if (errorMessage.includes('Authentication required') || errorMessage.includes('401')) {
-                handleError("Authentication Required", "Please sign in to create nodes.", true);
+                toast({
+                    title: "Authentication Required",
+                    description: "Please sign in to create nodes.",
+                    variant: "destructive",
+                });
             } else {
-                handleError("Registration Failed", errorMessage);
+                toast({
+                    title: "Registration Failed",
+                    description: errorMessage,
+                    variant: "destructive",
+                });
             }
         } finally {
             setIsRegistering(false);
@@ -93,31 +82,26 @@ export default function ManagedTestnetNodes() {
 
     const handleDeleteNode = async (node: NodeRegistration) => {
         try {
-            const message = await deleteNode(node);
-            setAlertDialogTitle("Node Deleted");
-            setAlertDialogMessage(message);
-            setIsLoginError(false);
-            setIsAlertDialogOpen(true);
+            const deletePromise = deleteNode(node);
+            notify({ name: "Managed Testnet Node Deletion", type: "local" }, deletePromise);
+            await deletePromise;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete node';
             if (errorMessage.includes('Authentication required') || errorMessage.includes('401')) {
-                setAlertDialogTitle("Authentication Required");
-                setAlertDialogMessage("Please sign in to delete nodes.");
-                setIsLoginError(true);
+                toast({
+                    title: "Authentication Required",
+                    description: "Please sign in to delete nodes.",
+                    variant: "destructive",
+                });
             } else {
-                setAlertDialogTitle("Delete Failed");
-                setAlertDialogMessage(errorMessage);
-                setIsLoginError(false);
+                toast({
+                    title: "Delete Failed",
+                    description: errorMessage,
+                    variant: "destructive",
+                });
             }
-            setIsAlertDialogOpen(true);
         }
     };
-
-    // Load nodes when component mounts
-    useEffect(() => {
-        fetchNodes();
-    }, []);
-
     // If not on testnet, show disabled message
     if (!isTestnet) {
         return (
@@ -125,104 +109,60 @@ export default function ManagedTestnetNodes() {
                 title="Hosted L1 Testnet Nodes"
                 description="We recommend using cloud-hosted Avalanche nodes with open ports for testing, as running a node locally can be challenging and may introduce security risks when configuring the required ports. To simplify the process, the Avalanche Builder Hub provides free access to hosted testnet nodes, allowing developers to quickly experiment without managing their own infrastructure. This service is completely free to use, but you'll need to create an Avalanche Builder Account to get started."
             >
-                <div className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-700 rounded-2xl p-8 text-center">
-                    <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                        <X className="w-8 h-8 text-red-600 dark:text-red-400" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-                        Testnet Only Feature
-                    </h2>
-                    <p className="text-zinc-600 dark:text-zinc-400 mb-6">
-                        Builder Hub Nodes are only available on testnet. Switch to Fuji testnet to create and manage nodes for your L1s.
-                    </p>
-                </div>
+                <TestnetOnly />
             </Container>
         );
     }
 
     return (
-        <>
-            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{alertDialogTitle}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {alertDialogMessage}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="flex gap-2">
-                        {isLoginError ? (
-                            <>
-                                <AlertDialogAction onClick={handleLogin} className="bg-blue-500 hover:bg-blue-600">
-                                    Login
-                                </AlertDialogAction>
-                                <AlertDialogAction className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800">
-                                    Close
-                                </AlertDialogAction>
-                            </>
-                        ) : (
-                            <AlertDialogAction>OK</AlertDialogAction>
-                        )}
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            <Container
-                title="Hosted L1 Testnet Nodes"
-                description="Free cloud-hosted Avalanche nodes for testing. Create an Avalanche Builder Account to get started."
-            >
-                {/* Stats Section */}
-                <div className="mb-8 not-prose">
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                <span className="font-semibold">{nodes.length}</span> / 3 active nodes
-                            </p>
-                        </div>
-                        <Button
-                            onClick={() => setShowCreateForm(true)}
-                            className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 !w-auto"
-                            size="sm"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add a node for a new L1
-                        </Button>
+        <Container
+            title="Hosted L1 Testnet Nodes"
+            description="Free cloud-hosted Avalanche nodes for testing. Create an Avalanche Builder Account to get started."
+        >
+            {/* Stats Section */}
+            <div className="mb-8 not-prose">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            <span className="font-semibold">{nodes.length}</span> / 3 active nodes
+                        </p>
                     </div>
+                    <Button
+                        onClick={() => setShowCreateForm(true)}
+                        className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 !w-auto"
+                        size="sm"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add a node for a new L1
+                    </Button>
                 </div>
+            </div>
 
-                {/* Create Node Form */}
-                {showCreateForm && (
-                    <CreateNodeForm
-                        onClose={() => setShowCreateForm(false)}
-                        onSubmit={handleRegistration}
-                        onError={handleError}
-                        avalancheNetworkID={avalancheNetworkID}
-                        isRegistering={isRegistering}
-                    />
-                )}
+            {/* Create Node Form */}
+            {showCreateForm && (
+                <CreateNodeForm
+                    onClose={() => setShowCreateForm(false)}
+                    onSubmit={handleRegistration}
+                    onError={(title, message) => toast({ title, description: message, variant: "destructive" })}
+                    avalancheNetworkID={avalancheNetworkID}
+                    isRegistering={isRegistering}
+                />
+            )}
 
-                {/* Success Message */}
-                {registrationResponse && (
-                    <SuccessMessage
-                        onReset={handleReset}
-                        onClose={() => setRegistrationResponse(null)}
-                    />
-                )}
-
-                {/* Nodes List */}
-                <div className="not-prose">
-                    <NodesList
-                        nodes={nodes}
-                        isLoadingNodes={isLoadingNodes}
-                        nodesError={nodesError}
-                        onRefresh={fetchNodes}
-                        onShowCreateForm={() => setShowCreateForm(true)}
-                        onDeleteNode={handleDeleteNode}
-                        deletingNodes={deletingNodes}
-                    />
-                </div>
-            </Container>
-
-        </>
+            {/* Nodes List */}
+            <div className="not-prose">
+                <NodesList
+                    nodes={nodes}
+                    isLoadingNodes={isLoadingNodes}
+                    nodesError={nodesError}
+                    onRefresh={fetchNodes}
+                    onShowCreateForm={() => setShowCreateForm(true)}
+                    onDeleteNode={handleDeleteNode}
+                    deletingNodes={deletingNodes}
+                />
+            </div>
+        </Container>
     );
 }
+
+export default withConsoleToolMetadata(ManagedTestnetNodesBase, metadata);

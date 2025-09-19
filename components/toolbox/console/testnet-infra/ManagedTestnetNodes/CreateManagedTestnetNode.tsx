@@ -3,29 +3,26 @@
 import { useState, useEffect } from "react";
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { Button } from "@/components/toolbox/components/Button";
-import InputSubnetId from "@/components/toolbox/components/InputSubnetId";
-import BlockchainDetailsDisplay from "@/components/toolbox/components/BlockchainDetailsDisplay";
-import { getBlockchainInfo, getSubnetInfo } from "@/components/toolbox/coreViem/utils/glacier";
-import { networkIDs } from "@avalabs/avalanchejs";
 import { useManagedTestnetNodes } from "@/hooks/useManagedTestnetNodes";
 import { NodeRegistration, RegisterSubnetResponse } from "./types";
 import { useWallet } from "@/components/toolbox/hooks/useWallet";
-import { Wallet } from "lucide-react";
-import {
-    AlertDialog,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle
-} from "@/components/toolbox/components/AlertDialog";
+import { Wallet, X } from "lucide-react";
 import { Steps, Step } from 'fumadocs-ui/components/steps';
 import Link from 'next/link';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import SelectSubnet from "@/components/toolbox/components/SelectSubnet";
+import TestnetOnly from "./TestnetOnly";
+import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 
-export default function CreateManagedTestnetNode() {
-    const { avalancheNetworkID } = useWalletStore();
+const metadata: ConsoleToolMetadata = {
+    title: "Create Managed Testnet Node",
+    description: "Spin up a free testnet node. You need a Builder Hub Account to use this tool.",
+    walletRequirements: []
+};
+
+function CreateManagedTestnetNodeBase() {
+    const { isTestnet } = useWalletStore();
     const { createNode, fetchNodes, nodes } = useManagedTestnetNodes();
     const { addChain } = useWallet();
     const { notify } = useConsoleNotifications();
@@ -33,54 +30,11 @@ export default function CreateManagedTestnetNode() {
     const [subnetId, setSubnetId] = useState("");
     const [selectedBlockchainId, setSelectedBlockchainId] = useState("");
     const [subnet, setSubnet] = useState<any>(null);
-    const [blockchainInfo, setBlockchainInfo] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [subnetIdError, setSubnetIdError] = useState<string | null>(null);
     const [createdResponse, setCreatedResponse] = useState<RegisterSubnetResponse | null>(null);
     const [createdNode, setCreatedNode] = useState<NodeRegistration | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [secondsUntilWalletEnabled, setSecondsUntilWalletEnabled] = useState<number>(0);
     const [isConnecting, setIsConnecting] = useState(false);
-    const [errorOpen, setErrorOpen] = useState(false);
-    const [errorTitle, setErrorTitle] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-
-    useEffect(() => {
-        setSubnetIdError(null);
-        setSubnet(null);
-        setBlockchainInfo(null);
-        setSelectedBlockchainId("");
-        if (!subnetId) return;
-
-        const abortController = new AbortController();
-        setIsLoading(true);
-
-        const loadSubnetData = async () => {
-            try {
-                const subnetInfo = await getSubnetInfo(subnetId, abortController.signal);
-                if (abortController.signal.aborted) return;
-                setSubnet(subnetInfo);
-                if (subnetInfo.blockchains && subnetInfo.blockchains.length > 0) {
-                    const blockchainId = subnetInfo.blockchains[0].blockchainId;
-                    setSelectedBlockchainId(blockchainId);
-                    const chainInfo = await getBlockchainInfo(blockchainId, abortController.signal);
-                    if (abortController.signal.aborted) return;
-                    setBlockchainInfo(chainInfo);
-                }
-            } catch (error) {
-                if (!abortController.signal.aborted) {
-                    setSubnetIdError((error as Error).message);
-                }
-            } finally {
-                if (!abortController.signal.aborted) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        loadSubnetData();
-        return () => abortController.abort();
-    }, [subnetId]);
 
     useEffect(() => {
         if (createdResponse && nodes.length > 0) {
@@ -115,41 +69,33 @@ export default function CreateManagedTestnetNode() {
 
     const handleCreate = async () => {
         setIsCreating(true);
+        const createNodePromise = createNode(subnetId, selectedBlockchainId);
+        notify({
+            name: "Managed Testnet Node Creation",
+            type: "local"
+        }, createNodePromise);
         try {
-            const createNodePromise = createNode(subnetId, selectedBlockchainId);
-            notify({
-                name: "Testnet Node Creation",
-                type: "local"
-            }, createNodePromise);
-            const response = await createNodePromise
-            setCreatedResponse(response);
-            await fetchNodes();
-        } catch (error) {
-            const msg = error instanceof Error ? error.message : 'Unknown error';
-            setErrorTitle("Creation Failed");
-            setErrorMessage(msg);
-            setErrorOpen(true);
-        } finally {
+        const response = await createNodePromise;
+        setCreatedResponse(response);
+        } finally{
             setIsCreating(false);
+            await fetchNodes();
         }
     };
 
     const handleAddToWallet = async () => {
         if (!createdNode) return;
         setIsConnecting(true);
-        try {
-            await addChain({
-                rpcUrl: createdNode.rpc_url,
-                allowLookup: false
-            });
-        } catch (error) {
-            setErrorTitle("Add to Wallet Failed");
-            setErrorMessage(error instanceof Error ? error.message : 'Failed to add to wallet');
-            setErrorOpen(true);
-        } finally {
-            setIsConnecting(false);
-        }
+        await addChain({
+            rpcUrl: createdNode.rpc_url,
+            allowLookup: false
+        });
+        setIsConnecting(false);
     };
+
+    if (!isTestnet) {
+        return <TestnetOnly />;
+    }
 
     return (
         <div className="p-8">
@@ -164,19 +110,14 @@ export default function CreateManagedTestnetNode() {
                     <p className="text-sm text-gray-500 mb-8">
                         Enter the Subnet ID of the blockchain you want to create a node for.
                     </p>
-                    <InputSubnetId value={subnetId} onChange={setSubnetId} error={subnetIdError} />
-                    {subnet && subnet.blockchains && subnet.blockchains.length > 0 && (
-                        <div className="space-y-4 mt-6">
-                            {subnet.blockchains.map((blockchain: any) => (
-                                <BlockchainDetailsDisplay
-                                    key={blockchain.blockchainId}
-                                    blockchain={{ ...blockchain, isTestnet: avalancheNetworkID === networkIDs.FujiID }}
-                                    isLoading={isLoading}
-                                    customTitle={`${blockchain.blockchainName} Blockchain Details`}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <SelectSubnet 
+                        value={subnetId} 
+                        onChange={(selection) => {
+                            setSubnetId(selection.subnetId);
+                            setSubnet(selection.subnet);
+                            setSelectedBlockchainId(selection.subnet?.blockchains?.[0]?.blockchainId || '');
+                        }} 
+                    />
                 </Step>
 
                 <Step>
@@ -187,7 +128,7 @@ export default function CreateManagedTestnetNode() {
                     <Button 
                         onClick={handleCreate} 
                         loading={isCreating}
-                        disabled={!subnetId || !blockchainInfo || isCreating}
+                        disabled={!subnetId || !selectedBlockchainId || isCreating}
                     >
                         Create Node
                     </Button>
@@ -218,18 +159,8 @@ export default function CreateManagedTestnetNode() {
                     </Button>
                 </Step>
             </Steps>
-
-            <AlertDialog open={errorOpen} onOpenChange={setErrorOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{errorTitle}</AlertDialogTitle>
-                        <AlertDialogDescription>{errorMessage}</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <Button onClick={() => setErrorOpen(false)}>OK</Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     );
 }
+
+export default withConsoleToolMetadata(CreateManagedTestnetNodeBase, metadata);
