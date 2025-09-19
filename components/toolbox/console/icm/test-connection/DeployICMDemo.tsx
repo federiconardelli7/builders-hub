@@ -55,11 +55,6 @@ function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {
     }, [selectedL1?.evmChainId]);
 
     async function handleDeploy() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsDeploying(true);
         setIcmReceiverAddress("");
         try {

@@ -39,7 +39,8 @@ const TopUpComponent = ({
     const [isSending, setIsSending] = useState(false);
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const viemChain = useViemChainStore();
-    const { coreWalletClient, publicClient } = useWalletStore();
+    const { publicClient } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
 
     // Throw critical errors during render
     if (criticalError) {
@@ -47,11 +48,6 @@ const TopUpComponent = ({
     }
 
     const handleTopUp = async () => {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsSending(true);
         try {
             const hash = await coreWalletClient.sendTransaction({
@@ -138,11 +134,6 @@ function TeleporterMessenger({ onSuccess }: BaseConsoleToolProps) {
     }, []);
 
     const handleDeploy = async () => {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsDeploying(true);
         try {
             // Send the raw presigned transaction

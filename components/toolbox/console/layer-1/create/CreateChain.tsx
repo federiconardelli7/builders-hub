@@ -64,12 +64,6 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     };
 
     async function handleCreateSubnet() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
-
         setIsCreatingSubnet(true);
 
         const createSubnetTx = coreWalletClient.createSubnet({
@@ -87,12 +81,6 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function handleCreateChain() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
-
         setIsCreatingChain(true);
 
         const createChainTx = coreWalletClient.createChain({

@@ -41,11 +41,6 @@ function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function handleDeploy() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsDeploying(true);
         setTeleporterRegistryAddress("");
         try {

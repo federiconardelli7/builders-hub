@@ -42,11 +42,6 @@ function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {
     const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     async function deployProxyAdmin() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setIsDeployingProxyAdmin(true);
         setProxyAdminAddress("");
 
@@ -73,11 +68,6 @@ function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function deployTransparentProxy() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setIsDeployingProxy(true);
         setProxyAddress("");
 

@@ -129,11 +129,6 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function handleInitialize() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setIsInitializing(true);
 
         const formattedSubnetId = subnetIDHex.startsWith('0x') ? subnetIDHex : `0x${subnetIDHex}`;

@@ -115,7 +115,7 @@ const AddValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
   // Fetch P-Chain balance when component mounts so we can pass it to the ValidatorListInput to check if the validator balance is greater than the user's current P-Chain balance
   useEffect(() => {
     const fetchBalance = async () => {
-      if (!pChainAddress || !coreWalletClient) return;
+      if (!pChainAddress) return;
 
       try {
         const balanceValue = await getPChainBalance(coreWalletClient);

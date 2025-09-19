@@ -135,11 +135,6 @@ function UpgradeProxy({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function handleUpgrade() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         if (!desiredImplementation) {
             throw new Error('Implementation address is required');
         }

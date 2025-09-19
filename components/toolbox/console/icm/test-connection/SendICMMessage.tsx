@@ -86,7 +86,7 @@ function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
     }, [destinationChainId]);
 
     async function handleSendMessage() {
-        if (!icmReceiverAddress || !targetToolboxStore.icmReceiverAddress || !destinationBlockchainIDHex || !viemChain || !coreWalletClient) {
+        if (!icmReceiverAddress || !targetToolboxStore.icmReceiverAddress || !destinationBlockchainIDHex || !viemChain) {
             setCriticalError(new Error('Missing required information to send message.'));
             return;
         }
@@ -173,7 +173,6 @@ function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {
         !!targetContractError ||
         !!destinationChainError ||
         !message ||
-        !coreWalletClient ||
         !destinationBlockchainIDHex;
 
     const isQueryButtonDisabled = isQuerying ||

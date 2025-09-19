@@ -100,11 +100,6 @@ function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {
     }, [newOwnerAddress, publicClient]);
 
     async function handleTransferOwnership() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsTransferring(true);
         try {
             const transferPromise = coreWalletClient.writeContract({

@@ -53,11 +53,6 @@ function InitValidatorSet({ onSuccess }: BaseConsoleToolProps) {
     const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
     async function aggSigs() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setL1ConversionSignatureError("");
         setIsAggregating(true);
 

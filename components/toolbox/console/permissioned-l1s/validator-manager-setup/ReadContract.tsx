@@ -45,7 +45,6 @@ function ReadContract({ onSuccess }: BaseConsoleToolProps) {
   const [isReading, setIsReading] = useState(false)
   const [eventLogs, setEventLogs] = useState<Record<string, any[]>>({})
   const { publicClient } = useWalletStore()
-  const { coreWalletClient } = useConnectedWallet()
   const [expandedEvents, setExpandedEvents] = useState<Record<string, boolean>>({})
   const selectedL1 = useSelectedL1()();
 

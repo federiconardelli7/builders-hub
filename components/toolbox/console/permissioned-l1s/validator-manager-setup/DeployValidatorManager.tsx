@@ -64,11 +64,6 @@ function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {
     };
 
     async function deployValidatorMessages() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setIsDeployingMessages(true);
         setValidatorMessagesLibAddress("");
 
@@ -99,11 +94,6 @@ function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function deployValidatorManager() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setIsDeployingManager(true);
         setValidatorManagerAddress("");
 

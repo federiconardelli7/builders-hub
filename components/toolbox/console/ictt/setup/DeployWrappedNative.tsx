@@ -42,11 +42,6 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     }
 
     async function handleDeploy() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsDeploying(true);
         try {
             if (!viemChain) throw new Error("No chain selected");

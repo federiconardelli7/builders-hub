@@ -83,11 +83,6 @@ function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {
     }, [poaManagerAddress]);
 
     async function deployPoAManager() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         if (!safeSelection.safeAddress) {
             setSafeError("Select an Ash account (Safe) to deploy");
             return;

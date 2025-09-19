@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/toolbox/components/Button'
 import { Input } from '@/components/toolbox/components/Input'
 import { WalletRequirementsConfigKey } from '@/components/toolbox/hooks/useWalletRequirements'
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from '../../components/WithConsoleToolMetadata'
-import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalletContext'
 import { useWalletStore } from '@/components/toolbox/stores/walletStore'
 import { Success } from '@/components/toolbox/components/Success'
 import { useWallet } from '@/components/toolbox/hooks/useWallet'
@@ -55,8 +54,7 @@ const metadata: ConsoleToolMetadata = {
 }
 
 function Stake({ onSuccess }: BaseConsoleToolProps) {
-  const { pChainAddress, isTestnet, avalancheNetworkID, walletEVMAddress } = useWalletStore()
-  const { coreWalletClient } = useConnectedWallet()
+  const { pChainAddress, isTestnet, avalancheNetworkID } = useWalletStore()
   const { avalancheWalletClient } = useWallet();
 
   const [validator, setValidator] = useState<ConvertToL1Validator | null>(null)
@@ -102,7 +100,7 @@ function Stake({ onSuccess }: BaseConsoleToolProps) {
   }
 
   const validateForm = (): string | null => {
-    if (!coreWalletClient || !pChainAddress) {
+    if (!pChainAddress) {
       return 'Connect Core Wallet to get your P-Chain address'
     }
 

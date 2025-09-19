@@ -98,7 +98,6 @@ function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
 
     try {
       if (!viemChain) throw new Error("Chain not selected");
-      if (!coreWalletClient) throw new Error("Wallet not connected");
 
       // Ensure we are on the correct chain
       await coreWalletClient.addChain({ chain: viemChain });

@@ -54,7 +54,7 @@ function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
         const isMounted = { current: true };
 
         const fetchBalance = async () => {
-            if (!pChainAddress || !coreWalletClient) return;
+            if (!pChainAddress) return;
             try {
                 const balanceValue = await getPChainBalance(coreWalletClient);
                 if (isMounted.current) {
@@ -70,11 +70,6 @@ function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
     }, [pChainAddress, coreWalletClient]);
 
     async function handleConvertToL1() {
-        if (!coreWalletClient) {
-            sendCoreWalletNotSetNotification();
-            return;
-        }
-
         setConvertToL1TxId("");
         setIsConverting(true);
 

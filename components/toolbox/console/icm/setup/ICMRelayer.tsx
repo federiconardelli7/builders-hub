@@ -162,11 +162,6 @@ function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
     };
 
     const sendOneCoin = async (chainId: string) => {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsSending(true);
         try {
             const chain = l1List.find((l1: L1ListItem) => l1.id === chainId);
