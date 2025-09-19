@@ -125,7 +125,6 @@ const data = {
         },
       ],
     },
-
     {
       title: "Free Testnet Infrastructure",
       icon: Box,
