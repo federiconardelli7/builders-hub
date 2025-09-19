@@ -18,7 +18,7 @@ export function Container({
 }: ContainerProps) {
 
   return (<>
-    <div className="relative bg-gradient-to-r from-transparent via-red-50/30 to-red-100/50 dark:from-transparent dark:via-red-950/20 dark:to-red-900/30 rounded-2xl p-6 -m-6 mb-0">
+    <div className="relative bg-gradient-to-r from-transparent via-red-50/30 to-red-100/50 dark:from-transparent dark:via-red-950/20 dark:to-red-900/30 rounded-2xl p-6 -m-6 mb-4">
       {/* Scattered Red Spray Elements - çok dağınık */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
         <div className="absolute top-2 right-12 w-3 h-3 bg-red-300/20 dark:bg-red-700/15 rounded-full blur-[1px]"></div>
