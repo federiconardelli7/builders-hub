@@ -12,6 +12,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/toolbox/components/AlertDialog";
+import { toast } from 'sonner';
 
 interface CreateApiKeyModalProps {
     isOpen: boolean;
@@ -29,30 +30,27 @@ export default function CreateApiKeyModal({
     maxKeysReached = false,
 }: CreateApiKeyModalProps) {
     const [alias, setAlias] = useState('');
-    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async () => {
         if (!alias.trim()) {
-            setError('Please enter an alias for your API key');
+            toast.error('Please enter an alias for your API key');
             return;
         }
 
         if (alias.length > 64) {
-            setError('Alias must be 64 characters or less');
+            toast.error('Alias must be 64 characters or less');
             return;
         }
 
-        setError(null);
         try {
             await onSubmit(alias.trim());
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to create API key');
+            // Error is already handled by parent component
         }
     };
 
     const handleClose = () => {
         setAlias('');
-        setError(null);
         onClose();
     };
 
@@ -103,12 +101,6 @@ export default function CreateApiKeyModal({
                             {alias.length}/64 characters
                         </p>
                     </div>
-
-                    {error && (
-                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                            <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-                        </div>
-                    )}
                 </div>
 
                 <AlertDialogFooter>

@@ -12,6 +12,7 @@ import {
 } from "@/components/toolbox/components/AlertDialog";
 import { Copy, Check } from "lucide-react";
 import { CreateApiKeyResponse } from './types';
+import { toast } from 'sonner';
 
 interface ApiKeyCreatedModalProps {
     isOpen: boolean;
@@ -32,16 +33,22 @@ export default function ApiKeyCreatedModal({
                 await navigator.clipboard.writeText(createdKey.key);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
+                toast.success('API key copied to clipboard');
             } catch (err) {
                 // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = createdKey.key;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = createdKey.key;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                    toast.success('API key copied to clipboard');
+                } catch (fallbackErr) {
+                    toast.error('Failed to copy to clipboard');
+                }
             }
         }
     };
