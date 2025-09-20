@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { Button } from "@/components/toolbox/components/Button";
 import { useManagedTestnetNodes } from "@/hooks/useManagedTestnetNodes";
 import { NodeRegistration, RegisterSubnetResponse } from "./types";
@@ -12,29 +11,29 @@ import Link from 'next/link';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import SelectSubnet from "@/components/toolbox/components/SelectSubnet";
-import TestnetOnly from "./TestnetOnly";
 import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 
 const metadata: ConsoleToolMetadata = {
     title: "Create Managed Testnet Node",
     description: "Spin up a free testnet node. You need a Builder Hub Account to use this tool.",
-    walletRequirements: []
+    walletRequirements: [WalletRequirementsConfigKey.TestnetRequired]
 };
 
 function CreateManagedTestnetNodeBase() {
-    const { isTestnet } = useWalletStore();
     const { createNode, fetchNodes, nodes } = useManagedTestnetNodes();
     const { addChain } = useWallet();
     const { notify } = useConsoleNotifications();
 
     const [subnetId, setSubnetId] = useState("");
     const [selectedBlockchainId, setSelectedBlockchainId] = useState("");
-    const [subnet, setSubnet] = useState<any>(null);
+
     const [createdResponse, setCreatedResponse] = useState<RegisterSubnetResponse | null>(null);
     const [createdNode, setCreatedNode] = useState<NodeRegistration | null>(null);
-    const [isCreating, setIsCreating] = useState(false);
+    const [isCreatingNode, setIsCreatingNode] = useState(false);
+    
     const [secondsUntilWalletEnabled, setSecondsUntilWalletEnabled] = useState<number>(0);
-    const [isConnecting, setIsConnecting] = useState(false);
+    const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
     useEffect(() => {
         if (createdResponse && nodes.length > 0) {
@@ -68,7 +67,7 @@ function CreateManagedTestnetNodeBase() {
     }, [createdNode]);
 
     const handleCreate = async () => {
-        setIsCreating(true);
+        setIsCreatingNode(true);
         const createNodePromise = createNode(subnetId, selectedBlockchainId);
         notify({
             name: "Managed Testnet Node Creation",
@@ -78,24 +77,20 @@ function CreateManagedTestnetNodeBase() {
         const response = await createNodePromise;
         setCreatedResponse(response);
         } finally{
-            setIsCreating(false);
+            setIsCreatingNode(false);
             await fetchNodes();
         }
     };
 
     const handleAddToWallet = async () => {
         if (!createdNode) return;
-        setIsConnecting(true);
+        setIsConnectingWallet(true);
         await addChain({
             rpcUrl: createdNode.rpc_url,
             allowLookup: false
         });
-        setIsConnecting(false);
+        setIsConnectingWallet(false);
     };
-
-    if (!isTestnet) {
-        return <TestnetOnly />;
-    }
 
     return (
         <div className="p-8">
@@ -114,7 +109,6 @@ function CreateManagedTestnetNodeBase() {
                         value={subnetId} 
                         onChange={(selection) => {
                             setSubnetId(selection.subnetId);
-                            setSubnet(selection.subnet);
                             setSelectedBlockchainId(selection.subnet?.blockchains?.[0]?.blockchainId || '');
                         }} 
                     />
@@ -127,8 +121,8 @@ function CreateManagedTestnetNodeBase() {
                     </p>
                     <Button 
                         onClick={handleCreate} 
-                        loading={isCreating}
-                        disabled={!subnetId || !selectedBlockchainId || isCreating}
+                        loading={isCreatingNode}
+                        disabled={!subnetId || !selectedBlockchainId || isCreatingNode}
                     >
                         Create Node
                     </Button>
@@ -149,8 +143,8 @@ function CreateManagedTestnetNodeBase() {
                     )}
                     <Button
                         onClick={handleAddToWallet}
-                        disabled={!createdNode || secondsUntilWalletEnabled > 0 || isConnecting}
-                        loading={isConnecting}
+                        disabled={!createdNode || secondsUntilWalletEnabled > 0 || isConnectingWallet}
+                        loading={isConnectingWallet}
                     >
                         <Wallet className="mr-2 h-4 w-4" />
                         {secondsUntilWalletEnabled > 0
