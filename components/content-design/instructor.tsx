@@ -10,7 +10,7 @@ export default function Instructors({ names }: { names: string[] }) {
                 <Link href={instructor.x} target="_blank" key={uuidv4()} className="flex text-muted-foreground hover:text-foreground">
                     <div className="relative w-12 h-12">
                         <Image
-                            src={`/common-images/intro/instructors/${instructor.name.toLowerCase().replaceAll(" ", "-")}.jpeg`}
+                            src={instructor.image}
                             alt={instructor.name}
                             fill
                             className="rounded-full object-cover"

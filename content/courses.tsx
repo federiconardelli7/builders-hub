@@ -218,7 +218,18 @@ const officialCourses: Course[] = [
         instructors: ["Michael Martin", "Doro Unger-Lee", "Nicolas Arnedo"],
         category: "Codebase"
     },
-
+    {
+        name: "Encrypted ERC",
+        description: "Learn the basics on what is an encrypted ERC token and how to use it",
+        slug: "encrypted-erc",
+        icon: <SquareCode />,
+        duration: "3 hour",
+        status: "featured",
+        tools: [],
+        languages: ["Solidity"],
+        instructors: ["Alejandro Soto"],
+        category: "Smart Contract Development"
+    },
     /*{
         name:"Chainlink VRF with Interchain Messaging ",
         description:"Utilize Interchain Messaging to make Chainlink VRF available on any blockchain in the Avalanche Network",
