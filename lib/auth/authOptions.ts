@@ -7,6 +7,7 @@ import { prisma } from '../../prisma/prisma';
 import { JWT } from 'next-auth/jwt';
 import type { VerifyOTPResult } from '@/types/verifyOTPResult';
 import { upsertUser } from '@/server/services/auth';
+import { triggerLoginWebhook } from '@/server/services/hubspotWebhook';
 
 declare module 'next-auth' {
   export interface Session {
@@ -123,6 +124,16 @@ export const AuthOptions: NextAuthOptions = {
       try {
         const dbUser = await upsertUser(user, account, profile);
         user.id = dbUser.id;
+        
+        // Trigger HubSpot webhook for login notification
+        const loginMethod = account?.provider || 'email_otp';
+        await triggerLoginWebhook(
+          dbUser.id,
+          dbUser.email,
+          dbUser.name || user.name || '',
+          loginMethod
+        );
+        
         return true;
       } catch (error) {
         console.error('Error processing user:', error);
