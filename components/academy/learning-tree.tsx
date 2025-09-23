@@ -6,10 +6,21 @@ import { cn } from "@/utils/cn";
 import { ArrowRight, ChevronDown, GraduationCap, BookOpen, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// CourseNode interface definition
+export interface CourseNode {
+    id: string;
+    name: string;
+    description: string;
+    slug: string;
+    category: string;
+    position: { x: number; y: number };
+    dependencies?: string[];
+    mobileOrder: number;
+}
+
 // Import configs
 import { avalancheLearningPaths, avalancheCategoryStyles } from './learning-path-configs/avalanche-developer.config';
 import { entrepreneurLearningPaths, entrepreneurCategoryStyles } from './learning-path-configs/codebase-entrepreneur.config';
-import type { CourseNode } from './learning-path-configs/avalanche-developer.config';
 
 interface LearningTreeProps {
   pathType?: 'avalanche' | 'entrepreneur';

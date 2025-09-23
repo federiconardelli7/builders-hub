@@ -3,30 +3,7 @@ import { PDFDocument } from 'pdf-lib';
 import { getServerSession } from 'next-auth';
 import { AuthOptions } from '@/lib/auth/authOptions';
 import { triggerCertificateWebhook } from '@/server/services/hubspotCodebaseCertificateWebhook';
-
-// Combined course configuration - single source of truth
-const courseConfig: Record<string, { name: string; template: string }> = {
-  'avalanche-fundamentals': {
-    name: 'Avalanche Fundamentals',
-    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf'
-  },
-  'codebase-entrepreneur-foundations': {
-    name: 'Foundations of a Web3 Venture',
-    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Foundations.pdf'
-  },
-  'codebase-entrepreneur-go-to-market': {
-    name: 'Go-to-Market Strategist',
-    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_GTM.pdf'
-  },
-  'codebase-entrepreneur-community': {
-    name: 'Web3 Community Architect',
-    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Community.pdf'
-  },
-  'codebase-entrepreneur-fundraising': {
-    name: 'Fundraising & Finance Pro',
-    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Fundraising.pdf'
-  }
-};
+import { getCourseConfig } from '@/content/courses';
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,7 +27,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing course ID' }, { status: 400 });
     }
 
-    // Get course configuration
+    // Get course configuration from centralized source
+    const courseConfig = getCourseConfig();
     const course = courseConfig[courseId];
     if (!course) {
       return NextResponse.json({ 

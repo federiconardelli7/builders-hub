@@ -11,6 +11,7 @@ export type Course = {
     tools: string[];
     instructors: string[];
     category: "Fundamentals" | "Smart Contract Development" | "L1 Development" | "Interoperability" | "Codebase";
+    certificateTemplate?: string;
 };
 
 const officialCourses: Course[] = [
@@ -36,7 +37,8 @@ const officialCourses: Course[] = [
         languages: [],
         tools: ["L1 Toolbox"],
         instructors: ["Martin Eckardt", "Ash", "Nicolas Arnedo"],
-        category: "Fundamentals"
+        category: "Fundamentals",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Interchain Messaging",
@@ -48,7 +50,8 @@ const officialCourses: Course[] = [
         tools: ["L1 Toolbox", "Docker"],
         languages: ["Solidity"],
         instructors: ["Martin Eckardt", "Andrea Vargas", "Ash", "Nicolas Arnedo"], // + Usman
-        category: "Interoperability"
+        category: "Interoperability",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Interchain Token Transfer",
@@ -60,7 +63,8 @@ const officialCourses: Course[] = [
         tools: ["ICM", "Foundry"],
         languages: ["Solidity"],
         instructors: ["Martin Eckardt", "Andrea Vargas", "Ash", "Owen Wahlgren", "Sarp"],
-        category: "Interoperability"
+        category: "Interoperability",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Customizing the EVM",
@@ -72,7 +76,8 @@ const officialCourses: Course[] = [
         tools: ["Avalanche CLI"],
         languages: ["Go"],
         instructors: ["Martin Eckardt", "Ash"], // + Usman
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Layer 1 Tokenomics",
@@ -84,7 +89,8 @@ const officialCourses: Course[] = [
         tools: ["Avalanche CLI", "ICM"],
         languages: ["Solidity"],
         instructors: ["Sarp", "Owen Wahlgren"],
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "L1 Native Tokenomics",
@@ -96,7 +102,8 @@ const officialCourses: Course[] = [
         tools: ["Avalanche CLI", "ICM"],
         languages: ["Solidity"],
         instructors: ["Martin Eckardt", "Owen Wahlgren", "Sarp", "Nicolas Arnedo"],
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "L1 Validator Management",
@@ -108,7 +115,8 @@ const officialCourses: Course[] = [
         tools: ["Warp"],
         languages: ["Solidity"],
         instructors: ["Owen Wahlgren", "Martin Eckardt"],
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Permissioned L1s",
@@ -120,7 +128,8 @@ const officialCourses: Course[] = [
         tools: ["Validator Manager", "P-Chain", "ICM"],
         languages: ["Solidity"],
         instructors: ["Martin Eckardt", "Owen Wahlgren", "Nicolas Arnedo"],
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "AvaCloud APIs",
@@ -132,7 +141,8 @@ const officialCourses: Course[] = [
         tools: ["AvaCloudSDK", "AvaCloud API"],
         languages: ["Typescript"],
         instructors: ["Owen Wahlgren"],
-        category: "Smart Contract Development"
+        category: "Smart Contract Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Solidity Programming with Foundry",
@@ -144,7 +154,8 @@ const officialCourses: Course[] = [
         tools: ["Starter-Kit", "Foundry"],
         languages: ["Solidity"],
         instructors: ["Andrea Vargas"],
-        category: "Smart Contract Development"
+        category: "Smart Contract Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "HyperSDK",
@@ -156,7 +167,8 @@ const officialCourses: Course[] = [
         tools: ["HyperSDK"],
         languages: ["Go", "Typescript"],
         instructors: ["Aaron Buchwald", "Ilya", "Rodrigo Villar", "Martin Eckardt", "Owen Wahlgren"],
-        category: "L1 Development"
+        category: "L1 Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Chainlink on your L1 via ICM",
@@ -168,7 +180,8 @@ const officialCourses: Course[] = [
         tools: ["ICM", "Chainlink VRF"],
         languages: ["Solidity"],
         instructors: ["Martin Eckardt", "Andrea Vargas", "Ash"],
-        category: "Interoperability"
+        category: "Interoperability",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     {
         name: "Foundations of a Web3 Venture",
@@ -180,7 +193,8 @@ const officialCourses: Course[] = [
         languages: [],
         tools: ["Codebase"],
         instructors: ["Michael Martin", "Doro Unger-Lee", "Nicolas Arnedo"],
-        category: "Codebase"
+        category: "Codebase",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Foundations.pdf"
     },
     {
         name: "Go-to-Market Strategist",
@@ -192,7 +206,8 @@ const officialCourses: Course[] = [
         languages: [],
         tools: ["Codebase"],
         instructors: ["Michael Martin", "Doro Unger-Lee", "Nicolas Arnedo"],
-        category: "Codebase"
+        category: "Codebase",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_GTM.pdf"
     },
     {
         name: "Web3 Community Architect",
@@ -204,7 +219,8 @@ const officialCourses: Course[] = [
         languages: [],
         tools: ["Codebase"],
         instructors: ["Michael Martin", "Doro Unger-Lee", "Nicolas Arnedo"],
-        category: "Codebase"
+        category: "Codebase",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Community.pdf"
     },
     {
         name: "Fundraising & Finance Pro",
@@ -216,7 +232,8 @@ const officialCourses: Course[] = [
         languages: [],
         tools: ["Codebase"],
         instructors: ["Michael Martin", "Doro Unger-Lee", "Nicolas Arnedo"],
-        category: "Codebase"
+        category: "Codebase",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Fundraising.pdf"
     },
     {
         name: "Encrypted ERC",
@@ -228,7 +245,8 @@ const officialCourses: Course[] = [
         tools: [],
         languages: ["Solidity"],
         instructors: ["Alejandro Soto"],
-        category: "Smart Contract Development"
+        category: "Smart Contract Development",
+        certificateTemplate: "https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf"
     },
     /*{
         name:"Chainlink VRF with Interchain Messaging ",
@@ -273,6 +291,35 @@ const ecosystemCourses: Course[] = [
 ];
 
 const codebaseEntrepreneurCourses = officialCourses.filter((course) => course.category === "Codebase");
+
+// Helper function to create course configuration mappings
+export const getCourseConfig = () => {
+    const config: Record<string, { name: string; template: string }> = {};
+    
+    officialCourses.forEach(course => {
+        if (course.certificateTemplate) {
+            config[course.slug] = {
+                name: course.name,
+                template: course.certificateTemplate
+            };
+        }
+    });
+    
+    return config;
+};
+
+// Helper function to create course name mappings for HubSpot
+export const getCourseNameMapping = () => {
+    const mapping: Record<string, string> = {};
+    
+    codebaseEntrepreneurCourses.forEach(course => {
+        if (course.certificateTemplate) {
+            mapping[course.slug] = course.name;
+        }
+    });
+    
+    return mapping;
+};
 
 export default {
     official: officialCourses.filter((course) => ["normal", "featured"].includes(course.status) && course.category !== "Codebase"),

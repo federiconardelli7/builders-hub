@@ -1,18 +1,11 @@
 import { prisma } from '@/prisma/prisma';
+import { getCourseNameMapping } from '@/content/courses';
 
 const CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK = process.env.CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK;
 
 if (!CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK) {
   throw new Error('CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK environment variable is not set');
 }
-
-// Course name mapping for Codebase Entrepreneur courses only
-const courseNameMapping: Record<string, string> = {
-  'codebase-entrepreneur-foundations': 'Foundations of a Web3 Venture',
-  'codebase-entrepreneur-go-to-market': 'Go-to-Market Strategist',
-  'codebase-entrepreneur-community': 'Web3 Community Architect',
-  'codebase-entrepreneur-fundraising': 'Fundraising & Finance Pro',
-};
 
 export async function triggerCertificateWebhook(
   userId: string, 
@@ -32,7 +25,8 @@ export async function triggerCertificateWebhook(
     const firstName = nameParts[0] || 'User';
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Get the proper course name
+    // Get the proper course name from centralized mapping
+    const courseNameMapping = getCourseNameMapping();
     const courseName = courseNameMapping[courseId] || courseId;
 
     const webhookData = {

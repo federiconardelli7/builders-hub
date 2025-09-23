@@ -1,15 +1,5 @@
 import { BookOpen, ArrowLeftRight, Layers, Coins, Code } from 'lucide-react';
-
-export interface CourseNode {
-    id: string;
-    name: string;
-    description: string;
-    slug: string;
-    category: string;
-    position: { x: number; y: number };
-    dependencies?: string[];
-    mobileOrder: number;
-}
+import type { CourseNode } from '../learning-tree';
 
 export const avalancheLearningPaths: CourseNode[] = [
     // Foundation Layer
