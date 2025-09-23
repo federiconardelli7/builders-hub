@@ -127,12 +127,14 @@ export const AuthOptions: NextAuthOptions = {
         
         // Trigger HubSpot webhook for login notification
         const loginMethod = account?.provider || 'email_otp';
-        await triggerLoginWebhook(
-          dbUser.id,
-          dbUser.email,
-          dbUser.name || user.name || '',
-          loginMethod
-        );
+        if (dbUser.email) {
+          await triggerLoginWebhook(
+            dbUser.id,
+            dbUser.email,
+            dbUser.name || user.name || '',
+            loginMethod
+          );
+        }
         
         return true;
       } catch (error) {

@@ -164,9 +164,16 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
           router.push('/academy');
         }
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating certificate:', error);
-      alert(`Failed to generate certificate: ${(error as Error).message}`);
+      
+      // Check if it's an authentication or email error
+      if (error.message?.includes('Unauthorized') || error.message?.includes('Email address required')) {
+        alert('Please sign in with a BuilderHub account that has a valid email address to generate certificates.');
+        router.push('/login');
+      } else {
+        alert(`Failed to generate certificate: ${(error as Error).message}`);
+      }
     } finally {
       setIsGenerating(false);
     }

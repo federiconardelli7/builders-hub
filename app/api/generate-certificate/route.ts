@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument } from 'pdf-lib';
 import { getServerSession } from 'next-auth';
 import { AuthOptions } from '@/lib/auth/authOptions';
+import { triggerCertificateWebhook } from '@/server/services/hubspotCertificateWebhook';
 
 const courseMapping: Record<string, string> = {
   'avalanche-fundamentals': 'Avalanche Fundamentals',
@@ -40,7 +41,14 @@ export async function POST(req: NextRequest) {
     // Require auth and derive the user's name from the connected BuilderHub account
     const session = await getServerSession(AuthOptions);
     if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in to BuilderHub to generate certificates.' }, { status: 401 });
+    }
+    
+    // Email is mandatory for certificate generation
+    if (!session.user.email) {
+      return NextResponse.json({ 
+        error: 'Email address required. Please ensure your BuilderHub account has a valid email address.' 
+      }, { status: 400 });
     }
 
     ({ courseId } = await req.json());
@@ -103,6 +111,16 @@ export async function POST(req: NextRequest) {
 
     form.flatten();
     const pdfBytes = await pdfDoc.save();
+    
+    // Trigger HubSpot webhook for certificate completion
+    // At this point we know email exists due to the check above
+    await triggerCertificateWebhook(
+      session.user.id,
+      session.user.email!,
+      userName,
+      courseId
+    );
+    
     return new NextResponse(Buffer.from(pdfBytes), {
       status: 200,
       headers: {

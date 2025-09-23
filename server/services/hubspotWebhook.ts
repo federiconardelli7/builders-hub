@@ -11,7 +11,7 @@ export async function triggerLoginWebhook(userId: string, email: string, name: s
         id: true,
         email: true,
         name: true,
-        createdAt: true
+        created_at: true
       }
     });
 
@@ -32,7 +32,7 @@ export async function triggerLoginWebhook(userId: string, email: string, name: s
         loginMethod: loginMethod,
         ipAddress: '', // You would get this from the request context
         userAgent: '', // You would get this from the request headers
-        accountCreated: user.createdAt.toISOString()
+        accountCreated: user.created_at.toISOString()
       }
     };
 
