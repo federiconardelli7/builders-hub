@@ -3,7 +3,7 @@ import { prisma } from '@/prisma/prisma';
 const CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK = process.env.CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK;
 
 if (!CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK) {
-  throw new Error('HUBSPOT_CERTIFICATE_WEBHOOK_URL environment variable is not set');
+  throw new Error('CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK environment variable is not set');
 }
 
 // Course name mapping for Codebase Entrepreneur courses only

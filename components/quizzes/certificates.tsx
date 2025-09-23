@@ -9,7 +9,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import { Linkedin, Twitter, Award, Share2 } from 'lucide-react';
 import { AwardBadgeWrapper } from './components/awardBadgeWrapper';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/hooks/use-toast';
+import { useCertificates } from '@/hooks/useCertificates';
 
 interface CertificatePageProps {
   courseId: string;
@@ -48,15 +48,14 @@ const quizData = quizDataImport as QuizDataStructure;
 
 const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const router = useRouter();
+  const { isGenerating, certificatePdfUrl, generateCertificate } = useCertificates();
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [quizzes, setQuizzes] = useState<QuizInfo[]>([]);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
   const [correctlyAnsweredQuizzes, setCorrectlyAnsweredQuizzes] = useState(0);
   const [shouldShowCertificate, setShouldShowCertificate] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [certificatePdfUrl, setCertificatePdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuizzes = () => {
@@ -119,96 +118,9 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
 
   const allQuizzesCompleted = shouldShowCertificate;
 
-  const generateCertificate = async () => {
-    setIsGenerating(true);
-    let response: Response | undefined;
-
-    try {
-      response = await fetch('/api/generate-certificate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          courseId,
-        }),
-      });
-
-      if (!response.ok) {
-        // Handle authentication error specifically
-        if (response.status === 401) {
-          toast({
-            title: "Authentication Required",
-            description: "Please sign in to your BuilderHub account to generate certificates.",
-            variant: "destructive",
-          });
-          setIsGenerating(false);
-          // Redirect to login after a short delay
-          setTimeout(() => {
-            router.push('/login');
-          }, 2000);
-          return;
-        }
-        
-        // Try to get error details from response
-        try {
-          const errorData = await response.json();
-          console.error('Server error details:', errorData);
-          
-          // Check for specific error types
-          if (errorData.error?.includes('Email address required')) {
-            toast({
-              title: "Email Required",
-              description: "Please ensure your BuilderHub account has a valid email address.",
-              variant: "destructive",
-            });
-            setIsGenerating(false);
-            return;
-          }
-          
-          throw new Error(errorData.error || errorData.details || 'Failed to generate certificate');
-        } catch (jsonError) {
-          throw new Error(`Failed to generate certificate (${response.status})`);
-        }
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      // Store the PDF URL for sharing
-      setCertificatePdfUrl(url);
-      
-      // Download the PDF
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `${courseId}_certificate.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      // Don't revoke the URL immediately as we need it for sharing
-      
-      // Show success message and redirect
-      setShowSuccessMessage(true);
-      setTimeout(() => {
-        // Redirect to the appropriate academy page
-        if (courseId.startsWith('codebase-entrepreneur-')) {
-          router.push('/codebase-entrepreneur-academy');
-        } else {
-          router.push('/academy');
-        }
-      }, 3000);
-    } catch (error: any) {
-      console.error('Error generating certificate:', error);
-      
-      // Generic error handling for unexpected errors
-      toast({
-        title: "Certificate Generation Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleGenerateCertificate = async () => {
+    await generateCertificate(courseId);
+    setShowSuccessMessage(true);
   };
 
   const chapters = [...new Set(quizzes.map(quiz => quiz.chapter))];
@@ -312,7 +224,7 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
               buttonVariants({ variant: 'default' }),
               'w-full mb-6 py-3 text-lg relative overflow-hidden'
             )}
-            onClick={generateCertificate}
+            onClick={handleGenerateCertificate}
             disabled={isGenerating}
           >
             {isGenerating ? (
