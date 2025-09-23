@@ -26,6 +26,7 @@ import {
   Ticket,
   Earth,
   ArrowLeftRight,
+  Shield,
   Triangle,
 } from 'lucide-react';
 import Image from 'next/image';

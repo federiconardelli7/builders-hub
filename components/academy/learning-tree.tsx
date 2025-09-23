@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-import { ArrowRight, ChevronDown, GraduationCap, BookOpen } from "lucide-react";
+import { ArrowRight, ChevronDown, GraduationCap, BookOpen, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Import configs
