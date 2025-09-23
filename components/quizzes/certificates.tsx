@@ -56,6 +56,7 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const [correctlyAnsweredQuizzes, setCorrectlyAnsweredQuizzes] = useState(0);
   const [shouldShowCertificate, setShouldShowCertificate] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [certificatePdfUrl, setCertificatePdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuizzes = () => {
@@ -146,13 +147,18 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
+      
+      // Store the PDF URL for sharing
+      setCertificatePdfUrl(url);
+      
+      // Download the PDF
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
       a.download = `${courseId}_certificate.pdf`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      // Don't revoke the URL immediately as we need it for sharing
       
       // Show success message and redirect
       setShowSuccessMessage(true);
@@ -197,9 +203,15 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   };
 
   const shareOnTwitter = () => {
-    const text = `I just completed the ${quizData.courses[courseId].title} course on Avalanche Academy!`;
-    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+    const text = `I just completed the ${quizData.courses[courseId].title} course on Avalanche Academy! 🎉`;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
+  };
+  
+  const viewCertificate = () => {
+    if (certificatePdfUrl) {
+      window.open(certificatePdfUrl, '_blank');
+    }
   };
 
   if (isLoading) {
@@ -280,10 +292,25 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
             {isGenerating ? 'Generating Certificate...' : 'Generate My Certificate'}
           </button>
           <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <p className="text-center text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-2">
               Share your achievement:
             </p>
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Your certificate PDF has been downloaded. You can attach it when sharing on social media.
+            </p>
             <div className="flex justify-center space-x-4">
+              {certificatePdfUrl && (
+                <button
+                  onClick={viewCertificate}
+                  className={cn(
+                    buttonVariants({ variant: 'secondary' }),
+                    'flex items-center px-4 py-2'
+                  )}
+                >
+                  <Award className="mr-2 h-5 w-5" />
+                  View Certificate
+                </button>
+              )}
               <a href={shareOnLinkedIn()} target="_blank" rel="noopener noreferrer"
                 style={{ textDecoration: 'none' }}
                 className={cn(
@@ -302,7 +329,7 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
                 onClick={shareOnTwitter}
               >
                 <Twitter className="mr-2 h-5 w-5" />
-                X
+                Share on X
               </button>
             </div>
           </div>
