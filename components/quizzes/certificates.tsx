@@ -10,6 +10,7 @@ import { Linkedin, Twitter, Award, Share2 } from 'lucide-react';
 import { AwardBadgeWrapper } from './components/awardBadgeWrapper';
 import { useRouter } from 'next/navigation';
 import { useCertificates } from '@/hooks/useCertificates';
+import { toast } from '@/hooks/use-toast';
 
 interface CertificatePageProps {
   courseId: string;
@@ -55,7 +56,6 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const [totalQuizzes, setTotalQuizzes] = useState(0);
   const [correctlyAnsweredQuizzes, setCorrectlyAnsweredQuizzes] = useState(0);
   const [shouldShowCertificate, setShouldShowCertificate] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     const fetchQuizzes = () => {
@@ -119,8 +119,11 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const allQuizzesCompleted = shouldShowCertificate;
 
   const handleGenerateCertificate = async () => {
+    toast({
+      title: "Generating Certificate",
+      description: "Please wait while we create your certificate...",
+    });
     await generateCertificate(courseId);
-    setShowSuccessMessage(true);
   };
 
   const chapters = [...new Set(quizzes.map(quiz => quiz.chapter))];
@@ -188,27 +191,8 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
         );
       })}
 
-      {showSuccessMessage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full mx-4 transform transition-all">
-            <div className="flex items-center justify-center mb-4">
-              <Award className="w-12 h-12 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-4">
-              Certificate Downloaded!
-            </h3>
-            <p className="text-center text-gray-600 dark:text-gray-300">
-              Your certificate has been successfully generated and downloaded. 
-              You'll be redirected to the academy page in a moment...
-            </p>
-            <div className="mt-6 flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {allQuizzesCompleted && !showSuccessMessage && (
+      {allQuizzesCompleted && (
 
         <div className="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <AwardBadgeWrapper courseId={courseId} isCompleted={allQuizzesCompleted} />

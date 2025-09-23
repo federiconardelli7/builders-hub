@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { createMetadata } from '@/utils/metadata';
 import { blog } from '@/lib/source';
 import { AcademyLayout } from '@/components/academy/shared/academy-layout';
-import { avalancheDeveloperLandingPageConfig } from '@/app/(home)/academy/avalanche-developer.config';
+import { avalancheDeveloperAcademyLandingPageConfig } from '@/app/(home)/academy/avalanche-developer.config';
 
 export const metadata: Metadata = createMetadata({
   title: 'Academy',
@@ -48,5 +48,5 @@ export default function AcademyPage(): React.ReactElement {
     },
   }));
 
-  return <AcademyLayout config={avalancheDeveloperLandingPageConfig} blogs={blogs} />;
+  return <AcademyLayout config={avalancheDeveloperAcademyLandingPageConfig} blogs={blogs} />;
 }
