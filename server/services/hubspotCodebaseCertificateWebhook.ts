@@ -1,8 +1,8 @@
 import { prisma } from '@/prisma/prisma';
 
-const HUBSPOT_CERTIFICATE_WEBHOOK_URL = process.env.HUBSPOT_CERTIFICATE_WEBHOOK_URL;
+const CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK = process.env.CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK;
 
-if (!HUBSPOT_CERTIFICATE_WEBHOOK_URL) {
+if (!CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK) {
   throw new Error('HUBSPOT_CERTIFICATE_WEBHOOK_URL environment variable is not set');
 }
 
@@ -43,7 +43,7 @@ export async function triggerCertificateWebhook(
       courseCompletionDate: new Date().toISOString()
     };
 
-    const response = await fetch(HUBSPOT_CERTIFICATE_WEBHOOK_URL!, {
+    const response = await fetch(CODEBASE_CERTIFICATE_HUBSPOT_WEBHOOK!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
