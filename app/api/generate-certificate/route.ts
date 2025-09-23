@@ -129,7 +129,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Certificate generation error:', error);
     return NextResponse.json(
       {
         error: 'Failed to generate certificate, contact the Avalanche team.',
