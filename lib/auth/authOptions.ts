@@ -123,7 +123,6 @@ export const AuthOptions: NextAuthOptions = {
       try {
         const dbUser = await upsertUser(user, account, profile);
         user.id = dbUser.id;
-        
         return true;
       } catch (error) {
         console.error('Error processing user:', error);
