@@ -2,46 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument } from 'pdf-lib';
 import { getServerSession } from 'next-auth';
 import { AuthOptions } from '@/lib/auth/authOptions';
-import { triggerCertificateWebhook } from '@/server/services/hubspotCertificateWebhook';
+import { triggerCertificateWebhook } from '@/server/services/hubspotCodebaseCertificateWebhook';
 
-const courseMapping: Record<string, string> = {
-  'avalanche-fundamentals': 'Avalanche Fundamentals',
-  'codebase-entrepreneur-foundations': 'Foundations of a Web3 Venture',
-  'codebase-entrepreneur-go-to-market': 'Go-to-Market Strategist',
-  'codebase-entrepreneur-community': 'Web3 Community Architect',
-  'codebase-entrepreneur-fundraising': 'Fundraising & Finance Pro',
-};
-
-const certificateTemplates: Record<string, string> = {
-  'avalanche-fundamentals': 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf',
-  'codebase-entrepreneur-foundations': 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Foundations.pdf',
-  'codebase-entrepreneur-go-to-market': 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_GTM.pdf',
-  'codebase-entrepreneur-community': 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Community.pdf',
-  'codebase-entrepreneur-fundraising': 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Fundraising.pdf',
-};
-
-function getCourseName(courseId: string): string {
-  return courseMapping[courseId] || courseId;
-}
-
-function getCertificateTemplate(courseId: string): string {
-  // Check if we have a specific template for this course
-  if (certificateTemplates[courseId]) {
-    return certificateTemplates[courseId];
+// Combined course configuration - single source of truth
+const courseConfig: Record<string, { name: string; template: string }> = {
+  'avalanche-fundamentals': {
+    name: 'Avalanche Fundamentals',
+    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/AvalancheAcademy_Certificate.pdf'
+  },
+  'codebase-entrepreneur-foundations': {
+    name: 'Foundations of a Web3 Venture',
+    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Foundations.pdf'
+  },
+  'codebase-entrepreneur-go-to-market': {
+    name: 'Go-to-Market Strategist',
+    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_GTM.pdf'
+  },
+  'codebase-entrepreneur-community': {
+    name: 'Web3 Community Architect',
+    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Community.pdf'
+  },
+  'codebase-entrepreneur-fundraising': {
+    name: 'Fundraising & Finance Pro',
+    template: 'https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Codebase_EntrepreneurAcademy_Certificate_Fundraising.pdf'
   }
-
-  // No fallback - throw error for unknown courses
-  throw new Error(`No certificate template found for course: ${courseId}`);
-}
+};
 
 export async function POST(req: NextRequest) {
-  let courseId: string = '';
-
   try {
     // Require auth and derive the user's name from the connected BuilderHub account
     const session = await getServerSession(AuthOptions);
     if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized. Please sign in to BuilderHub to generate certificates.' }, { status: 401 });
+      return NextResponse.json({ 
+        error: 'Unauthorized. Please sign in to BuilderHub to generate certificates.' 
+      }, { status: 401 });
     }
     
     // Email is mandatory for certificate generation
@@ -51,15 +45,21 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    ({ courseId } = await req.json());
+    const { courseId } = await req.json();
     if (!courseId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing course ID' }, { status: 400 });
+    }
+
+    // Get course configuration
+    const course = courseConfig[courseId];
+    if (!course) {
+      return NextResponse.json({ 
+        error: `No certificate template found for course: ${courseId}` 
+      }, { status: 404 });
     }
 
     const userName = session.user.name || session.user.email || 'BuilderHub User';
-
-    const courseName = getCourseName(courseId);
-    const templateUrl = getCertificateTemplate(courseId);
+    const { name: courseName, template: templateUrl } = course;
 
     const templateResponse = await fetch(templateUrl);
     if (!templateResponse.ok) {
@@ -129,12 +129,11 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    console.error('Certificate generation error:', error);
     return NextResponse.json(
       {
-        error: 'Failed to generate certificate, contact the Avalanche team.',
-        details: (error as Error).message,
-        courseId,
-        // Name now comes from the authenticated session
+        error: 'Failed to generate certificate. Please try again or contact support.',
+        details: (error as Error).message
       },
       { status: 500 }
     );

@@ -50,7 +50,6 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const router = useRouter();
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // Name will be derived from the authenticated BuilderHub account on the server
   const [isGenerating, setIsGenerating] = useState(false);
   const [quizzes, setQuizzes] = useState<QuizInfo[]>([]);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
