@@ -9,6 +9,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import { Linkedin, Twitter, Award, Share2 } from 'lucide-react';
 import { AwardBadgeWrapper } from './components/awardBadgeWrapper';
 import { useRouter } from 'next/navigation';
+import { useCertificates } from '@/hooks/useCertificates';
 
 interface CertificatePageProps {
   courseId: string;
@@ -47,10 +48,9 @@ const quizData = quizDataImport as QuizDataStructure;
 
 const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   const router = useRouter();
+  const { isGenerating, certificatePdfUrl, generateCertificate } = useCertificates();
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userName, setUserName] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [quizzes, setQuizzes] = useState<QuizInfo[]>([]);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
   const [correctlyAnsweredQuizzes, setCorrectlyAnsweredQuizzes] = useState(0);
@@ -118,64 +118,9 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
 
   const allQuizzesCompleted = shouldShowCertificate;
 
-  const generateCertificate = async () => {
-    if (!userName.trim()) {
-      alert('Please enter your name');
-      return;
-    }
-
-    setIsGenerating(true);
-    let response: Response | undefined;
-
-    try {
-      response = await fetch('/api/generate-certificate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          courseId,
-          userName,
-        }),
-      });
-
-      if (!response.ok) {
-        // Try to get error details from response
-        try {
-          const errorData = await response.json();
-          console.error('Server error details:', errorData);
-          throw new Error(errorData.details || 'Failed to generate certificate');
-        } catch (jsonError) {
-          throw new Error(`Failed to generate certificate (${response.status})`);
-        }
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `${courseId}_certificate.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
-      // Show success message and redirect
-      setShowSuccessMessage(true);
-      setTimeout(() => {
-        // Redirect to the appropriate academy page
-        if (courseId.startsWith('codebase-entrepreneur-')) {
-          router.push('/codebase-entrepreneur-academy');
-        } else {
-          router.push('/academy');
-        }
-      }, 3000);
-    } catch (error) {
-      console.error('Error generating certificate:', error);
-      alert(`Failed to generate certificate: ${(error as Error).message}`);
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleGenerateCertificate = async () => {
+    await generateCertificate(courseId);
+    setShowSuccessMessage(true);
   };
 
   const chapters = [...new Set(quizzes.map(quiz => quiz.chapter))];
@@ -196,9 +141,15 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
   };
 
   const shareOnTwitter = () => {
-    const text = `I just completed the ${quizData.courses[courseId].title} course on Avalanche Academy!`;
-    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+    const text = `I just completed the ${quizData.courses[courseId].title} course on Avalanche Academy! 🎉`;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
+  };
+  
+  const viewCertificate = () => {
+    if (certificatePdfUrl) {
+      window.open(certificatePdfUrl, '_blank');
+    }
   };
 
   if (isLoading) {
@@ -268,34 +219,43 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
           <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
             You've completed all quizzes for the {quizData.courses[courseId].title} course. Claim your certificate now!
           </p>
-          <div className="mb-6">
-            <label htmlFor="userName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Enter your full name for the certificate:
-            </label>
-            <input
-              type="text"
-              id="userName"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="John Doe"
-            />
-          </div>
           <button
             className={cn(
               buttonVariants({ variant: 'default' }),
-              'w-full mb-6 py-3 text-lg'
+              'w-full mb-6 py-3 text-lg relative overflow-hidden'
             )}
-            onClick={generateCertificate}
+            onClick={handleGenerateCertificate}
             disabled={isGenerating}
           >
-            {isGenerating ? 'Generating Certificate...' : 'Generate My Certificate'}
+            {isGenerating ? (
+              <span className="flex items-center justify-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Generating Certificate...
+              </span>
+            ) : (
+              'Generate My Certificate'
+            )}
           </button>
           <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <p className="text-center text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-2">
               Share your achievement:
             </p>
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Your certificate PDF has been downloaded. You can attach it when sharing on social media.
+            </p>
             <div className="flex justify-center space-x-4">
+              {certificatePdfUrl && (
+                <button
+                  onClick={viewCertificate}
+                  className={cn(
+                    buttonVariants({ variant: 'secondary' }),
+                    'flex items-center px-4 py-2'
+                  )}
+                >
+                  <Award className="mr-2 h-5 w-5" />
+                  View Certificate
+                </button>
+              )}
               <a href={shareOnLinkedIn()} target="_blank" rel="noopener noreferrer"
                 style={{ textDecoration: 'none' }}
                 className={cn(
@@ -314,7 +274,7 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
                 onClick={shareOnTwitter}
               >
                 <Twitter className="mr-2 h-5 w-5" />
-                X
+                Share on X
               </button>
             </div>
           </div>
