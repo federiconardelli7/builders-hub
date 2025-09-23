@@ -53,6 +53,7 @@ export interface UnifiedFeedbackProps {
   title: string;
   pagePath: string;
   editUrl: string;
+  pageType?: 'docs' | 'academy';
 }
 
 export function Feedback({
@@ -61,6 +62,7 @@ export function Feedback({
   title,
   pagePath,
   editUrl,
+  pageType = 'docs',
 }: UnifiedFeedbackProps) {
   const pathname = usePathname();
   const [previous, setPrevious] = useState<Feedback | null>(null);
@@ -233,7 +235,7 @@ export function Feedback({
 Page: [${pagePath}](https://build.avax.network${pagePath})
 
 [Provide more details here...]`,
-              labels: ['outdated', 'documentation'],
+              labels: pageType === 'academy' ? ['outdated', 'Academy'] : ['outdated', 'Docs'],
             })}
             target="_blank"
             rel="noreferrer noopener"
