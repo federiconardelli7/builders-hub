@@ -9,6 +9,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import { Linkedin, Twitter, Award, Share2 } from 'lucide-react';
 import { AwardBadgeWrapper } from './components/awardBadgeWrapper';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 interface CertificatePageProps {
   courseId: string;
@@ -135,11 +136,38 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
       });
 
       if (!response.ok) {
+        // Handle authentication error specifically
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in to your BuilderHub account to generate certificates.",
+            variant: "destructive",
+          });
+          setIsGenerating(false);
+          // Redirect to login after a short delay
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+          return;
+        }
+        
         // Try to get error details from response
         try {
           const errorData = await response.json();
           console.error('Server error details:', errorData);
-          throw new Error(errorData.details || 'Failed to generate certificate');
+          
+          // Check for specific error types
+          if (errorData.error?.includes('Email address required')) {
+            toast({
+              title: "Email Required",
+              description: "Please ensure your BuilderHub account has a valid email address.",
+              variant: "destructive",
+            });
+            setIsGenerating(false);
+            return;
+          }
+          
+          throw new Error(errorData.error || errorData.details || 'Failed to generate certificate');
         } catch (jsonError) {
           throw new Error(`Failed to generate certificate (${response.status})`);
         }
@@ -173,13 +201,12 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
     } catch (error: any) {
       console.error('Error generating certificate:', error);
       
-      // Check if it's an authentication or email error
-      if (error.message?.includes('Unauthorized') || error.message?.includes('Email address required')) {
-        alert('Please sign in with a BuilderHub account that has a valid email address to generate certificates.');
-        router.push('/login');
-      } else {
-        alert(`Failed to generate certificate: ${(error as Error).message}`);
-      }
+      // Generic error handling for unexpected errors
+      toast({
+        title: "Certificate Generation Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -284,12 +311,19 @@ const CertificatePage: React.FC<CertificatePageProps> = ({ courseId }) => {
           <button
             className={cn(
               buttonVariants({ variant: 'default' }),
-              'w-full mb-6 py-3 text-lg'
+              'w-full mb-6 py-3 text-lg relative overflow-hidden'
             )}
             onClick={generateCertificate}
             disabled={isGenerating}
           >
-            {isGenerating ? 'Generating Certificate...' : 'Generate My Certificate'}
+            {isGenerating ? (
+              <span className="flex items-center justify-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Generating Certificate...
+              </span>
+            ) : (
+              'Generate My Certificate'
+            )}
           </button>
           <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
             <p className="text-center text-gray-600 dark:text-gray-300 mb-2">
