@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, RotateCw, EyeOff, HelpCircle, ArrowRight } f
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { saveFlashcardProgress, getFlashcardProgress, resetFlashcardProgress } from "@/utils/quizzes/indexedDB"
+import { parseTextWithLinks } from "../../utils/safeHtml"
 import flashcardData from './flashcardData.json'
 
 interface FlashcardProps {
@@ -173,10 +174,7 @@ const CleanFlashcard: React.FC<FlashcardProps> = ({ flashcardSetId, quizUrl }) =
                                 {currentCard.example && (
                                     <div>
                                         <h4 className="text-sm font-semibold text-primary mb-2 uppercase tracking-wide">Example</h4>
-                                        <p 
-                                            className="text-muted-foreground italic leading-relaxed"
-                                            dangerouslySetInnerHTML={{ __html: currentCard.example }}
-                                        />
+                                        {parseTextWithLinks(currentCard.example, "text-muted-foreground italic leading-relaxed")}
                                     </div>
                                 )}
                             </div>
