@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/utils/cn';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
-import { ThumbsDown, ThumbsUp, PencilIcon, AlertCircle, Copy, ChevronDown, ExternalLink } from 'lucide-react';
+import { ThumbsDown, ThumbsUp, PencilIcon, AlertCircle, Copy, ChevronDown, ExternalLink, Check } from 'lucide-react';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import {
   Collapsible,
@@ -69,6 +69,7 @@ export function Feedback({
   const [opinion, setOpinion] = useState<'yes' | 'no' | null>(null);
   const [message, setMessage] = useState('');
   const [isCopyingMarkdown, setIsCopyingMarkdown] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     setPrevious(get(pathname));
@@ -92,8 +93,9 @@ export function Feedback({
   }
 
   const handleCopyMarkdown = async () => {
-    const markdownUrl = `${window.location.origin}${pagePath}.mdx`;
+    const markdownUrl = `${window.location.origin}${pagePath}`;
     setIsCopyingMarkdown(true);
+    setIsCopied(false);
     try {
       // Fetch the markdown content
       const response = await fetch(markdownUrl);
@@ -104,12 +106,21 @@ export function Feedback({
       
       // Copy the content to clipboard
       await navigator.clipboard.writeText(markdownContent);
-      // You can add a toast notification here if you have one
+      setIsCopied(true);
+      
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
     } catch (err) {
       console.error('Failed to copy markdown:', err);
       // Fallback to copying just the URL if fetching fails
       try {
         await navigator.clipboard.writeText(markdownUrl);
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 2000);
       } catch (clipboardErr) {
         console.error('Failed to copy URL:', clipboardErr);
       }
@@ -119,14 +130,14 @@ export function Feedback({
   };
 
   const openInChatGPT = () => {
-    const mdxUrl = `${window.location.origin}${pagePath}.mdx`;
+    const mdxUrl = `${window.location.origin}${pagePath}`;
     const prompt = `Read ${mdxUrl}, I want to ask questions about it.`;
     const chatGPTUrl = `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`;
     window.open(chatGPTUrl, '_blank', 'noopener,noreferrer');
   };
 
   const openInClaude = () => {
-    const mdxUrl = `${window.location.origin}${pagePath}.mdx`;
+    const mdxUrl = `${window.location.origin}${pagePath}`;
     const prompt = `Read ${mdxUrl}, I want to ask questions about it.`;
     const claudeUrl = `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
     window.open(claudeUrl, '_blank', 'noopener,noreferrer');
@@ -181,7 +192,22 @@ export function Feedback({
             disabled={isCopyingMarkdown}
             className={cn(rateButtonVariants(), "gap-2 no-underline text-sm")}
           >
-            <Copy className="size-4" /> {isCopyingMarkdown ? 'Copying...' : 'Copy Markdown'}
+            {isCopied ? (
+              <>
+                <Check className="size-4" />
+                Copied
+              </>
+            ) : isCopyingMarkdown ? (
+              <>
+                <Copy className="size-4" />
+                Copying...
+              </>
+            ) : (
+              <>
+                <Copy className="size-4" />
+                Copy Markdown
+              </>
+            )}
           </button>
 
           <DropdownMenu>
