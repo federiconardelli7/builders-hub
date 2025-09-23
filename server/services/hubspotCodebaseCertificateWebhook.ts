@@ -1,6 +1,10 @@
 import { prisma } from '@/prisma/prisma';
 
-const HUBSPOT_CERTIFICATE_WEBHOOK_URL = process.env.HUBSPOT_CERTIFICATE_WEBHOOK_URL || 'https://api-na1.hubapi.com/automation/v4/webhook-triggers/7522520/nELpaOw';
+const HUBSPOT_CERTIFICATE_WEBHOOK_URL = process.env.HUBSPOT_CERTIFICATE_WEBHOOK_URL;
+
+if (!HUBSPOT_CERTIFICATE_WEBHOOK_URL) {
+  throw new Error('HUBSPOT_CERTIFICATE_WEBHOOK_URL environment variable is not set');
+}
 
 // Course name mapping for Codebase Entrepreneur courses only
 const courseNameMapping: Record<string, string> = {
@@ -39,7 +43,7 @@ export async function triggerCertificateWebhook(
       courseCompletionDate: new Date().toISOString()
     };
 
-    const response = await fetch(HUBSPOT_CERTIFICATE_WEBHOOK_URL, {
+    const response = await fetch(HUBSPOT_CERTIFICATE_WEBHOOK_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
