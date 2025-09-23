@@ -130,6 +130,7 @@ export default async function Page(props: {
         title={page.data.title}
         pagePath={`/academy/${page.slugs.join('/')}`}
         editUrl={editUrl}
+        pageType="academy"
         onRateAction={async (url, feedback) => {
           'use server';
           await posthog.capture('on_rate_document', feedback);

@@ -5,19 +5,21 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { baseOptions } from "@/app/layout.config";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from 'react';
+import newGithubIssueUrl from "new-github-issue-url";
 
 function createGitHubIssueURL(path: string | null) {
-  const title = encodeURIComponent(`Missing Page${path ? `: ${path}` : ''}`);
-  const body = encodeURIComponent(
-    `# Missing Page Report\n\n` +
-    `${path ? `The following page was not found: \`${path}\`\n\n` : ''}` +
-    `## Expected Location\n` +
-    `${path ? `I was trying to access: ${path}` : 'Please enter the URL you were trying to access'}\n\n` +
-    `## Additional Context\n` +
-    `Please provide any additional context about what you were looking for.`
-  );
-  
-  return `https://github.com/ava-labs/builders-hub/issues/new?title=${title}&body=${body}&labels=bug`;
+  return newGithubIssueUrl({
+    user: "ava-labs",
+    repo: "builders-hub",
+    title: `Missing Page${path ? `: ${path}` : ''}`,
+    body: `# Missing Page Report
+
+${path ? `The following page was not found: \`${path}\`
+
+` : ''}## Expected Location
+${path ? `I was trying to access: ${path}` : 'Please enter the URL you were trying to access'},`,
+    labels: ["bug"],
+  });
 }
 
 export default function NotFound() {
