@@ -1,8 +1,10 @@
 import { SectionWrapper } from '../SectionWrapper';
-import { PreinstallConfig } from '../PreinstalledContractsSection';
+import { PreinstallConfig } from '../types';
 import { useMemo, useCallback } from 'react';
 import { useGenesisHighlight } from '../GenesisHighlightContext';
 import { cn } from '@/lib/cn';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 type PredeploysSectionProps = {
     config: PreinstallConfig;
@@ -28,6 +30,45 @@ export const PredeploysSection = ({
     const { setHighlightPath, clearHighlight } = useGenesisHighlight();
     const enabledCount = useMemo(() => Object.values(config).filter(Boolean).length, [config]);
     const totalCount = useMemo(() => Object.keys(config).length, [config]);
+
+    // Predeploy addresses and descriptions
+    const predeployInfo = {
+        proxy: {
+            address: '0xfacade0000000000000000000000000000000000',
+            name: 'Transparent Upgradeable Proxy',
+            description: 'Enables upgradeability for smart contracts. Delegates calls to implementation contracts while preserving storage.'
+        },
+        proxyAdmin: {
+            address: '0xdad0000000000000000000000000000000000000',
+            name: 'Proxy Admin Contract',
+            description: 'Manages upgrades for transparent proxies. Controls which addresses can upgrade proxy implementations.'
+        },
+        icmMessenger: {
+            address: '0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf',
+            name: 'ICM Messenger',
+            description: 'Avalanche Interchain Messaging contract for cross-subnet communication and message relaying.'
+        },
+        wrappedNativeToken: {
+            address: '0x1111111111111111111111111111111111111111',
+            name: `Wrapped ${tokenName || 'Native Token'}`,
+            description: 'ERC-20 wrapper for the native token, enabling DeFi integrations and smart contract interactions.'
+        },
+        safeSingletonFactory: {
+            address: '0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7',
+            name: 'Safe Singleton Factory',
+            description: 'Deploys Safe multisig wallet contracts at deterministic addresses across all chains.'
+        },
+        multicall3: {
+            address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+            name: 'Multicall3',
+            description: 'Batches multiple contract calls into a single transaction, reducing gas costs and improving efficiency.'
+        },
+        create2Deployer: {
+            address: '0x13b0D85CcB8bf860b6b79AF3029fCA081AE9beF2',
+            name: 'Create2 Deployer',
+            description: 'Enables deterministic contract deployment using CREATE2 opcode for same address across chains.'
+        }
+    };
 
     // Custom green switch component
     const GreenSwitch = ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
@@ -95,7 +136,23 @@ export const PredeploysSection = ({
                 <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-md overflow-hidden">
                     {items.map((item) => (
                         <div key={item.id} className="flex items-center justify-between px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
-                            <div className="text-zinc-800 dark:text-zinc-200 truncate pr-3">{item.label}</div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-zinc-800 dark:text-zinc-200 truncate">{item.label}</span>
+                                {predeployInfo[item.id as keyof typeof predeployInfo] && (
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                            <div className="space-y-1">
+                                                <div className="font-semibold">{predeployInfo[item.id as keyof typeof predeployInfo].name}</div>
+                                                <div className="text-xs font-mono">{predeployInfo[item.id as keyof typeof predeployInfo].address}</div>
+                                                <div className="text-xs">{predeployInfo[item.id as keyof typeof predeployInfo].description}</div>
+                                            </div>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                )}
+                            </div>
                             <GreenSwitch checked={config[item.id]} onCheckedChange={(c) => handleToggle(item.id, !!c)} />
                         </div>
                     ))}

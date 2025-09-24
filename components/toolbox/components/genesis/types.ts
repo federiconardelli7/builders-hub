@@ -74,6 +74,16 @@ export type ValidationMessages = {
   warnings: { [key: string]: string };
 };
 
+export interface PreinstallConfig {
+  proxy: boolean;
+  proxyAdmin: boolean;
+  safeSingletonFactory: boolean;
+  multicall3: boolean;
+  icmMessenger: boolean;
+  wrappedNativeToken: boolean;
+  create2Deployer: boolean;
+}
+
 // Consolidated state type (example, adjust as needed during refactoring)
 export type GenesisConfigState = {
   evmChainId: number;

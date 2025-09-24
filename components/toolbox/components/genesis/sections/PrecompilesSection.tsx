@@ -7,6 +7,8 @@ import { Textarea as TextArea } from '../../TextArea';
 import { AddConnectedWalletButton } from '@/components/toolbox/components/ConnectWallet/AddConnectedWalletButton';
 import { useGenesisHighlight } from '../GenesisHighlightContext';
 import { cn } from '@/lib/cn';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 type PrecompilesSectionProps = {
     deployerConfig: AllowlistPrecompileConfig;
@@ -52,6 +54,40 @@ export const PrecompilesSection = ({
     walletAddress
 }: PrecompilesSectionProps) => {
     const { setHighlightPath, clearHighlight } = useGenesisHighlight();
+
+    // Precompile addresses and descriptions
+    const precompileInfo = {
+        contractDeployer: {
+            address: '0x0200000000000000000000000000000000000000',
+            name: 'Contract Deployer Allow List',
+            description: 'Controls who can deploy smart contracts on your blockchain. Restricts contract deployment to authorized addresses only.'
+        },
+        nativeMinter: {
+            address: '0x0200000000000000000000000000000000000001',
+            name: 'Native Minter',
+            description: 'Allows authorized addresses to mint new native tokens, increasing the total supply on your blockchain.'
+        },
+        txAllowList: {
+            address: '0x0200000000000000000000000000000000000002',
+            name: 'Transaction Allow List',
+            description: 'Restricts who can submit transactions to your blockchain, creating a permissioned network.'
+        },
+        feeManager: {
+            address: '0x0200000000000000000000000000000000000003',
+            name: 'Fee Manager',
+            description: 'Enables dynamic fee configuration adjustments by authorized admins without requiring a hard fork.'
+        },
+        rewardManager: {
+            address: '0x0200000000000000000000000000000000000004',
+            name: 'Reward Manager',
+            description: 'Manages validator rewards and fee recipient configuration for block producers.'
+        },
+        warp: {
+            address: '0x0200000000000000000000000000000000000005',
+            name: 'Warp Messenger',
+            description: 'Enables native cross-subnet messaging for Avalanche interchain communication.'
+        }
+    };
 
     // Custom green switch component
     const GreenSwitch = ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
@@ -122,7 +158,21 @@ export const PrecompilesSection = ({
                 {/* Contract Deployer Allowlist */}
                     <div className="px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium text-zinc-800 dark:text-zinc-200">Contract Deployer Allowlist</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200">Contract Deployer Allowlist</span>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1">
+                                            <div className="font-semibold">{precompileInfo.contractDeployer.name}</div>
+                                            <div className="text-xs font-mono">{precompileInfo.contractDeployer.address}</div>
+                                            <div className="text-xs">{precompileInfo.contractDeployer.description}</div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         <GreenSwitch checked={!!deployerConfig.activated} onCheckedChange={(c) => {
                             const isEnabled = !!c;
                             setDeployerConfig(prev => {
@@ -164,7 +214,21 @@ export const PrecompilesSection = ({
                 {/* Transaction Allowlist */}
                     <div className="px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium text-zinc-800 dark:text-zinc-200">Transaction Allowlist</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200">Transaction Allowlist</span>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1">
+                                            <div className="font-semibold">{precompileInfo.txAllowList.name}</div>
+                                            <div className="text-xs font-mono">{precompileInfo.txAllowList.address}</div>
+                                            <div className="text-xs">{precompileInfo.txAllowList.description}</div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         <GreenSwitch checked={!!txConfig.activated} onCheckedChange={(c) => {
                             const isEnabled = !!c;
                             setTxConfig(prev => {
@@ -206,7 +270,21 @@ export const PrecompilesSection = ({
                 {/* Native Minter */}
                     <div className="px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium text-zinc-800 dark:text-zinc-200">Native Token Minter</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200">Native Token Minter</span>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1">
+                                            <div className="font-semibold">{precompileInfo.nativeMinter.name}</div>
+                                            <div className="text-xs font-mono">{precompileInfo.nativeMinter.address}</div>
+                                            <div className="text-xs">{precompileInfo.nativeMinter.description}</div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         <GreenSwitch checked={!!nativeMinterConfig.activated} onCheckedChange={(c) => {
                             const isEnabled = !!c;
                             setNativeMinterConfig(prev => {
@@ -248,7 +326,21 @@ export const PrecompilesSection = ({
                 {/* Fee Manager */}
                     <div className="px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium text-zinc-800 dark:text-zinc-200">Fee Manager</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200">Fee Manager</span>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1">
+                                            <div className="font-semibold">{precompileInfo.feeManager.name}</div>
+                                            <div className="text-xs font-mono">{precompileInfo.feeManager.address}</div>
+                                            <div className="text-xs">{precompileInfo.feeManager.description}</div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         <GreenSwitch checked={feeManagerEnabled} onCheckedChange={(c) => {
                             const isEnabled = !!c;
                             setFeeManagerEnabled(isEnabled);
@@ -283,7 +375,21 @@ export const PrecompilesSection = ({
                 {/* Reward Manager */}
                     <div className="px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium text-zinc-800 dark:text-zinc-200">Reward Manager</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200">Reward Manager</span>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                        <div className="space-y-1">
+                                            <div className="font-semibold">{precompileInfo.rewardManager.name}</div>
+                                            <div className="text-xs font-mono">{precompileInfo.rewardManager.address}</div>
+                                            <div className="text-xs">{precompileInfo.rewardManager.description}</div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         <GreenSwitch checked={rewardManagerEnabled} onCheckedChange={(c) => {
                             const isEnabled = !!c;
                             setRewardManagerEnabled(isEnabled);

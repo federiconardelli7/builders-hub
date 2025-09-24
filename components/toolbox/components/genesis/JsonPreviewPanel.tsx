@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
-import { Copy, Download, Edit3, Check, X, Save } from "lucide-react";
+import { Copy, Download, Check } from "lucide-react";
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
 
 // Simple JSON syntax highlighter component
@@ -82,15 +82,9 @@ export function JsonPreviewPanel({
     onHighlightChange
 }: JsonPreviewPanelProps) {
     const [copied, setCopied] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedJson, setEditedJson] = useState(jsonData);
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
     const [jsonLines, setJsonLines] = useState<string[]>([]);
-    const [jsonError, setJsonError] = useState<string | null>(null);
 
-    useEffect(() => {
-        setEditedJson(jsonData);
-    }, [jsonData]);
 
     // Parse JSON and find line numbers for highlighting
     useEffect(() => {
@@ -145,15 +139,12 @@ export function JsonPreviewPanel({
 
             // Find line number for the highlighted path
             if (highlightPath) {
-                console.log('highlightPath received:', highlightPath);
                 const lineNumber = findLineNumberForPath(lines, highlightPath, pathMap);
-                console.log('lineNumber found:', lineNumber);
                 setHighlightedLine(lineNumber);
 
                 // Use setTimeout to ensure DOM has updated with syntax highlighting
                 if (lineNumber) {
                     setTimeout(() => {
-                        console.log('Calling scrollToLine after timeout');
                         scrollToLine(lineNumber);
                     }, 100);
                 }
@@ -285,18 +276,14 @@ export function JsonPreviewPanel({
             return;
         }
 
-        console.log('scrollToLine called with lineNumber:', lineNumber);
         // More precise scrolling based on actual line content
         const element = document.querySelector('.json-preview-scroll');
-        console.log('Found element:', element);
         if (element) {
             // Try multiple approaches to find and scroll to the target line
 
             // Approach 1: Look for data-line attribute
             const targetElement = element.querySelector(`[data-line="${lineNumber}"]`);
-            console.log('Found target element with data-line:', targetElement);
             if (targetElement) {
-                console.log('Scrolling to target element via data-line approach');
                 targetElement.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
@@ -306,22 +293,17 @@ export function JsonPreviewPanel({
             }
 
             // Approach 2: Calculate based on line height
-            console.log('Using approach 2: calculate based on line height');
             const lineHeight = 20; // Approximate line height in pixels
             const scrollTop = (lineNumber - 1) * lineHeight;
             element.scrollTop = Math.max(0, scrollTop - 150); // Scroll with some padding
 
             // Approach 3: If we have syntax highlighted content, try to find by nth-child
             const syntaxHighlightedElement = element.querySelector('pre');
-            console.log('Found pre element:', syntaxHighlightedElement);
             if (syntaxHighlightedElement) {
                 const childElements = syntaxHighlightedElement.querySelectorAll('div');
-                console.log('Found child divs:', childElements.length);
                 if (childElements.length >= lineNumber) {
                     const targetChild = childElements[lineNumber - 1];
-                    console.log('Found target child:', targetChild);
                     if (targetChild) {
-                        console.log('Scrolling to target via nth-child approach');
                         targetChild.scrollIntoView({
                             behavior: 'smooth',
                             block: 'center',
@@ -355,31 +337,6 @@ export function JsonPreviewPanel({
         URL.revokeObjectURL(url);
     };
 
-    const handleEdit = () => {
-        setIsEditing(true);
-        setEditedJson(jsonData);
-        setJsonError(null);
-    };
-
-    const handleSave = () => {
-        try {
-            // Validate JSON
-            JSON.parse(editedJson);
-            if (onJsonUpdate) {
-                onJsonUpdate(editedJson);
-            }
-            setIsEditing(false);
-            setJsonError(null);
-        } catch (error) {
-            setJsonError(`Invalid JSON: ${(error as Error).message}`);
-        }
-    };
-
-    const handleCancel = () => {
-        setIsEditing(false);
-        setEditedJson(jsonData);
-        setJsonError(null);
-    };
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -415,70 +372,35 @@ export function JsonPreviewPanel({
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                    {isEditing ? (
-                        <>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleCancel}
-                                className="h-8"
-                            >
-                                <X className="h-4 w-4 mr-1" />
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="primary"
-                                size="sm"
-                                onClick={handleSave}
-                                className="h-8"
-                            >
-                                <Save className="h-4 w-4 mr-1" />
-                                Save
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleEdit}
-                                disabled={!isValidJson}
-                                className="h-8"
-                            >
-                                <Edit3 className="h-4 w-4 mr-1" />
-                                Edit
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleCopy}
-                                disabled={!isValidJson}
-                                className="h-8"
-                            >
-                                {copied ? (
-                                    <>
-                                        <Check className="h-4 w-4 mr-1 text-green-500" />
-                                        Copied
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="h-4 w-4 mr-1" />
-                                        Copy
-                                    </>
-                                )}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleDownload}
-                                disabled={!isValidJson}
-                                className="h-8"
-                            >
-                                <Download className="h-4 w-4 mr-1" />
-                                Download
-                            </Button>
-                        </>
-                    )}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCopy}
+                            disabled={!isValidJson}
+                            className="h-8"
+                        >
+                            {copied ? (
+                                <>
+                                    <Check className="h-4 w-4 mr-1 text-green-500" />
+                                    Copied
+                                </>
+                            ) : (
+                                <>
+                                    <Copy className="h-4 w-4 mr-1" />
+                                    Copy
+                                </>
+                            )}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleDownload}
+                            disabled={!isValidJson}
+                            className="h-8"
+                        >
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                        </Button>
                     </div>
                 </div>
                 {isValidJson && (
@@ -492,53 +414,34 @@ export function JsonPreviewPanel({
 
             {/* JSON Content */}
             <div className="flex-1 overflow-auto p-3 bg-zinc-50 dark:bg-zinc-950 text-xs json-preview-scroll">
-                {isEditing ? (
-                    <div className="h-full">
-                        {jsonError && (
-                            <div className="mb-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm">
-                                {jsonError}
-                            </div>
-                        )}
-                        <textarea
-                            value={editedJson}
-                            onChange={(e) => {
-                                setEditedJson(e.target.value);
-                                setJsonError(null);
-                            }}
-                            className="w-full h-full p-3 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-mono text-xs rounded border border-zinc-300 dark:border-zinc-800 focus:outline-none focus:border-blue-500 resize-none"
-                            spellCheck={false}
-                        />
-                    </div>
-                ) : (
-                    <div className="rounded-lg overflow-hidden">
-                        {isValidJson ? (
-                            <div className="text-[11px] leading-5">
-                                {jsonLines.length > 0 && highlightedLine ? (
-                                    <div className="relative">
-                                        <SyntaxHighlightedJSON
-                                            code={jsonData}
-                                            highlightedLine={highlightedLine}
-                                        />
-                                    </div>
-                                ) : (
+                <div className="rounded-lg overflow-hidden">
+                    {isValidJson ? (
+                        <div className="text-[11px] leading-5">
+                            {jsonLines.length > 0 && highlightedLine ? (
+                                <div className="relative">
                                     <SyntaxHighlightedJSON
                                         code={jsonData}
-                                        highlightedLine={null}
+                                        highlightedLine={highlightedLine}
                                     />
+                                </div>
+                            ) : (
+                                <SyntaxHighlightedJSON
+                                    code={jsonData}
+                                    highlightedLine={null}
+                                />
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-zinc-500 dark:text-zinc-400">
+                            <div className="text-center">
+                                <p className="text-sm">Configure your chain to see the genesis JSON</p>
+                                {jsonData.startsWith("Error:") && (
+                                    <p className="text-xs mt-2 text-red-400">{jsonData}</p>
                                 )}
                             </div>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-zinc-500 dark:text-zinc-400">
-                                <div className="text-center">
-                                    <p className="text-sm">Configure your chain to see the genesis JSON</p>
-                                    {jsonData.startsWith("Error:") && (
-                                        <p className="text-xs mt-2 text-red-400">{jsonData}</p>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
