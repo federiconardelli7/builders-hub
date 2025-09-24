@@ -490,9 +490,7 @@ export default function AvalancheMetrics() {
       <main className="container mx-auto px-4 py-6 sm:py-8 pb-24 space-y-6 sm:space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
           <div className="space-y-2 sm:space-y-3">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
-              Avalanche Mainnet L1 Stats
-            </h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Avalanche Mainnet L1 Stats</h1>
             <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
               Opinionated stats for Avalanche Mainnet L1s. Click on any chain to
               view detailed metrics.
