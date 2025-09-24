@@ -21,7 +21,6 @@ export default function GenesisBuilderMDX() {
                 initiallyExpandedSections={["chainParams"]}
                 tokenAllocations={tokenAllocations}
                 setTokenAllocations={setTokenAllocations}
-                hideManualEditWarning={true}
             />
         </GenesisHighlightProvider>
     );

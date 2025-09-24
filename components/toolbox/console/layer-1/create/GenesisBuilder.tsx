@@ -59,7 +59,6 @@ type GenesisBuilderProps = {
     initiallyExpandedSections?: SectionId[];
     tokenAllocations?: AllocationEntry[];
     setTokenAllocations?: (allocations: AllocationEntry[]) => void;
-    hideManualEditWarning?: boolean;
 };
 
 export default function GenesisBuilder({
@@ -67,8 +66,7 @@ export default function GenesisBuilder({
     setGenesisData,
     initiallyExpandedSections = ["chainParams"],
     tokenAllocations: propTokenAllocations,
-    setTokenAllocations: propSetTokenAllocations,
-    hideManualEditWarning = false
+    setTokenAllocations: propSetTokenAllocations
 }: GenesisBuilderProps) {
     const { walletEVMAddress } = useWalletStore();
 
@@ -81,18 +79,6 @@ export default function GenesisBuilder({
     const [tokenSymbol, setTokenSymbol] = useState<string>("COIN");
     const [gasLimit, setGasLimit] = useState<number>(15000000);
     const [targetBlockRate, setTargetBlockRate] = useState<number>(2);
-    
-    // Manual edit mode - when true, prevents automatic regeneration
-    const [isManualEditMode, setIsManualEditMode] = useState(false);
-    const [lastGeneratedJson, setLastGeneratedJson] = useState<string>("");
-    
-    // Detect manual edits
-    useEffect(() => {
-        if (genesisData && lastGeneratedJson && genesisData !== lastGeneratedJson && !genesisData.startsWith("Error:")) {
-            // JSON has been manually edited
-            setIsManualEditMode(true);
-        }
-    }, [genesisData, lastGeneratedJson]);
 
     // Use props for token allocations if provided, otherwise use local state
     const [localTokenAllocations, setLocalTokenAllocations] = useState<AllocationEntry[]>([]);
@@ -225,11 +211,9 @@ export default function GenesisBuilder({
     useEffect(() => {
         // Add a debounce to prevent multiple rapid updates
         const debounceTimer = setTimeout(() => {
-            // Don't proceed if we shouldn't generate genesis or in manual edit mode
-            if (!shouldGenerateGenesis || isManualEditMode) {
-                if (!shouldGenerateGenesis) {
-                    setGenesisData(""); // Clear genesis data if we shouldn't generate
-                }
+            // Don't proceed if we shouldn't generate genesis
+            if (!shouldGenerateGenesis) {
+                setGenesisData(""); // Clear genesis data if we shouldn't generate
                 return;
             }
 
@@ -293,7 +277,6 @@ export default function GenesisBuilder({
                     timestamp: `0x${blockTimestamp.toString(16)}`
                 };
                 const genesisString = JSON.stringify(finalGenesisConfig, null, 2);
-                setLastGeneratedJson(genesisString);
                 setGenesisData(genesisString);
             } catch (error) {
                 console.error("Error generating genesis data:", error);
@@ -303,7 +286,7 @@ export default function GenesisBuilder({
 
         return () => clearTimeout(debounceTimer);
         // Only depend on shouldGenerateGenesis flag and the actual data needed
-    }, [shouldGenerateGenesis, isManualEditMode, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, setGenesisData, blockTimestamp]);
+    }, [shouldGenerateGenesis, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, setGenesisData, blockTimestamp]);
 
     // --- Handlers --- 
 
@@ -318,10 +301,6 @@ export default function GenesisBuilder({
         }
     }, [genesisData]);
     
-    const handleExitManualEditMode = useCallback(() => {
-        // Exit manual edit mode and regenerate from form state
-        setIsManualEditMode(false);
-    }, []);
 
     const handleDownloadGenesis = useCallback(() => {
         if (!genesisData) return;
@@ -412,27 +391,6 @@ export default function GenesisBuilder({
     // --- Render --- 
     return (
         <div className="space-y-6 mb-4">
-            {/* Manual Edit Mode Notification */}
-            {isManualEditMode && !hideManualEditWarning && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">
-                                Manual Edit Mode
-                            </span>
-                            <span className="text-amber-600 dark:text-amber-400 text-xs">
-                                Form changes are disabled while editing JSON directly
-                            </span>
-                        </div>
-                        <button
-                            onClick={handleExitManualEditMode}
-                            className="text-xs px-2 py-1 bg-amber-600 dark:bg-amber-500 text-white rounded hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors"
-                        >
-                            Exit Manual Mode
-                        </button>
-                    </div>
-                </div>
-            )}
             {/* Compact single-column: remove top tab bar per design */}
 
             {/* Configuration - single column */}
