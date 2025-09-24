@@ -40,7 +40,7 @@ export const PermissionsSection = ({
 
                 <AllowlistPrecompileConfigurator
                     title="Contract Deployer Allowlist"
-                    description={compact ? undefined : "You can optionally restrict which addresses may deploy smart contracts on this blockchain."}
+                    description={compact ? "" : "You can optionally restrict which addresses may deploy smart contracts on this blockchain."}
                     precompileAction="deploy contracts"
                     config={deployerConfig}
                     onUpdateConfig={setDeployerConfig}
@@ -54,7 +54,7 @@ export const PermissionsSection = ({
 
                 <AllowlistPrecompileConfigurator
                     title="Transaction Allowlist"
-                    description={compact ? undefined : "Configure which addresses can submit transactions."}
+                    description={compact ? "" : "Configure which addresses can submit transactions."}
                     precompileAction="submit transactions"
                     config={txConfig}
                     onUpdateConfig={setTxConfig}
