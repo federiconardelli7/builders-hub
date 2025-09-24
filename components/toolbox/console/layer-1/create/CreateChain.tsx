@@ -188,4 +188,5 @@ function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
     );
 }
 
+export { CreateChain };
 export default withConsoleToolMetadata(CreateChain, metadata);

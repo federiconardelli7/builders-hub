@@ -1,6 +1,6 @@
 "use client";
 
-import CreateChain from "./CreateChain";
+import { CreateChain } from "./CreateChain";
 
 /**
  * Wrapper component for CreateChain to be used in MDX files.
