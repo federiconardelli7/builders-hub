@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
 import { http, createPublicClient } from "viem";
-import { Container } from "@/components/toolbox/components/Container";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { CheckWalletRequirements } from "@/components/toolbox/components/CheckWalletRequirements";
@@ -15,6 +14,8 @@ import WrapNativeToken from "./wrappedNativeToken/WrapNativeToken";
 import UnwrapNativeToken from "./wrappedNativeToken/UnwrapNativeToken";
 import DisplayNativeBalance from "./wrappedNativeToken/DisplayNativeBalance";
 import DisplayWrappedBalance from "./wrappedNativeToken/DisplayWrappedBalance";
+import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 // Pre-deployed wrapped native token address (from genesis)
@@ -22,7 +23,15 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 const PREDEPLOYED_WRAPPED_NATIVE_ADDRESS = '0x1111111111111111111111111111111111111111';
 
 
-export default function DeployWrappedNative() {
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Wrapped Native Token",
+    description: "Deploy a Wrapped Native token contract for testing and ICTT integration",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
     const { wrappedNativeTokenAddress: wrappedNativeTokenAddressStore, setWrappedNativeTokenAddress } = useToolboxStore();
@@ -30,8 +39,8 @@ export default function DeployWrappedNative() {
     const [wrappedNativeTokenAddress, setLocalWrappedNativeTokenAddress] = useState<string>('');
     const [hasPredeployedToken, setHasPredeployedToken] = useState(false);
     const [isCheckingToken, setIsCheckingToken] = useState(false);
-
-    const { coreWalletClient, walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
+    const { walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
     const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
@@ -113,11 +122,6 @@ export default function DeployWrappedNative() {
     }, [viemChain, walletEVMAddress, wrappedNativeTokenAddressStore, selectedL1, walletChainId, cachedWrappedToken, cachedNativeCurrency, setWrappedNativeToken, setNativeCurrencyInfo]);
 
     async function handleDeploy() {
-        if (!coreWalletClient) {
-            setCriticalError(new Error('Core wallet not found'));
-            return;
-        }
-
         setIsDeploying(true);
         try {
             if (!viemChain) throw new Error("No chain selected");
@@ -240,7 +244,8 @@ export default function DeployWrappedNative() {
                         </>
                     )}
                 </div>
-            </Container>
-        </CheckWalletRequirements>
+        </>
     );
 }
+
+export default withConsoleToolMetadata(DeployWrappedNative, metadata);

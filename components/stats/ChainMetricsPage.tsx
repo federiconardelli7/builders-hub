@@ -3,10 +3,11 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { Area,AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, ReferenceLine } from "recharts";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {type ChartConfig, ChartContainer,ChartTooltip,ChartTooltipContent } from "@/components/ui/chart";
 import DateRangeFilter from "@/components/ui/DateRangeFilter";
-import {Users, Activity, FileText, MessageSquare, TrendingUp, UserPlus, Hash, Code2, Zap, Gauge, DollarSign, TrendingDown, Clock, Fuel } from "lucide-react";
-import BubbleNavigation from "@/components/navigation/BubbleNavigation";
+import {Users, Activity, FileText, MessageSquare, TrendingUp, UserPlus, Hash, Code2, Zap, Gauge, DollarSign, TrendingDown, Clock, Fuel, ExternalLink } from "lucide-react";
+import { StatsBubbleNav } from "@/components/stats/stats-bubble.config";
 import { ChartSkeletonLoader } from "@/components/ui/chart-skeleton";
 import {TimeSeriesDataPoint, TimeSeriesMetric, ICMDataPoint, ICMMetric, ChartDataPoint, TimeRange } from "@/types/stats";
 
@@ -673,7 +674,7 @@ export default function ChainMetricsPage({
           </div>
           <ChartSkeletonLoader />
         </div>
-        <BubbleNavigation />
+        <StatsBubbleNav />
       </div>
     );
   }
@@ -705,11 +706,24 @@ export default function ChainMetricsPage({
       <div className="container mx-auto mt-4 p-6 pb-24 space-y-12">
         <div className="space-y-2">
           <div>
-            <h1 className="text-2xl md:text-5xl mb-4">
-              {chainName.includes("C-Chain")
-                ? "Avalanche C-Chain Metrics"
-                : `${chainName} L1 Metrics`}
-            </h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h1 className="text-2xl md:text-5xl mb-4 sm:mb-0">
+                {chainName.includes("C-Chain")
+                  ? "Avalanche C-Chain Metrics"
+                  : `${chainName} L1 Metrics`}
+              </h1>
+              {!chainName.includes("C-Chain") && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.open(`https://${chainId}.snowtrace.io`, "_blank")}
+                  className="flex items-center gap-2 self-start sm:self-auto"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View Explorer
+                </Button>
+              )}
+            </div>
             <p className="text-zinc-400 text-md text-left">{description}</p>
           </div>
         </div>
@@ -1041,7 +1055,7 @@ export default function ChainMetricsPage({
       </div>
 
       {/* Bubble Navigation */}
-      <BubbleNavigation />
+      <StatsBubbleNav />
     </div>
   );
 }
