@@ -34,11 +34,6 @@ export const getCreateChainStore = (isTestnet: boolean) => create(
 
             reset: () => {
                 window?.localStorage.removeItem(`${STORE_VERSION}-create-chain-store-${isTestnet ? 'testnet' : 'mainnet'}`);
-                // Reset to initial state with default token allocations
-                set({
-                    ...createChainInitialState,
-                    evmChainId: Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
-                });
             },
         })),
         {
