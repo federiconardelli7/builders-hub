@@ -26,7 +26,11 @@ const metadata: ConsoleToolMetadata = {
     ]
 };
 
-function CreateChain({ onSuccess }: BaseConsoleToolProps) {
+interface CreateChainProps extends BaseConsoleToolProps {
+    embedded?: boolean;
+}
+
+function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
     const {
         subnetId,
         setChainID,
@@ -122,6 +126,7 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
                         <GenesisWizard
                             genesisData={genesisData}
                             onGenesisDataChange={setGenesisData}
+                            embedded={embedded}
                         >
                             <div className="space-y-6">
                                 <ChainConfigStep

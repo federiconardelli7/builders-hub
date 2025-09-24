@@ -65,44 +65,51 @@ interface GenesisWizardProps {
     onGenesisDataChange: (data: string) => void;
     currentStep?: number;
     footer?: ReactNode;
+    embedded?: boolean;
 }
 
-function GenesisWizardContent({ children, genesisData, onGenesisDataChange, footer }: GenesisWizardProps) {
+function GenesisWizardContent({ children, genesisData, onGenesisDataChange, footer, embedded = false }: GenesisWizardProps) {
     const { highlightPath } = useGenesisHighlight();
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 1024);
+            // Force single column layout if embedded or on mobile
+            setIsMobile(embedded || window.innerWidth < 1024);
         };
 
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
         return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    }, [embedded]);
 
     if (isMobile) {
-        // Mobile layout - stacked view with collapsible JSON preview
+        // Mobile/Embedded layout - stacked view with collapsible JSON preview
         return (
             <div className="space-y-6">
                 <div className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
                     {children}
                 </div>
 
-                <details className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <summary className="p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
-                        <span className="text-sm font-medium">View Genesis JSON</span>
-                    </summary>
-                    <div className="border-t border-zinc-200 dark:border-zinc-800">
-                        <div className="p-3">
-                            <SyntaxHighlightedJSON
-                                code={genesisData}
-                                highlightedLine={null}
-                            />
+                {genesisData && genesisData.length > 0 && !genesisData.startsWith("Error:") && (
+                    <details className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800" open={embedded}>
+                        <summary className="p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/50 flex items-center justify-between">
+                            <span className="text-sm font-medium">View Genesis JSON</span>
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                {(new Blob([genesisData]).size / 1024).toFixed(2)} KiB
+                            </span>
+                        </summary>
+                        <div className="border-t border-zinc-200 dark:border-zinc-800">
+                            <div className="p-3 max-h-[400px] overflow-y-auto">
+                                <SyntaxHighlightedJSON
+                                    code={genesisData}
+                                    highlightedLine={null}
+                                />
+                            </div>
                         </div>
-                    </div>
-                </details>
+                    </details>
+                )}
             </div>
         );
     }
@@ -142,7 +149,8 @@ export function GenesisWizard({
     genesisData,
     onGenesisDataChange,
     currentStep = 1,
-    footer
+    footer,
+    embedded = false
 }: GenesisWizardProps) {
     return (
         <GenesisHighlightProvider>
@@ -150,6 +158,7 @@ export function GenesisWizard({
                 genesisData={genesisData}
                 onGenesisDataChange={onGenesisDataChange}
                 footer={footer}
+                embedded={embedded}
             >
                 {children}
             </GenesisWizardContent>

@@ -59,6 +59,7 @@ type GenesisBuilderProps = {
     initiallyExpandedSections?: SectionId[];
     tokenAllocations?: AllocationEntry[];
     setTokenAllocations?: (allocations: AllocationEntry[]) => void;
+    hideManualEditWarning?: boolean;
 };
 
 export default function GenesisBuilder({
@@ -66,7 +67,8 @@ export default function GenesisBuilder({
     setGenesisData,
     initiallyExpandedSections = ["chainParams"],
     tokenAllocations: propTokenAllocations,
-    setTokenAllocations: propSetTokenAllocations
+    setTokenAllocations: propSetTokenAllocations,
+    hideManualEditWarning = false
 }: GenesisBuilderProps) {
     const { walletEVMAddress } = useWalletStore();
 
@@ -411,7 +413,7 @@ export default function GenesisBuilder({
     return (
         <div className="space-y-6 mb-4">
             {/* Manual Edit Mode Notification */}
-            {isManualEditMode && (
+            {isManualEditMode && !hideManualEditWarning && (
                 <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
