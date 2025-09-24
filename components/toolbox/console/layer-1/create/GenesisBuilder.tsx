@@ -411,7 +411,6 @@ export default function GenesisBuilder({
                         toggleExpand={() => toggleSection('tokenomics')}
                         validationErrors={validationMessages.errors}
                         compact
-                        hideMinterConfigurator
                     />
 
                     {/* Precompiles enable/disable list */}

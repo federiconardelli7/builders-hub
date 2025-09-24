@@ -1,8 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import { SectionWrapper } from '../SectionWrapper';
 import { Input } from '../../Input';
 import TokenAllocationList from '../TokenAllocationList';
-import AllowlistPrecompileConfigurator from '../AllowlistPrecompileConfigurator';
 import { AllocationEntry, AllowlistPrecompileConfig } from '../types';
 import { useGenesisHighlight } from '../GenesisHighlightContext';
 
@@ -17,7 +15,6 @@ type TokenomicsSectionProps = {
     toggleExpand: () => void;
     validationErrors: { [key: string]: string };
     compact?: boolean;
-    hideMinterConfigurator?: boolean;
 };
 
 export const TokenomicsSection = ({
@@ -31,7 +28,6 @@ export const TokenomicsSection = ({
     toggleExpand,
     validationErrors, // Pass errors object
     compact,
-    hideMinterConfigurator = false
 }: TokenomicsSectionProps) => {
     const { setHighlightPath, clearHighlight } = useGenesisHighlight();
 
@@ -43,18 +39,17 @@ export const TokenomicsSection = ({
         clearHighlight();
     };
     return (
-        // <SectionWrapper
-        //     title="Tokenomics"
-        //     description={compact ? "" : "Configure allocations and optional minting for your native token."}
-        //     isExpanded={isExpanded}
-        //     toggleExpand={toggleExpand}
-        //     sectionId="tokenomics"
-        //     compact={compact}
-        //     variant="flat"
-        // >
             <div className="space-y-6 text-[13px]">
 
                  {/* Initial Allocation */} 
+                 <Input
+                    label="Token Name"
+                    value={tokenName}
+                    onChange={setTokenName}
+                    placeholder="COIN"
+                    onFocus={() => handleFocus('tokenName')}
+                    onBlur={handleBlur}
+                />
                  <div>
                     <TokenAllocationList
                         allocations={tokenAllocations}
@@ -63,32 +58,6 @@ export const TokenomicsSection = ({
                     />
                     {validationErrors.tokenAllocations && <p className="text-red-500 text-sm mt-1">{validationErrors.tokenAllocations}</p>}
                 </div>
-                
-                {/* Coin Name - match EVM Chain ID styling (simple labeled input) */}
-                <Input
-                    label="Coin Name"
-                    value={tokenName}
-                    onChange={setTokenName}
-                    placeholder="COIN"
-                    onFocus={() => handleFocus('tokenName')}
-                    onBlur={handleBlur}
-                />
-
-                {!hideMinterConfigurator && (
-                    <div>
-                        <AllowlistPrecompileConfigurator
-                            title="Minting Rights of Native Token"
-                            description={compact ? "" : "Configure which addresses can mint additional native tokens."}
-                            precompileAction="mint native tokens"
-                            config={nativeMinterConfig}
-                            onUpdateConfig={setNativeMinterConfig}
-                            radioOptionFalseLabel="Fixed token supply."
-                            radioOptionTrueLabel="Allow minting additional tokens."
-                            validationError={validationErrors.contractNativeMinter}
-                        />
-                    </div>
-                )}
             </div>
-        // </SectionWrapper>
     );
 }; 
