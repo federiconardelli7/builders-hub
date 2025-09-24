@@ -6,6 +6,7 @@ import { useWalletStore, useWrappedNativeToken, useNativeCurrencyInfo } from "@/
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
+import { Container } from "@/components/toolbox/components/Container";
 import { http, createPublicClient } from "viem";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
@@ -244,7 +245,8 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                         </>
                     )}
                 </div>
-        </>
+            </Container>
+        </CheckWalletRequirements>
     );
 }
 
