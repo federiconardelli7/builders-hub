@@ -29,6 +29,9 @@ export async function POST(req: NextRequest) {
 
     // Get course configuration from centralized source
     const courseConfig = getCourseConfig();
+    console.log('Certificate generation - courseId:', courseId);
+    console.log('Available courses:', Object.keys(courseConfig));
+    
     const course = courseConfig[courseId];
     if (!course) {
       return NextResponse.json({ 

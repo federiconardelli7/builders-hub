@@ -36,9 +36,10 @@ export function useCertificates(): UseCertificatesReturn {
             variant: "destructive",
           });
           setIsGenerating(false);
-          // Redirect to login after a short delay
+          // Redirect to login after a short delay with callback URL
           setTimeout(() => {
-            router.push('/login');
+            const currentPath = window.location.pathname;
+            router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`);
           }, 2000);
           return;
         }
