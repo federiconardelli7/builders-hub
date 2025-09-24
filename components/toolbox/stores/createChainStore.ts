@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage, combine } from 'zustand/middleware'
 import { useWalletStore } from "./walletStore";
 import { localStorageComp, STORE_VERSION } from "./utils";
-import { AllocationEntry } from "../toolbox/components/genesis/types";
+import { AllocationEntry } from "../components/genesis/types";
 
 const createChainInitialState = {
     subnetId: "",

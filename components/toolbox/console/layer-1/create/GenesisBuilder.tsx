@@ -13,7 +13,6 @@ import { ChainParamsSection } from "@/components/toolbox/components/genesis/sect
 import { TokenomicsSection } from "@/components/toolbox/components/genesis/sections/TokenomicsSection";
 import { PermissionsSection } from "@/components/toolbox/components/genesis/sections/PermissionsSection";
 import { TransactionFeesSection } from "@/components/toolbox/components/genesis/sections/TransactionFeesSection";
-import { PreinstallsTab } from "@/components/toolbox/components/genesis/tabs/PreinstallsTab";
 import { PredeploysSection } from "@/components/toolbox/components/genesis/sections/PredeploysSection";
 import { PrecompilesSection } from "@/components/toolbox/components/genesis/sections/PrecompilesSection";
 
@@ -28,7 +27,7 @@ import {
     generateEmptyAllowlistPrecompileConfig,
     isValidAllowlistPrecompileConfig
 } from "@/components/toolbox/components/genesis/types";
-import { PreinstallConfig } from "@/components/toolbox/components/genesis/PreinstalledContractsSection";
+import { PreinstalledContractsSection, PreinstallConfig } from "@/components/toolbox/components/genesis/PreinstalledContractsSection";
 
 // --- Constants --- 
 const DEFAULT_FEE_CONFIG: FeeConfigType = {
@@ -933,15 +932,29 @@ export default function GenesisBuilder({
 
             {/* Preinstalls Tab */}
             {activeTab === "preinstalls" && (
-                <PreinstallsTab
-                    preinstallConfig={preinstallConfig}
-                    setPreinstallConfig={setPreinstallConfig}
-                    ownerAddress={tokenAllocations[0]?.address}
-                    tokenName={tokenName}
-                    tokenSymbol={tokenSymbol}
-                    isGenesisReady={!!isGenesisReady}
-                    setActiveTab={setActiveTab}
-                />
+                <div className="space-y-6">
+                    <PreinstalledContractsSection
+                        config={preinstallConfig}
+                        onConfigChange={setPreinstallConfig}
+                        ownerAddress={tokenAllocations[0]?.address}
+                        tokenName={tokenName}
+                        tokenSymbol={tokenSymbol}
+                    />
+
+                    <div className="flex justify-center space-x-4">
+                        <Button onClick={() => setActiveTab("config")} variant="secondary">
+                            Back to Configuration
+                        </Button>
+                        <Button onClick={() => setActiveTab("precompiles")} variant="secondary">
+                            View Precompiles
+                        </Button>
+                        {isGenesisReady && (
+                            <Button onClick={() => setActiveTab("genesis")} variant="secondary">
+                                View Genesis JSON
+                            </Button>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* Genesis JSON Tab */}

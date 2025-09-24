@@ -101,6 +101,12 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
 
                 {/* Step 2: Genesis Configuration */}
                 <Step>
+                    <div>
+                        <h2 className="text-[14px] font-semibold mb-1">Configure Genesis</h2>
+                        <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
+                            Configure the genesis data for your chain.
+                        </p>
+                    </div>
                     {!canProceedToStep2 ? (
                         <div className="flex items-center justify-center py-12">
                             <div className="text-center">
@@ -140,6 +146,12 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
 
                 {/* Step 3: Create Chain */}
                 <Step>
+                    <div>
+                        <h2 className="text-[14px] font-semibold mb-1">Create Chain</h2>
+                        <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
+                            Create your chain by issuing a CreateChainTx transaction.
+                        </p>
+                    </div>
                     {!canProceedToStep3 ? (
                         <div className="flex items-center justify-center py-12">
                             <div className="text-center">
