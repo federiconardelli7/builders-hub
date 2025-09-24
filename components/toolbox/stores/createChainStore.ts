@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage, combine } from 'zustand/middleware'
 import { useWalletStore } from "./walletStore";
 import { localStorageComp, STORE_VERSION } from "./utils";
+import { AllocationEntry } from "../toolbox/components/genesis/types";
 
 const createChainInitialState = {
     subnetId: "",
@@ -15,6 +16,7 @@ const createChainInitialState = {
     convertToL1TxId: "",
     validatorWeights: Array(100).fill(100) as number[],
     nodePopJsons: [""] as string[],
+    tokenAllocations: [] as AllocationEntry[],
 }
 
 export const getCreateChainStore = (isTestnet: boolean) => create(
@@ -31,6 +33,7 @@ export const getCreateChainStore = (isTestnet: boolean) => create(
             setConvertToL1TxId: (convertToL1TxId: string) => set({ convertToL1TxId }),
             setValidatorWeights: (validatorWeights: number[]) => set({ validatorWeights }),
             setNodePopJsons: (nodePopJsons: string[]) => set({ nodePopJsons }),
+            setTokenAllocations: (tokenAllocations: AllocationEntry[]) => set({ tokenAllocations }),
 
             reset: () => {
                 window?.localStorage.removeItem(`${STORE_VERSION}-create-chain-store-${isTestnet ? 'testnet' : 'mainnet'}`);

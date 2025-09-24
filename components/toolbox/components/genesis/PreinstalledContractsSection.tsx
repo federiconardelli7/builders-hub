@@ -45,6 +45,7 @@ interface PreinstalledContractsSectionProps {
     ownerAddress?: string;
     tokenName?: string;
     tokenSymbol?: string;
+    hideHeader?: boolean;
 }
 
 interface ContractInfoProps {
@@ -140,7 +141,8 @@ export const PreinstalledContractsSection: React.FC<PreinstalledContractsSection
     onConfigChange,
     ownerAddress,
     tokenName,
-    tokenSymbol
+    tokenSymbol,
+    hideHeader
 }) => {
     const handleToggle = (key: keyof PreinstallConfig, enabled: boolean) => {
         let newConfig = {
@@ -398,22 +400,24 @@ export const PreinstalledContractsSection: React.FC<PreinstalledContractsSection
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="text-center mb-4">
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">
-                    Pre-Deployed Contracts
-                </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-                    Configure essential infrastructure contracts that will be deployed in your genesis block.
-                </p>
-                
-                {/* Status Summary */}
-                <div className="inline-flex items-center space-x-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
-                    <div className={`w-1.5 h-1.5 rounded-full ${enabledCount === totalCount ? 'bg-green-500' : enabledCount > 0 ? 'bg-yellow-500' : 'bg-zinc-400'}`} />
-                    <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                        {enabledCount} of {totalCount} contracts enabled
-                    </span>
+            {!hideHeader && (
+                <div className="text-center mb-4">
+                    <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">
+                        Pre-Deployed Contracts
+                    </h2>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+                        Configure essential infrastructure contracts that will be deployed in your genesis block.
+                    </p>
+                    
+                    {/* Status Summary */}
+                    <div className="inline-flex items-center space-x-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
+                        <div className={`w-1.5 h-1.5 rounded-full ${enabledCount === totalCount ? 'bg-green-500' : enabledCount > 0 ? 'bg-yellow-500' : 'bg-zinc-400'}`} />
+                        <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            {enabledCount} of {totalCount} contracts enabled
+                        </span>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Contracts Stack */}
             <div className="space-y-3">

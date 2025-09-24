@@ -7,20 +7,37 @@ type SectionWrapperProps = {
     toggleExpand: () => void;
     children: React.ReactNode;
     sectionId: string; // Added for key prop if needed
+    compact?: boolean;
+    variant?: "card" | "flat";
 };
 
-export const SectionWrapper = ({ title, description, isExpanded, toggleExpand, children, sectionId }: SectionWrapperProps) => {
+export const SectionWrapper = ({ title, description, isExpanded, toggleExpand, children, sectionId, compact, variant = "card" }: SectionWrapperProps) => {
+    if (variant === "flat") {
+        return (
+            <div key={sectionId} className="space-y-2">
+                <div>
+                    <h3 className="text-sm font-medium text-zinc-800 dark:text-white">{title}</h3>
+                    {!compact && description && (
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{description}</p>
+                    )}
+                </div>
+                <div>{children}</div>
+            </div>
+        );
+    }
     return (
         <div key={sectionId} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm overflow-hidden">
             <div 
-                className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center cursor-pointer" 
+                className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center cursor-pointer" 
                 onClick={toggleExpand}
             >
                 <div>
-                    <h3 className="text-lg mt-1! mb-1 font-medium text-zinc-800 dark:text-white">{title}</h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0 mb-0">
-                        {description}
-                    </p>
+                    <h3 className="text-base mb-0.5 font-medium text-zinc-800 dark:text-white">{title}</h3>
+                    {!compact && (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0 mb-0">
+                            {description}
+                        </p>
+                    )}
                 </div>
                 <div>
                     {isExpanded ? 
@@ -30,7 +47,7 @@ export const SectionWrapper = ({ title, description, isExpanded, toggleExpand, c
                 </div>
             </div>
             {isExpanded && (
-                <div className="p-5">
+                <div className="p-4">
                     {children}
                 </div>
             )}

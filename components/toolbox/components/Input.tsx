@@ -88,12 +88,12 @@ export function Input({
       <div className="relative">
         <div className="flex">
           <RawInput
+            {...props}
             id={id}
             value={inputValue}
             onChange={handleChange}
             className={cn("flex-1", unit ? "pr-12" : "", button ? "rounded-r-none" : "", className)}
             error={error}
-            {...props}
           />
           {button}
         </div>

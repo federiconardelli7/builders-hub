@@ -30,6 +30,7 @@ interface AllowlistPrecompileConfiguratorProps {
     radioOptionFalseLabel: string
     radioOptionTrueLabel: string
     validationError?: string
+    showActivationToggle?: boolean
 }
 
 const simpleHash = (str: string): string => {
@@ -50,7 +51,8 @@ export default function AllowlistPrecompileConfigurator({
     onUpdateConfig,
     radioOptionFalseLabel,
     radioOptionTrueLabel,
-    validationError
+    validationError,
+    showActivationToggle = true
 }: AllowlistPrecompileConfiguratorProps) {
     const handleUpdateAllowlist = (newAddresses: AllowlistPrecompileConfig['addresses']) => {
         onUpdateConfig({ ...config, addresses: newAddresses })
@@ -69,16 +71,18 @@ export default function AllowlistPrecompileConfigurator({
                 <p className="text-zinc-500 dark:text-zinc-400">{description} The permission for adding and removing addresses from the allowlist as well as granting and revoking other addresses these permissions can be granted to an EOR or a smart contract.</p>
             </div>
 
-            <RadioGroup
-                value={config.activated ? 'true' : 'false'}
-                onChange={handleActivatedChange}
-                className="space-y-2"
-                idPrefix={`allowlist-${simpleHash(precompileAction)}-`}
-                items={[
-                    { value: "false", label: radioOptionFalseLabel },
-                    { value: "true", label: radioOptionTrueLabel }
-                ]}
-            />
+            {showActivationToggle && (
+                <RadioGroup
+                    value={config.activated ? 'true' : 'false'}
+                    onChange={handleActivatedChange}
+                    className="space-y-2"
+                    idPrefix={`allowlist-${simpleHash(precompileAction)}-`}
+                    items={[
+                        { value: "false", label: radioOptionFalseLabel },
+                        { value: "true", label: radioOptionTrueLabel }
+                    ]}
+                />
+            )}
 
 
             {config.activated && (

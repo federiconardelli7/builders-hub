@@ -25,6 +25,7 @@ type TransactionFeesSectionProps = {
     isExpanded: boolean;
     toggleExpand: () => void;
     validationMessages: ValidationMessages;
+    compact?: boolean;
 };
 
 export const TransactionFeesSection = ({
@@ -44,7 +45,8 @@ export const TransactionFeesSection = ({
     setRewardManagerAdmins,
     isExpanded,
     toggleExpand,
-    validationMessages
+    validationMessages,
+    compact
 }: TransactionFeesSectionProps) => {
 
     // Combine specific errors/warnings for FeeConfig component
@@ -109,10 +111,12 @@ export const TransactionFeesSection = ({
     return (
         <SectionWrapper
             title="Transaction Fees & Gas"
-            description="In addition to the native token, you can also configure the transaction fees (also known as gas fees). This allows Avalanche L1s to define the desired or maximal throughput of the blockchain differently."
+            description={compact ? "" : "Configure fee parameters and optional dynamic managers."}
             isExpanded={isExpanded}
             toggleExpand={toggleExpand}
             sectionId="transactionFees"
+            compact={compact}
+            variant="flat"
         >
             {/* Pass all necessary props to FeeConfig */}
             <FeeConfig

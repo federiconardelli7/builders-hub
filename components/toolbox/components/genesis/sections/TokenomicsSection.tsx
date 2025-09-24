@@ -1,17 +1,23 @@
 import { Dispatch, SetStateAction } from 'react';
 import { SectionWrapper } from '../SectionWrapper';
+import { Input } from '../../Input';
 import TokenAllocationList from '../TokenAllocationList';
 import AllowlistPrecompileConfigurator from '../AllowlistPrecompileConfigurator';
 import { AllocationEntry, AllowlistPrecompileConfig } from '../types';
+import { useGenesisHighlight } from '../GenesisHighlightContext';
 
 type TokenomicsSectionProps = {
     tokenAllocations: AllocationEntry[];
-    setTokenAllocations: Dispatch<SetStateAction<AllocationEntry[]>>;
+    setTokenAllocations: (allocations: AllocationEntry[]) => void;
     nativeMinterConfig: AllowlistPrecompileConfig;
     setNativeMinterConfig: Dispatch<SetStateAction<AllowlistPrecompileConfig>>;
+    tokenName: string;
+    setTokenName: Dispatch<SetStateAction<string>>;
     isExpanded: boolean;
     toggleExpand: () => void;
     validationErrors: { [key: string]: string };
+    compact?: boolean;
+    hideMinterConfigurator?: boolean;
 };
 
 export const TokenomicsSection = ({
@@ -19,51 +25,70 @@ export const TokenomicsSection = ({
     setTokenAllocations,
     nativeMinterConfig,
     setNativeMinterConfig,
+    tokenName,
+    setTokenName,
     isExpanded,
     toggleExpand,
-    validationErrors // Pass errors object
+    validationErrors, // Pass errors object
+    compact,
+    hideMinterConfigurator = false
 }: TokenomicsSectionProps) => {
-    return (
-        <SectionWrapper
-            title="Tokenomics"
-            description="Tokenomics in Layer 1 blockchains on the Avalanche network are highly flexible, allowing developers to tailor economic models to their specific needs. Each L1 can define its own native token, specifying its initial allocation, distribution mechanism, and whether it should be mintable for ongoing issuance. This enables a wide range of economic designs, from fixed-supply tokens to inflationary models that support network sustainability."
-            isExpanded={isExpanded}
-            toggleExpand={toggleExpand}
-            sectionId="tokenomics"
-        >
-            <div className="space-y-6">
-                <p></p>
+    const { setHighlightPath, clearHighlight } = useGenesisHighlight();
 
-                {/* Initial Allocation */} 
-                <div>
-                    <h3 className="font-medium mb-3">Initial Token Allocation</h3>
-                    <div className="mb-4">
-                        <p className="text-zinc-500 dark:text-zinc-400">
-                            Add addresses and their initial token balances. The first address will also be the initial owner for the ProxyAdmin contract.
-                        </p>
-                        {validationErrors.tokenAllocations && <p className="text-red-500 text-sm mt-1">{validationErrors.tokenAllocations}</p>}
-                    </div>
+    const handleFocus = (path: string) => {
+        setHighlightPath(path);
+    };
+
+    const handleBlur = () => {
+        clearHighlight();
+    };
+    return (
+        // <SectionWrapper
+        //     title="Tokenomics"
+        //     description={compact ? "" : "Configure allocations and optional minting for your native token."}
+        //     isExpanded={isExpanded}
+        //     toggleExpand={toggleExpand}
+        //     sectionId="tokenomics"
+        //     compact={compact}
+        //     variant="flat"
+        // >
+            <div className="space-y-6 text-[13px]">
+
+                 {/* Initial Allocation */} 
+                 <div>
                     <TokenAllocationList
                         allocations={tokenAllocations}
                         onAllocationsChange={setTokenAllocations}
-                        // Pass specific allocation errors if needed (e.g., by filtering validationErrors)
+                        compact={compact}
                     />
+                    {validationErrors.tokenAllocations && <p className="text-red-500 text-sm mt-1">{validationErrors.tokenAllocations}</p>}
                 </div>
+                
+                {/* Coin Name - match EVM Chain ID styling (simple labeled input) */}
+                <Input
+                    label="Coin Name"
+                    value={tokenName}
+                    onChange={setTokenName}
+                    placeholder="COIN"
+                    onFocus={() => handleFocus('tokenName')}
+                    onBlur={handleBlur}
+                />
 
-                {/* Minting Rights */} 
-                <div>
-                    <AllowlistPrecompileConfigurator
-                        title="Minting Rights of Native Token"
-                        description="Configure which addresses can mint additional native tokens."
-                        precompileAction="mint native tokens"
-                        config={nativeMinterConfig}
-                        onUpdateConfig={setNativeMinterConfig}
-                        radioOptionFalseLabel="Fixed token supply."
-                        radioOptionTrueLabel="Allow minting additional tokens."
-                        validationError={validationErrors.contractNativeMinter}
-                    />
-                </div>
+                {!hideMinterConfigurator && (
+                    <div>
+                        <AllowlistPrecompileConfigurator
+                            title="Minting Rights of Native Token"
+                            description={compact ? "" : "Configure which addresses can mint additional native tokens."}
+                            precompileAction="mint native tokens"
+                            config={nativeMinterConfig}
+                            onUpdateConfig={setNativeMinterConfig}
+                            radioOptionFalseLabel="Fixed token supply."
+                            radioOptionTrueLabel="Allow minting additional tokens."
+                            validationError={validationErrors.contractNativeMinter}
+                        />
+                    </div>
+                )}
             </div>
-        </SectionWrapper>
+        // </SectionWrapper>
     );
 }; 

@@ -14,6 +14,8 @@ import { TokenomicsSection } from "@/components/toolbox/components/genesis/secti
 import { PermissionsSection } from "@/components/toolbox/components/genesis/sections/PermissionsSection";
 import { TransactionFeesSection } from "@/components/toolbox/components/genesis/sections/TransactionFeesSection";
 import { PreinstallsTab } from "@/components/toolbox/components/genesis/tabs/PreinstallsTab";
+import { PredeploysSection } from "@/components/toolbox/components/genesis/sections/PredeploysSection";
+import { PrecompilesSection } from "@/components/toolbox/components/genesis/sections/PrecompilesSection";
 
 // Genesis Utilities & Types
 import { generateGenesis } from "@/components/toolbox/components/genesis/genGenesis";
@@ -56,18 +58,45 @@ type GenesisBuilderProps = {
     genesisData: string;
     setGenesisData: (data: string) => void;
     initiallyExpandedSections?: SectionId[];
+    tokenAllocations?: AllocationEntry[];
+    setTokenAllocations?: (allocations: AllocationEntry[]) => void;
 };
 
-export default function GenesisBuilder({ genesisData, setGenesisData, initiallyExpandedSections = ["chainParams"] }: GenesisBuilderProps) {
+export default function GenesisBuilder({
+    genesisData,
+    setGenesisData,
+    initiallyExpandedSections = ["chainParams"],
+    tokenAllocations: propTokenAllocations,
+    setTokenAllocations: propSetTokenAllocations
+}: GenesisBuilderProps) {
     const { walletEVMAddress } = useWalletStore();
 
-    // --- State --- 
+    // --- State ---
     const [evmChainId, setEvmChainId] = useState<number>(10000 + Math.floor(Math.random() * 90000));
+    
+    // Stable timestamp - generated once when component mounts
+    const [blockTimestamp] = useState<number>(() => Math.floor(Date.now() / 1000));
     const [tokenName, setTokenName] = useState<string>("COIN");
     const [tokenSymbol, setTokenSymbol] = useState<string>("COIN");
     const [gasLimit, setGasLimit] = useState<number>(15000000);
     const [targetBlockRate, setTargetBlockRate] = useState<number>(2);
-    const [tokenAllocations, setTokenAllocations] = useState<AllocationEntry[]>([]);
+    
+    // Manual edit mode - when true, prevents automatic regeneration
+    const [isManualEditMode, setIsManualEditMode] = useState(false);
+    const [lastGeneratedJson, setLastGeneratedJson] = useState<string>("");
+    
+    // Detect manual edits
+    useEffect(() => {
+        if (genesisData && lastGeneratedJson && genesisData !== lastGeneratedJson && !genesisData.startsWith("Error:")) {
+            // JSON has been manually edited
+            setIsManualEditMode(true);
+        }
+    }, [genesisData, lastGeneratedJson]);
+
+    // Use props for token allocations if provided, otherwise use local state
+    const [localTokenAllocations, setLocalTokenAllocations] = useState<AllocationEntry[]>([]);
+    const tokenAllocations = propTokenAllocations ?? localTokenAllocations;
+    const setTokenAllocations = propSetTokenAllocations ?? setLocalTokenAllocations;
     const [feeConfig, setFeeConfig] = useState<FeeConfigType>(DEFAULT_FEE_CONFIG);
 
     // Using the AllowlistPrecompileConfig as the single source of truth for allowlists
@@ -111,10 +140,12 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
 
     // Initialize owner allocation when wallet address is available
     useEffect(() => {
-        if (walletEVMAddress && tokenAllocations.length === 0) {
+        // Only initialize if we have no allocations AND no props were passed
+        // This prevents overriding user edits when tokenAllocations are passed as props
+        if (walletEVMAddress && tokenAllocations.length === 0 && !propTokenAllocations) {
             setTokenAllocations([{ address: walletEVMAddress as Address, amount: 1000000 }]);
         }
-    }, [walletEVMAddress, tokenAllocations.length]);
+    }, [walletEVMAddress, tokenAllocations.length, setTokenAllocations, propTokenAllocations]);
 
     // Validate configuration whenever relevant state changes
     useEffect(() => {
@@ -193,9 +224,11 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
     useEffect(() => {
         // Add a debounce to prevent multiple rapid updates
         const debounceTimer = setTimeout(() => {
-            // Don't proceed if we shouldn't generate genesis
-            if (!shouldGenerateGenesis) {
-                setGenesisData(""); // Clear genesis data if we shouldn't generate
+            // Don't proceed if we shouldn't generate genesis or in manual edit mode
+            if (!shouldGenerateGenesis || isManualEditMode) {
+                if (!shouldGenerateGenesis) {
+                    setGenesisData(""); // Clear genesis data if we shouldn't generate
+                }
                 return;
             }
 
@@ -238,7 +271,7 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
                             targetBlockRate: targetBlockRate,
                         },
                         warpConfig: {
-                            blockTimestamp: Math.floor(Date.now() / 1000),
+                            blockTimestamp: blockTimestamp,
                             quorumNumerator: warpConfig.quorumNumerator,
                             requirePrimaryNetworkSigners: warpConfig.requirePrimaryNetworkSigners,
                         },
@@ -246,20 +279,21 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
                         ...(feeManagerEnabled && {
                             feeManagerConfig: {
                                 adminAddresses: [...feeManagerAdmins],
-                                blockTimestamp: Math.floor(Date.now() / 1000)
+                                blockTimestamp: blockTimestamp
                             }
                         }),
                         ...(rewardManagerEnabled && {
                             rewardManagerConfig: {
                                 adminAddresses: [...rewardManagerAdmins],
-                                blockTimestamp: Math.floor(Date.now() / 1000)
+                                blockTimestamp: blockTimestamp
                             }
                         }),
                     },
-                    timestamp: `0x${Math.floor(Date.now() / 1000).toString(16)}`
+                    timestamp: `0x${blockTimestamp.toString(16)}`
                 };
-                console.log("settingGenesis");
-                setGenesisData(JSON.stringify(finalGenesisConfig, null, 2));
+                const genesisString = JSON.stringify(finalGenesisConfig, null, 2);
+                setLastGeneratedJson(genesisString);
+                setGenesisData(genesisString);
             } catch (error) {
                 console.error("Error generating genesis data:", error);
                 setGenesisData(`Error generating genesis: ${error instanceof Error ? error.message : String(error)}`);
@@ -268,7 +302,7 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
 
         return () => clearTimeout(debounceTimer);
         // Only depend on shouldGenerateGenesis flag and the actual data needed
-    }, [shouldGenerateGenesis, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, setGenesisData]);
+    }, [shouldGenerateGenesis, isManualEditMode, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, setGenesisData, blockTimestamp]);
 
     // --- Handlers --- 
 
@@ -282,6 +316,11 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
             console.error("Failed to copy genesis data:", err);
         }
     }, [genesisData]);
+    
+    const handleExitManualEditMode = useCallback(() => {
+        // Exit manual edit mode and regenerate from form state
+        setIsManualEditMode(false);
+    }, []);
 
     const handleDownloadGenesis = useCallback(() => {
         if (!genesisData) return;
@@ -318,10 +357,10 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
     const maxSizeKiB = 64; // P-Chain transaction limit
     const sizePercentage = Math.min((genesisSizeKiB / maxSizeKiB) * 100, 100);
 
-    // Memoize common props for TokenomicsSection
-    const handleTokenAllocationsChange = useCallback((newAllocations: SetStateAction<AllocationEntry[]>) => {
+    // Handler for token allocations
+    const handleTokenAllocationsChange = useCallback((newAllocations: AllocationEntry[]) => {
         setTokenAllocations(newAllocations);
-    }, []);
+    }, [setTokenAllocations]);
 
     // Memoize common props for PermissionsSection
     const handleDeployerConfigChange = useCallback((config: SetStateAction<AllowlistPrecompileConfig>) => {
@@ -372,31 +411,32 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
     // --- Render --- 
     return (
         <div className="space-y-6 mb-4">
-            {/* Tabs */}
-            <div className="border-b border-zinc-200 dark:border-zinc-800">
-                <div className="flex -mb-px">
-                    {["config", "precompiles", "preinstalls", "genesis"].map(tabId => (
+            {/* Manual Edit Mode Notification */}
+            {isManualEditMode && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">
+                                Manual Edit Mode
+                            </span>
+                            <span className="text-amber-600 dark:text-amber-400 text-xs">
+                                Form changes are disabled while editing JSON directly
+                            </span>
+                        </div>
                         <button
-                            key={tabId}
-                            onClick={() => setActiveTab(tabId)}
-                            disabled={tabId === "genesis" && !isGenesisReady}
-                            className={`py-2 px-4 font-medium disabled:opacity-50 disabled:cursor-not-allowed ${activeTab === tabId
-                                ? "border-b-2 border-blue-500 text-blue-600 dark:text-blue-400"
-                                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
-                                }`}
+                            onClick={handleExitManualEditMode}
+                            className="text-xs px-2 py-1 bg-amber-600 dark:bg-amber-500 text-white rounded hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors"
                         >
-                            {tabId === "config" && "Configuration"}
-                            {tabId === "precompiles" && "Precompile Info"}
-                            {tabId === "preinstalls" && "Pre-Deployed Contracts"}
-                            {tabId === "genesis" && "Genesis JSON"}
+                            Exit Manual Mode
                         </button>
-                    ))}
+                    </div>
                 </div>
-            </div>
+            )}
+            {/* Compact single-column: remove top tab bar per design */}
 
-            {/* Configuration Tab */}
-            {activeTab === "config" && (
-                <div className="space-y-6">
+            {/* Configuration - single column */}
+            <div className="space-y-6">
+                    {/* Chain basics: Chain ID (only), no token fields here; Chain Name + VM ID live above */}
                     <ChainParamsSection
                         evmChainId={evmChainId}
                         setEvmChainId={handleSetEvmChainId}
@@ -409,26 +449,58 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
                         validationError={validationMessages.errors.chainId}
                         tokenNameError={validationMessages.errors.tokenName}
                         tokenSymbolError={validationMessages.errors.tokenSymbol}
+                        compact
+                        hideTokenFields
                     />
 
-                    <PermissionsSection
-                        deployerConfig={contractDeployerAllowListConfig}
-                        setDeployerConfig={handleDeployerConfigChange}
-                        txConfig={txAllowListConfig}
-                        setTxConfig={handleTxConfigChange}
-                        isExpanded={isSectionExpanded('permissions')}
-                        toggleExpand={() => toggleSection('permissions')}
-                        validationErrors={validationMessages.errors}
-                    />
-
+                    {/* Coin name + allocations */}
                     <TokenomicsSection
                         tokenAllocations={tokenAllocations}
                         setTokenAllocations={handleTokenAllocationsChange}
                         nativeMinterConfig={contractNativeMinterConfig}
                         setNativeMinterConfig={handleNativeMinterConfigChange}
+                        tokenName={tokenName}
+                        setTokenName={setTokenName}
                         isExpanded={isSectionExpanded('tokenomics')}
                         toggleExpand={() => toggleSection('tokenomics')}
                         validationErrors={validationMessages.errors}
+                        compact
+                        hideMinterConfigurator
+                    />
+
+                    {/* Precompiles enable/disable list */}
+                    <PrecompilesSection
+                        deployerConfig={contractDeployerAllowListConfig}
+                        setDeployerConfig={handleDeployerConfigChange}
+                        txConfig={txAllowListConfig}
+                        setTxConfig={handleTxConfigChange}
+                        nativeMinterConfig={contractNativeMinterConfig}
+                        setNativeMinterConfig={handleNativeMinterConfigChange}
+                        feeManagerEnabled={feeManagerEnabled}
+                        setFeeManagerEnabled={handleSetFeeManagerEnabled}
+                        feeManagerAdmins={feeManagerAdmins}
+                        setFeeManagerAdmins={handleSetFeeManagerAdmins}
+                        rewardManagerEnabled={rewardManagerEnabled}
+                        setRewardManagerEnabled={handleSetRewardManagerEnabled}
+                        rewardManagerAdmins={rewardManagerAdmins}
+                        setRewardManagerAdmins={handleSetRewardManagerAdmins}
+                        isExpanded={isSectionExpanded('precompiles' as SectionId)}
+                        toggleExpand={() => toggleSection('precompiles' as SectionId)}
+                        compact
+                        validationErrors={validationMessages.errors}
+                        walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
+                    />
+
+                    {/* Predeploy enable list */}
+                    <PredeploysSection
+                        config={preinstallConfig}
+                        onConfigChange={setPreinstallConfig}
+                        ownerAddress={tokenAllocations[0]?.address}
+                        tokenName={tokenName}
+                        tokenSymbol={tokenSymbol}
+                        isExpanded={isSectionExpanded('predeploys' as SectionId)}
+                        toggleExpand={() => toggleSection('predeploys' as SectionId)}
+                        compact
                     />
 
                     <TransactionFeesSection
@@ -449,73 +521,13 @@ export default function GenesisBuilder({ genesisData, setGenesisData, initiallyE
                         isExpanded={isSectionExpanded('transactionFees')}
                         toggleExpand={() => toggleSection('transactionFees')}
                         validationMessages={validationMessages} // Pass both errors and warnings
+                        compact
                     />
 
                     {/* Validation Summary & Actions */}
-                    <div>
-                        {Object.keys(validationMessages.errors).length > 0 ? (
-                            <div className="bg-red-50/70 dark:bg-red-900/20 border border-red-200 dark:border-red-800/60 p-4 rounded-md flex items-start mb-4">
-                                <AlertCircle className="text-red-500 mr-3 h-5 w-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 className="font-medium text-red-800 dark:text-red-300">Please fix the following errors:</h4>
-                                    <ul className="mt-2 list-disc list-inside text-sm text-red-700 dark:text-red-400">
-                                        {Object.entries(validationMessages.errors).map(([key, message]) => (
-                                            <li key={key}>{message}</li> // Consider making keys more user-friendly later
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ) : isGenesisReady ? (
-                            <div className="bg-green-50/70 dark:bg-green-900/20 border border-green-200 dark:border-green-800/60 p-4 rounded-md flex items-center mb-4">
-                                <Check className="text-green-500 mr-3 h-5 w-5" />
-                                <span className="text-green-800 dark:text-green-300">Genesis configuration is valid and ready!</span>
-                            </div>
-                        ) : (
-                            <div className="bg-blue-50/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/60 p-4 rounded-md flex items-center mb-4">
-                                <Check className="text-blue-500 mr-3 h-5 w-5" />
-                                <span className="text-blue-800 dark:text-blue-300">Fill in the configuration to generate the genesis file.</span>
-                            </div>
-                        )}
-
-                        {Object.keys(validationMessages.warnings).length > 0 && (
-                            <div className="bg-yellow-50/70 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/60 p-4 rounded-md flex items-start mb-4">
-                                <AlertCircle className="text-yellow-500 mr-3 h-5 w-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 className="font-medium text-yellow-800 dark:text-yellow-300">Configuration Warnings:</h4>
-                                    <ul className="mt-2 list-disc list-inside text-sm text-yellow-700 dark:text-yellow-400">
-                                        {Object.entries(validationMessages.warnings).map(([key, message]) => (
-                                            <li key={key}>{message}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        )}
-
-                        {isGenesisReady && (
-                            <div className="flex justify-center space-x-4 mt-4">
-                                <Button
-                                    onClick={() => setActiveTab("precompiles")}
-                                    variant="secondary"
-                                >
-                                    View Precompile Info
-                                </Button>
-                                <Button
-                                    onClick={() => setActiveTab("preinstalls")}
-                                    variant="secondary"
-                                >
-                                    View Pre-Deployed Contracts
-                                </Button>
-                                <Button
-                                    onClick={() => setActiveTab("genesis")}
-                                    variant="secondary"
-                                >
-                                    View Genesis JSON
-                                </Button>
-                            </div>
-                        )}
-                    </div>
+                   
                 </div>
-            )}
+            
 
             {/* Precompiles Tab */}
             {activeTab === "precompiles" && (

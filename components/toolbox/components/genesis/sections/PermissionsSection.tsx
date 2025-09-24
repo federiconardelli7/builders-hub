@@ -11,6 +11,7 @@ type PermissionsSectionProps = {
     isExpanded: boolean;
     toggleExpand: () => void;
     validationErrors: { [key: string]: string };
+    compact?: boolean;
 };
 
 export const PermissionsSection = ({
@@ -20,15 +21,18 @@ export const PermissionsSection = ({
     setTxConfig,
     isExpanded,
     toggleExpand,
-    validationErrors
+    validationErrors,
+    compact
 }: PermissionsSectionProps) => {
     return (
         <SectionWrapper
             title="Permissions"
-            description="By design, blockchain networks are fully permissionless, allowing anyone to transact and deploy smart contracts. However, certain use cases require permissioning to control who can participate in transactions or deploy contracts. On Avalanche, permissioning is an optional feature for Layer 1 blockchains that may or may not be activated, depending on the network's needs."
+            description={compact ? "" : "Optional permissioning for transaction submitters and contract deployers."}
             isExpanded={isExpanded}
             toggleExpand={toggleExpand}
             sectionId="permissions"
+            compact={compact}
+            variant="flat"
         >
             <div className="space-y-6">
 
@@ -36,7 +40,7 @@ export const PermissionsSection = ({
 
                 <AllowlistPrecompileConfigurator
                     title="Contract Deployer Allowlist"
-                    description="You can optionally restrict which addresses may deploy smart contracts on this blockchain."
+                    description={compact ? undefined : "You can optionally restrict which addresses may deploy smart contracts on this blockchain."}
                     precompileAction="deploy contracts"
                     config={deployerConfig}
                     onUpdateConfig={setDeployerConfig}
@@ -50,7 +54,7 @@ export const PermissionsSection = ({
 
                 <AllowlistPrecompileConfigurator
                     title="Transaction Allowlist"
-                    description="Configure which addresses can submit transactions."
+                    description={compact ? undefined : "Configure which addresses can submit transactions."}
                     precompileAction="submit transactions"
                     config={txConfig}
                     onUpdateConfig={setTxConfig}

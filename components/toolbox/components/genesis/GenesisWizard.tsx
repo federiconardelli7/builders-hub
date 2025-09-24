@@ -1,0 +1,178 @@
+"use client";
+
+import { useState, useEffect, ReactNode } from "react";
+import { JsonPreviewPanel } from "./JsonPreviewPanel";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import GenesisBuilder from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
+import { GenesisHighlightProvider, useGenesisHighlight } from "./GenesisHighlightContext";
+
+// Simple JSON syntax highlighter component for mobile view
+function SyntaxHighlightedJSON({ code, highlightedLine }: { code: string, highlightedLine: number | null }) {
+    const [highlightedElements, setHighlightedElements] = useState<Set<number>>(new Set());
+
+    useEffect(() => {
+        if (highlightedLine !== null) {
+            setHighlightedElements(new Set([highlightedLine]));
+        } else {
+            setHighlightedElements(new Set());
+        }
+    }, [highlightedLine]);
+
+    const syntaxHighlight = (json: string) => {
+        return json
+            .replace(/(".*?")(\s*:)/g, '<span class="text-green-600 dark:text-green-400">$1</span>$2')
+            .replace(/:\s*(".*?")/g, ': <span class="text-yellow-600 dark:text-yellow-400">$1</span>')
+            .replace(/:\s*(\b\d+\.?\d*\b)/g, ': <span class="text-orange-600 dark:text-orange-400">$1</span>')
+            .replace(/:\s*(\b(?:true|false|null)\b)/g, ': <span class="text-blue-600 dark:text-blue-400">$1</span>')
+            .replace(/("0x[0-9a-fA-F]+")/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
+            .replace(/(\{|\}|\[|\])/g, '<span class="text-zinc-600 dark:text-zinc-300">$1</span>');
+    };
+
+    const lines = code.split('\n');
+
+    return (
+        <div className="relative font-mono text-[11px] leading-5">
+            <pre className="whitespace-pre-wrap overflow-x-auto">
+                {lines.map((line, index) => {
+                    const lineNumber = index + 1;
+                    const isHighlighted = highlightedElements.has(lineNumber);
+
+                    return (
+                        <div
+                            key={lineNumber}
+                            className={`relative ${isHighlighted ? 'bg-blue-200/30 dark:bg-blue-800/30' : ''}`}
+                            style={{
+                                paddingTop: '1px',
+                                paddingBottom: '1px'
+                            }}
+                            data-line={lineNumber}
+                        >
+                            <span className="text-zinc-500 dark:text-zinc-400 pr-3 select-none inline-block w-8 text-right">
+                                {lineNumber.toString().padStart(3, ' ')}
+                            </span>
+                            <span dangerouslySetInnerHTML={{ __html: syntaxHighlight(line) }} />
+                        </div>
+                    );
+                })}
+            </pre>
+        </div>
+    );
+}
+
+interface GenesisWizardProps {
+    children: ReactNode;
+    genesisData: string;
+    onGenesisDataChange: (data: string) => void;
+    currentStep?: number;
+    footer?: ReactNode;
+}
+
+function GenesisWizardContent({ children, genesisData, onGenesisDataChange, footer }: GenesisWizardProps) {
+    const { highlightPath } = useGenesisHighlight();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    if (isMobile) {
+        // Mobile layout - stacked view with collapsible JSON preview
+        return (
+            <div className="space-y-6">
+                <div className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+                    {children}
+                </div>
+
+                <details className="bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                    <summary className="p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                        <span className="text-sm font-medium">View Genesis JSON</span>
+                    </summary>
+                    <div className="border-t border-zinc-200 dark:border-zinc-800">
+                        <div className="p-3">
+                            <SyntaxHighlightedJSON
+                                code={genesisData}
+                                highlightedLine={null}
+                            />
+                        </div>
+                    </div>
+                </details>
+            </div>
+        );
+    }
+
+    // Desktop layout - split view with global footer
+    return (
+        <div className="flex flex-col h-[calc(100vh-300px)] min-h-[500px] bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <div className="flex flex-1 min-h-0">
+                {/* Left Panel - Configuration */}
+                <div className="flex-1 overflow-y-auto p-5 bg-white dark:bg-zinc-950 text-[13px]">
+                    {children}
+                </div>
+
+                {/* Right Panel - JSON Preview */}
+                <div className="w-[640px] xl:w-[720px] border-l border-zinc-200 dark:border-zinc-800">
+                    <JsonPreviewPanel
+                        jsonData={genesisData}
+                        onJsonUpdate={onGenesisDataChange}
+                        highlightPath={highlightPath || undefined}
+                    />
+                </div>
+            </div>
+
+            {footer && (
+                <div className="border-t border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-950/60">
+                    <div className="px-4 py-3 flex items-center justify-center">
+                        {footer}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export function GenesisWizard({
+    children,
+    genesisData,
+    onGenesisDataChange,
+    currentStep = 1,
+    footer
+}: GenesisWizardProps) {
+    return (
+        <GenesisHighlightProvider>
+            <GenesisWizardContent
+                genesisData={genesisData}
+                onGenesisDataChange={onGenesisDataChange}
+                footer={footer}
+            >
+                {children}
+            </GenesisWizardContent>
+        </GenesisHighlightProvider>
+    );
+}
+
+interface WizardStepProps {
+    title: string;
+    description?: string;
+    children: ReactNode;
+}
+
+export function WizardStep({ title, description, children }: WizardStepProps) {
+    return (
+        <div className="space-y-4">
+            <div>
+                <h2 className="text-lg font-semibold">{title}</h2>
+                {description && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{description}</p>
+                )}
+            </div>
+            <div>{children}</div>
+        </div>
+    );
+}
