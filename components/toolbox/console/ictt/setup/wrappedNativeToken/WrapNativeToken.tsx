@@ -1,8 +1,9 @@
 "use client";
 
 import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
-import { useWalletStore, useWrappedNativeToken, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
-import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
+import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
+import { useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { http, createPublicClient, parseEther } from "viem";
@@ -14,8 +15,10 @@ interface WrapNativeTokenProps {
 }
 
 export default function WrapNativeToken({ wrappedNativeTokenAddress, onError }: WrapNativeTokenProps) {
-    const { coreWalletClient, walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
+    const { coreWalletClient, walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
     const viemChain = useViemChainStore();
+    const setWrappedNativeToken = useSetWrappedNativeToken();
+    const { notify } = useConsoleNotifications();
     
     // Get cached values from wallet store
     const cachedWrappedToken = useWrappedNativeToken();
@@ -41,7 +44,7 @@ export default function WrapNativeToken({ wrappedNativeTokenAddress, onError }: 
         
         // Cache the token address if we found one
         if (wrappedNativeTokenAddress && !cachedWrappedToken) {
-            setWrappedNativeToken(chainIdStr, wrappedNativeTokenAddress);
+            setWrappedNativeToken(wrappedNativeTokenAddress);
         }
     }, [viemChain, walletEVMAddress, wrappedNativeTokenAddress, walletChainId, cachedWrappedToken, cachedNativeCurrency, setWrappedNativeToken, setNativeCurrencyInfo]);
 
@@ -59,7 +62,7 @@ export default function WrapNativeToken({ wrappedNativeTokenAddress, onError }: 
                 transport: http(viemChain.rpcUrls.default.http[0] || "")
             });
 
-            const hash = await coreWalletClient.writeContract({
+            const writePromise = coreWalletClient.writeContract({
                 address: wrappedNativeTokenAddress as `0x${string}`,
                 abi: WrappedNativeToken.abi,
                 functionName: 'deposit',
@@ -68,6 +71,12 @@ export default function WrapNativeToken({ wrappedNativeTokenAddress, onError }: 
                 account: walletEVMAddress as `0x${string}`
             });
 
+            notify({
+                type: 'call',
+                name: 'Wrap Native Token'
+            }, writePromise, viemChain ?? undefined);
+
+            const hash = await writePromise;
             await publicClient.waitForTransactionReceipt({ hash });
 
             setWrapAmount('');

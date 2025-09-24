@@ -38,11 +38,6 @@ interface WalletState {
   };
   bootstrapped: boolean;
   
-  // Temporary contract addresses cache (session only, per chain)
-  contractsCache: {
-    wrappedNativeTokens: Record<string, string>; // Key: chainId, Value: address
-    // Can add more contract types here in the future
-  };
   
   // Native currency info cache
   nativeCurrencyCache: Record<string, { name: string; symbol: string; decimals: number }>; // Key: chainId
@@ -103,10 +98,6 @@ interface WalletActions {
   getBootstrapped: () => boolean;
   setBootstrapped: (bootstrapped: boolean) => void;
   
-  // Contract cache actions
-  setWrappedNativeToken: (chainId: string, address: string) => void;
-  getWrappedNativeToken: (chainId: string) => string | undefined;
-  clearContractsCache: () => void;
   
   // Native currency cache actions
   setNativeCurrencyInfo: (chainId: string, info: { name: string; symbol: string; decimals: number }) => void;
@@ -143,21 +134,11 @@ export const useWalletStore = create<WalletStore>((set, get) => {
       l1Chains: {},
     },
     bootstrapped: false,
-    contractsCache: {
-      wrappedNativeTokens: {},
-    },
     nativeCurrencyCache: {},
 
     // Actions
     updateWalletConnection: (data: { coreWalletClient?: ReturnType<typeof createCoreWalletClient>; walletEVMAddress?: string; walletChainId?: number; pChainAddress?: string; coreEthAddress?: string; }) => {
-      set((state) => {
-        // Clear contracts cache on wallet disconnect
-        const newState = { ...state, ...data };
-        if (data.walletEVMAddress === "" || data.walletEVMAddress === undefined) {
-          newState.contractsCache = { wrappedNativeTokens: {} };
-        }
-        return newState;
-      });
+      set((state) => ({ ...state, ...data }));
     },
 
     updateNetworkSettings: (data: { avalancheNetworkID?: typeof networkIDs.FujiID | typeof networkIDs.MainnetID; isTestnet?: boolean; evmChainName?: string; }) => {
@@ -270,31 +251,6 @@ export const useWalletStore = create<WalletStore>((set, get) => {
     getBootstrapped: () => get().bootstrapped,
     setBootstrapped: (bootstrapped: boolean) => set({ bootstrapped: bootstrapped }),
     
-    // Contract cache actions
-    setWrappedNativeToken: (chainId: string, address: string) => {
-      set((state) => ({
-        contractsCache: {
-          ...state.contractsCache,
-          wrappedNativeTokens: {
-            ...state.contractsCache.wrappedNativeTokens,
-            [chainId]: address,
-          },
-        },
-      }));
-    },
-    
-    getWrappedNativeToken: (chainId: string) => {
-      return get().contractsCache.wrappedNativeTokens[chainId];
-    },
-    
-    clearContractsCache: () => {
-      set((state) => ({
-        contractsCache: {
-          wrappedNativeTokens: {},
-        },
-      }));
-    },
-    
     // Native currency cache actions
     setNativeCurrencyInfo: (chainId: string, info: { name: string; symbol: string; decimals: number }) => {
       set((state) => ({
@@ -374,13 +330,6 @@ export const useL1LoadingStates = () => useWalletStore((state) => state.isLoadin
 export const useL1Balance = (chainId: string) => useWalletStore((state) => state.balances.l1Chains[chainId] || 0);
 export const useL1Loading = (chainId: string) => useWalletStore((state) => state.isLoading.l1Chains[chainId] || false);
 
-// Contract cache selectors
-export const useWrappedNativeToken = (chainId?: string) => {
-  const walletChainId = useWalletStore((state) => state.walletChainId);
-  const getWrappedNativeToken = useWalletStore((state) => state.getWrappedNativeToken);
-  const effectiveChainId = chainId || walletChainId.toString();
-  return getWrappedNativeToken(effectiveChainId);
-};
 
 export const useNativeCurrencyInfo = (chainId?: string) => {
   const walletChainId = useWalletStore((state) => state.walletChainId);

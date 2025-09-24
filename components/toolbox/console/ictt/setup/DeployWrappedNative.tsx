@@ -1,8 +1,8 @@
 "use client";
 
 import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
-import { useToolboxStore, useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
-import { useWalletStore, useWrappedNativeToken, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
+import { useToolboxStore, useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
@@ -36,12 +36,13 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
     const { wrappedNativeTokenAddress: wrappedNativeTokenAddressStore, setWrappedNativeTokenAddress } = useToolboxStore();
+    const setWrappedNativeToken = useSetWrappedNativeToken();
     const selectedL1 = useSelectedL1()();
     const [wrappedNativeTokenAddress, setLocalWrappedNativeTokenAddress] = useState<string>('');
     const [hasPredeployedToken, setHasPredeployedToken] = useState(false);
     const [isCheckingToken, setIsCheckingToken] = useState(false);
     const { coreWalletClient } = useConnectedWallet();
-    const { walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
+    const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
     const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
@@ -97,10 +98,7 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                         }
                     }
                     
-                    // Cache the token address if we found one
-                    if (tokenAddress) {
-                        setWrappedNativeToken(chainIdStr, tokenAddress);
-                    }
+                    // No need to cache here since we're using toolboxStore
                 } else {
                     // If we got from cache, we assume it exists
                     setHasPredeployedToken(true);
@@ -120,7 +118,7 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
         }
 
         checkToken();
-    }, [viemChain, walletEVMAddress, wrappedNativeTokenAddressStore, selectedL1, walletChainId, cachedWrappedToken, cachedNativeCurrency, setWrappedNativeToken, setNativeCurrencyInfo]);
+    }, [viemChain, walletEVMAddress, wrappedNativeTokenAddressStore, selectedL1, walletChainId, cachedWrappedToken, cachedNativeCurrency, setNativeCurrencyInfo]);
 
     async function handleDeploy() {
         setIsDeploying(true);
@@ -151,8 +149,8 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
 
             setWrappedNativeTokenAddress(receipt.contractAddress);
             setLocalWrappedNativeTokenAddress(receipt.contractAddress);
-            // Cache in wallet store for session
-            setWrappedNativeToken(walletChainId.toString(), receipt.contractAddress);
+            // Also update the cached wrapped native token for consistency
+            setWrappedNativeToken(receipt.contractAddress);
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useWalletStore, useWrappedNativeToken, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
-import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
+import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
+import { useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
 import { useState, useEffect } from "react";
 import { wrappedTokenBalanceService, WrappedTokenBalanceState } from "@/components/toolbox/services/wrappedTokenBalanceService";
 
@@ -11,8 +11,9 @@ interface DisplayWrappedBalanceProps {
 }
 
 export default function DisplayWrappedBalance({ wrappedNativeTokenAddress, onError }: DisplayWrappedBalanceProps) {
-    const { walletEVMAddress, walletChainId, setWrappedNativeToken, setNativeCurrencyInfo } = useWalletStore();
+    const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
     const viemChain = useViemChainStore();
+    const setWrappedNativeToken = useSetWrappedNativeToken();
     
     // Get cached values from wallet store
     const cachedWrappedToken = useWrappedNativeToken();
@@ -48,7 +49,7 @@ export default function DisplayWrappedBalance({ wrappedNativeTokenAddress, onErr
         
         // Cache the token address if we found one
         if (wrappedNativeTokenAddress && !cachedWrappedToken) {
-            setWrappedNativeToken(chainIdStr, wrappedNativeTokenAddress);
+            setWrappedNativeToken(wrappedNativeTokenAddress);
         }
 
         const state: WrappedTokenBalanceState = {
