@@ -30,6 +30,7 @@ export function SubnetStep({ subnetId, onSubnetIdChange }: SubnetStepProps) {
 
         try {
             const txID = await createSubnetTx;
+            // Update the subnet ID with the new value
             onSubnetIdChange(txID);
         } finally {
             setIsCreatingSubnet(false);

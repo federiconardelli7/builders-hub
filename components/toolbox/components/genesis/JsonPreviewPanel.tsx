@@ -145,12 +145,15 @@ export function JsonPreviewPanel({
 
             // Find line number for the highlighted path
             if (highlightPath) {
+                console.log('highlightPath received:', highlightPath);
                 const lineNumber = findLineNumberForPath(lines, highlightPath, pathMap);
+                console.log('lineNumber found:', lineNumber);
                 setHighlightedLine(lineNumber);
 
                 // Use setTimeout to ensure DOM has updated with syntax highlighting
                 if (lineNumber) {
                     setTimeout(() => {
+                        console.log('Calling scrollToLine after timeout');
                         scrollToLine(lineNumber);
                     }, 100);
                 }
@@ -282,14 +285,18 @@ export function JsonPreviewPanel({
             return;
         }
 
+        console.log('scrollToLine called with lineNumber:', lineNumber);
         // More precise scrolling based on actual line content
         const element = document.querySelector('.json-preview-scroll');
+        console.log('Found element:', element);
         if (element) {
             // Try multiple approaches to find and scroll to the target line
 
             // Approach 1: Look for data-line attribute
             const targetElement = element.querySelector(`[data-line="${lineNumber}"]`);
+            console.log('Found target element with data-line:', targetElement);
             if (targetElement) {
+                console.log('Scrolling to target element via data-line approach');
                 targetElement.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
@@ -299,17 +306,22 @@ export function JsonPreviewPanel({
             }
 
             // Approach 2: Calculate based on line height
+            console.log('Using approach 2: calculate based on line height');
             const lineHeight = 20; // Approximate line height in pixels
             const scrollTop = (lineNumber - 1) * lineHeight;
             element.scrollTop = Math.max(0, scrollTop - 150); // Scroll with some padding
 
             // Approach 3: If we have syntax highlighted content, try to find by nth-child
             const syntaxHighlightedElement = element.querySelector('pre');
+            console.log('Found pre element:', syntaxHighlightedElement);
             if (syntaxHighlightedElement) {
                 const childElements = syntaxHighlightedElement.querySelectorAll('div');
+                console.log('Found child divs:', childElements.length);
                 if (childElements.length >= lineNumber) {
                     const targetChild = childElements[lineNumber - 1];
+                    console.log('Found target child:', targetChild);
                     if (targetChild) {
+                        console.log('Scrolling to target via nth-child approach');
                         targetChild.scrollIntoView({
                             behavior: 'smooth',
                             block: 'center',

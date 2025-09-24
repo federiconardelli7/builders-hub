@@ -81,9 +81,32 @@ export default function GenesisBuilder({
     const [targetBlockRate, setTargetBlockRate] = useState<number>(2);
 
     // Use props for token allocations if provided, otherwise use local state
-    const [localTokenAllocations, setLocalTokenAllocations] = useState<AllocationEntry[]>([]);
-    const tokenAllocations = propTokenAllocations ?? localTokenAllocations;
+    // Initialize with a default allocation if empty
+    const [localTokenAllocations, setLocalTokenAllocations] = useState<AllocationEntry[]>(() => {
+        // If wallet address is available, use it; otherwise use a placeholder
+        const defaultAddress = walletEVMAddress || '0x0000000000000000000000000000000000000001';
+        return [{ address: defaultAddress as Address, amount: 1000000 }];
+    });
+    
+    // Always ensure we have valid token allocations
+    const effectiveTokenAllocations = (propTokenAllocations && propTokenAllocations.length > 0) 
+        ? propTokenAllocations 
+        : localTokenAllocations;
+    
+    // Make sure tokenAllocations is never empty
+    const tokenAllocations = effectiveTokenAllocations.length > 0
+        ? effectiveTokenAllocations
+        : [{ address: (walletEVMAddress || '0x0000000000000000000000000000000000000001') as Address, amount: 1000000 }];
+        
     const setTokenAllocations = propSetTokenAllocations ?? setLocalTokenAllocations;
+    
+    // Update token allocations if they're empty
+    useEffect(() => {
+        if (effectiveTokenAllocations.length === 0) {
+            const defaultAddress = walletEVMAddress || '0x0000000000000000000000000000000000000001';
+            setTokenAllocations([{ address: defaultAddress as Address, amount: 1000000 }]);
+        }
+    }, [effectiveTokenAllocations.length, walletEVMAddress, setTokenAllocations]);
     const [feeConfig, setFeeConfig] = useState<FeeConfigType>(DEFAULT_FEE_CONFIG);
 
     // Using the AllowlistPrecompileConfig as the single source of truth for allowlists
@@ -110,7 +133,8 @@ export default function GenesisBuilder({
     const [expandedSections, setExpandedSections] = useState<Set<SectionId>>(new Set(initiallyExpandedSections || []));
 
     // Add a flag to control when genesis should be generated
-    const [shouldGenerateGenesis, setShouldGenerateGenesis] = useState(false);
+    // Start with true to always show genesis, even with validation errors
+    const [shouldGenerateGenesis, setShouldGenerateGenesis] = useState(true);
 
     // Preinstall configuration state
     const [preinstallConfig, setPreinstallConfig] = useState<PreinstallConfig>({
@@ -143,7 +167,8 @@ export default function GenesisBuilder({
         if (evmChainId <= 0) errors.chainId = "Chain ID must be positive";
 
         // Token Name and Symbol validation
-        if (tokenName.length > 50) errors.tokenName = "Token name must be 50 characters or less";
+        if (!tokenName || tokenName.length === 0) errors.tokenName = "Token name is required";
+        else if (tokenName.length > 50) errors.tokenName = "Token name must be 50 characters or less";
         
         if (tokenSymbol.length < 2 || tokenSymbol.length > 6) errors.tokenSymbol = "Token symbol must be 2-6 characters";
         else if (!/^[A-Z0-9]+$/.test(tokenSymbol)) warnings.tokenSymbol = "Token symbol should be uppercase letters and numbers only";
@@ -195,11 +220,12 @@ export default function GenesisBuilder({
         if (feeConfig.blockGasCostStep < 0) errors.blockGasCostStep = "Block gas cost step must be non-negative";
         if (feeConfig.blockGasCostStep > 5000000) warnings.blockGasCostStep = "Block gas cost step above 5M may cause fees to change too rapidly";
 
-        // Update validation messages but don't trigger genesis generation here
+        // Update validation messages
         setValidationMessages({ errors, warnings });
 
-        // Only set the flag to generate genesis if there are no errors
-        setShouldGenerateGenesis(Object.keys(errors).length === 0);
+        // Always generate genesis, but show validation errors to user
+        // This ensures genesis is always visible even with errors
+        setShouldGenerateGenesis(true);
     }, [
         evmChainId, tokenName, tokenSymbol, gasLimit, targetBlockRate, tokenAllocations,
         contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig,

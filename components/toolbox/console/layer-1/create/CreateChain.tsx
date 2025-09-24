@@ -31,18 +31,22 @@ interface CreateChainProps extends BaseConsoleToolProps {
 }
 
 function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
-    const {
-        subnetId,
-        setChainID,
-        setSubnetID,
-        genesisData,
-        setGenesisData,
-        setChainName,
-        tokenAllocations,
-        setTokenAllocations,
-    } = useCreateChainStore()();
+    const store = useCreateChainStore();
+    const subnetId = store(state => state.subnetId);
+    const setChainID = store(state => state.setChainID);
+    const setSubnetID = store(state => state.setSubnetID);
+    const genesisData = store(state => state.genesisData);
+    const setGenesisData = store(state => state.setGenesisData);
+    const setChainName = store(state => state.setChainName);
+    // Ensure tokenAllocations always has a default if empty
+    const tokenAllocations = store(state => 
+        state.tokenAllocations.length > 0 
+            ? state.tokenAllocations 
+            : [{ address: '0x0000000000000000000000000000000000000001' as Address, amount: 1000000 }]
+    );
+    const setTokenAllocations = store(state => state.setTokenAllocations);
 
-    const { pChainAddress } = useWalletStore();
+    const { pChainAddress, walletEVMAddress } = useWalletStore();
     const { coreWalletClient } = useConnectedWallet();
 
     const [isCreatingChain, setIsCreatingChain] = useState(false);
@@ -52,12 +56,19 @@ function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
 
     const { notify } = useConsoleNotifications();
 
-    // Initialize token allocations if empty
+    // Initialize or update token allocations with EVM wallet address
     useEffect(() => {
-        if (pChainAddress && tokenAllocations.length === 0) {
-            setTokenAllocations([{ address: pChainAddress as Address, amount: 1000000 }]);
+        if (walletEVMAddress) {
+            // If tokenAllocations is empty OR has only the placeholder address, update it
+            if (tokenAllocations.length === 0) {
+                setTokenAllocations([{ address: walletEVMAddress as Address, amount: 1000000 }]);
+            } else if (tokenAllocations.length === 1 && 
+                       tokenAllocations[0].address === '0x0000000000000000000000000000000000000001') {
+                // Replace placeholder address with actual EVM wallet address
+                setTokenAllocations([{ address: walletEVMAddress as Address, amount: tokenAllocations[0].amount }]);
+            }
         }
-    }, [pChainAddress, tokenAllocations.length, setTokenAllocations]);
+    }, [walletEVMAddress, tokenAllocations, setTokenAllocations]);
 
     // Wrapper function to handle subnet ID changes properly
     const handleSubnetIdChange = (newSubnetId: string) => {

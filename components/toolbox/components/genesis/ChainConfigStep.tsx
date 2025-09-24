@@ -16,11 +16,23 @@ interface ChainConfigStepProps {
 
 export const generateRandomChainName = () => {
     const firstLetterUppercase = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
-    for (let i = 0; i < 1000; i++) {
-        const randomName = generateName({ words: 2 }).raw.map(firstLetterUppercase).join(' ');
-        if (!randomName.includes('-')) return randomName + " Chain";
+    
+    try {
+        for (let i = 0; i < 1000; i++) {
+            const result = generateName({ words: 2 });
+            if (result && result.raw && Array.isArray(result.raw)) {
+                const randomName = result.raw.map(firstLetterUppercase).join(' ');
+                if (!randomName.includes('-')) {
+                    return randomName + " Chain";
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error generating name:', error);
     }
-    throw new Error("Could not generate a name without a dash after 1000 attempts");
+    
+    // Fallback to a simple random name if unable to generate one or if there's an error
+    return "Chain " + Math.floor(Math.random() * 10000);
 };
 
 export function ChainConfigStep({ chainName, onChainNameChange, vmId, onVmIdChange }: ChainConfigStepProps) {
@@ -36,7 +48,8 @@ export function ChainConfigStep({ chainName, onChainNameChange, vmId, onVmIdChan
     };
 
     const handleGenerateRandomName = () => {
-        onChainNameChange(generateRandomChainName());
+        const newName = generateRandomChainName();
+        onChainNameChange(newName);
     };
 
     return (
@@ -49,8 +62,10 @@ export function ChainConfigStep({ chainName, onChainNameChange, vmId, onVmIdChan
                             Chain Name
                         </label>
                         <button
+                            type="button"
                             onClick={handleGenerateRandomName}
-                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer active:scale-95"
+                            style={{ pointerEvents: 'auto' }}
                         >
                             Generate Random
                         </button>

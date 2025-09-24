@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, type InputHTMLAttributes } from "react"
+import { useState, useEffect, type InputHTMLAttributes } from "react"
 import { cn } from "../lib/utils"
 
 export interface RawInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -62,6 +62,13 @@ export function Input({
   ...props
 }: InputProps) {
   const [inputValue, setInputValue] = useState(props.value?.toString() || props.defaultValue?.toString() || "")
+
+  // Sync internal state with external value prop changes
+  useEffect(() => {
+    if (props.value !== undefined) {
+      setInputValue(props.value.toString())
+    }
+  }, [props.value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value

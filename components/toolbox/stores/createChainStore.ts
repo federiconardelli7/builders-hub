@@ -4,6 +4,15 @@ import { useWalletStore } from "./walletStore";
 import { localStorageComp, STORE_VERSION } from "./utils";
 import { AllocationEntry } from "../components/genesis/types";
 
+// Helper function to get initial token allocation with a safe default
+const getInitialTokenAllocations = (): AllocationEntry[] => {
+    // Use a placeholder address that will be replaced when wallet connects
+    return [{ 
+        address: '0x0000000000000000000000000000000000000001' as any, 
+        amount: 1000000 
+    }];
+};
+
 const createChainInitialState = {
     subnetId: "",
     chainID: "",
@@ -16,7 +25,7 @@ const createChainInitialState = {
     convertToL1TxId: "",
     validatorWeights: Array(100).fill(100) as number[],
     nodePopJsons: [""] as string[],
-    tokenAllocations: [] as AllocationEntry[],
+    tokenAllocations: getInitialTokenAllocations(),
 }
 
 export const getCreateChainStore = (isTestnet: boolean) => create(
@@ -37,6 +46,12 @@ export const getCreateChainStore = (isTestnet: boolean) => create(
 
             reset: () => {
                 window?.localStorage.removeItem(`${STORE_VERSION}-create-chain-store-${isTestnet ? 'testnet' : 'mainnet'}`);
+                // Reset to initial state with default token allocations
+                set({
+                    ...createChainInitialState,
+                    evmChainId: Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000,
+                    tokenAllocations: getInitialTokenAllocations()
+                });
             },
         })),
         {
