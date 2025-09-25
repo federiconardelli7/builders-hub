@@ -157,7 +157,7 @@ function FeeConfigBase({
               className={cn(
                 "px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors",
                 viewMode === 'simple'
-                  ? "bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-900"
+                  ? "bg-zinc-400 dark:bg-zinc-500 text-white dark:text-white"
                   : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
               )}
             >
@@ -169,7 +169,7 @@ function FeeConfigBase({
               className={cn(
                 "px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors",
                 viewMode === 'advanced'
-                  ? "bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-900"
+                  ? "bg-zinc-400 dark:bg-zinc-500 text-white dark:text-white"
                   : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
               )}
             >
@@ -281,15 +281,13 @@ function FeeConfigBase({
             <div className="flex gap-2">
               <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="text-xs space-y-1">
-                <div className="font-medium text-blue-900 dark:text-blue-100">Static Gas Price Configuration</div>
+                <div className="font-medium text-blue-900 dark:text-blue-100">Want fixed gas prices?</div>
                 <div className="text-blue-800 dark:text-blue-200">
-                  For a static gas price (no congestion pricing), set Target Gas &gt; (Gas Limit × 10 ÷ Block Time).
-                  With current settings, use &gt;{Math.ceil((gasLimit * 10) / targetBlockRate / 1000000)}M gas.
-                  Use the "Static" preset button above for easy configuration.
+                  Click the "Static" preset above or set Target Gas to {Math.ceil((gasLimit * 10) / targetBlockRate / 1000000)}M+ 
+                  to disable dynamic pricing.
                 </div>
                 <div className="text-blue-700 dark:text-blue-300">
-                  This is ideal for permissioned chains or when transactions go through backend services,
-                  simplifying transaction creation and speeding up posting.
+                  Best for permissioned chains and backend-managed transactions.
                 </div>
               </div>
             </div>

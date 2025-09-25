@@ -149,7 +149,7 @@ export function GasSlider({
         <div className="relative h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
           {/* Progress Fill */}
           <div
-            className="absolute h-full bg-zinc-600 dark:bg-zinc-400 rounded-full transition-all duration-150"
+            className="absolute h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-150"
             style={{ width: `${percentage}%` }}
           />
           
@@ -181,7 +181,7 @@ export function GasSlider({
         <div
           className={cn(
             "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full",
-            "bg-white dark:bg-zinc-950 border-2 border-zinc-600 dark:border-zinc-400 shadow-sm",
+            "bg-white dark:bg-zinc-950 border-2 border-blue-500 dark:border-blue-400 shadow-sm",
             "pointer-events-none transition-transform",
             isDragging && "scale-110"
           )}
@@ -200,8 +200,8 @@ export function GasSlider({
                 "px-2.5 py-1 text-[11px] rounded-md transition-colors font-medium",
                 "border border-zinc-200 dark:border-zinc-800",
                 value === preset.value
-                  ? "bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-900 border-zinc-700 dark:border-zinc-300"
-                  : "bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                  ? "bg-blue-500 dark:bg-blue-500 text-white dark:text-white border-blue-500 dark:border-blue-500"
+                  : "bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
               )}
               title={preset.description}
             >
