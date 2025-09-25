@@ -265,7 +265,7 @@ export default function GenesisBuilder({
                         // Add fee and reward manager configurations
                         ...(feeManagerConfig.activated && {
                             feeManagerAddress: {
-                                blockTimestamp: feeManagerConfig.blockTimestamp || 0,
+                                blockTimestamp: blockTimestamp || 0,
                                 adminAddresses: [
                                     ...(feeManagerConfig.addresses?.Admin || []).map(a => a.address),
                                     ...(feeManagerConfig.addresses?.Manager || []).map(a => a.address),
@@ -275,7 +275,7 @@ export default function GenesisBuilder({
                         }),
                         ...(rewardManagerConfig.activated && {
                             rewardManagerAddress: {
-                                blockTimestamp: rewardManagerConfig.blockTimestamp || 0,
+                                blockTimestamp: blockTimestamp || 0,
                                 adminAddresses: [
                                     ...(rewardManagerConfig.addresses?.Admin || []).map(a => a.address),
                                     ...(rewardManagerConfig.addresses?.Manager || []).map(a => a.address),
