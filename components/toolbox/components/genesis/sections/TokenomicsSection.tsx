@@ -173,7 +173,7 @@ export const TokenomicsSection = ({
                             <div className="mt-2">
                                 <AllowlistPrecompileConfigurator
                                     title=""
-                                    description={compact ? '' : 'Addresses allowed to mint native tokens'}
+                                    description={compact ? '' : 'Assign Admin, Manager, and Enabled roles for native token minting authority.'}
                                     precompileAction="mint native tokens"
                                     config={nativeMinterConfig}
                                     onUpdateConfig={setNativeMinterConfig}

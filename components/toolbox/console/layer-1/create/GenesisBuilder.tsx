@@ -50,7 +50,7 @@ const RECOMMENDED_MIN_GAS_LIMIT = 8000000;
 
 // Target Gas Constants
 const MIN_TARGET_GAS = 1000000;
-const MAX_TARGET_GAS = 50000000;
+const MAX_TARGET_GAS = 500000000; // Increased to support static gas pricing
 
 // Helper function to convert gwei to wei
 const gweiToWei = (gwei: number): number => gwei * 1000000000;
@@ -185,7 +185,14 @@ export default function GenesisBuilder({
 
         if (feeConfig.targetGas < 0) errors.targetGas = "Target gas must be non-negative";
         if (feeConfig.targetGas < MIN_TARGET_GAS) warnings.targetGas = "Target gas below 1M may lead to congestion";
-        if (feeConfig.targetGas > MAX_TARGET_GAS) warnings.targetGas = "Target gas above 50M may require significant resources";
+        // Only warn if target gas is very high and not in static pricing range
+        const staticGasThreshold = Math.ceil((gasLimit * 10) / targetBlockRate);
+        if (feeConfig.targetGas > MAX_TARGET_GAS) {
+            warnings.targetGas = "Target gas above 500M may require significant resources";
+        } else if (feeConfig.targetGas > staticGasThreshold && feeConfig.targetGas < staticGasThreshold * 1.5) {
+            // Info message when in static pricing range
+            warnings.targetGas = "Target gas configured for static pricing (no congestion-based adjustments)";
+        }
 
         if (feeConfig.baseFeeChangeDenominator < 0) errors.baseFeeChangeDenominator = "Base fee change denominator must be non-negative";
         if (feeConfig.baseFeeChangeDenominator < 8) warnings.baseFeeChangeDenominator = "Low denominator may cause fees to change too rapidly";

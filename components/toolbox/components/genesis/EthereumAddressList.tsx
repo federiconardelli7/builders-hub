@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { RawInput } from "../Input"
-import { Trash2, AlertCircle, Plus, Lock } from 'lucide-react'
+import { Trash2, AlertCircle, Plus, Lock, Info } from 'lucide-react'
 import { AddressEntry, Role, AddressRoles } from './types'
 import { isAddress } from 'viem'
 import { AddConnectedWalletButtonSimple } from '@/components/toolbox/components/ConnectWallet/AddConnectedWalletButton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface EthereumAddressListProps {
   role: Role;
@@ -74,11 +75,16 @@ export default function EthereumAddressList({
     <div className="space-y-3 text-[12px]">
       <div className="bg-white dark:bg-zinc-950 rounded-md border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div className="px-3 py-2 border-b border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
             <div className="font-medium text-zinc-800 dark:text-white">{role} Addresses</div>
-          </div>
-          <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-            {getRoleDescription(role, precompileAction)}
+            <Tooltip>
+              <TooltipTrigger className="inline-flex">
+                <Info className="h-3.5 w-3.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">{getRoleDescription(role, precompileAction)}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 

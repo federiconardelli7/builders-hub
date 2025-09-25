@@ -213,9 +213,9 @@ function FeeConfigBase({
             onChange={setTargetBlockRate}
             min={1}
             max={10}
-            step={0.5}
+            step={1}
             unit="seconds"
-            description="How often new blocks are produced. Faster blocks mean quicker confirmations but higher resource usage."
+            description="How often new blocks are produced (integer values only). Faster blocks mean quicker confirmations but higher resource usage."
             presets={[
               { label: "1s", value: 1, description: "Near-instant finality" },
               { label: "2s", value: 2, description: "Good balance" },
@@ -253,22 +253,47 @@ function FeeConfigBase({
             label="Target Gas Usage"
             value={feeConfig.targetGas}
             onChange={(value) => updateFeeConfig({ targetGas: value })}
-            min={5000000}
-            max={gasLimit}
+            min={1000000}
+            max={Math.max(500000000, gasLimit * 20)}
             step={1000000}
-            unit="gas"
-            description="Target gas usage per block. Base fee adjusts to maintain this target."
+            unit="gas/10s"
+            description="Target gas usage per 10-second rolling window. Base fee adjusts to maintain this target across ~5 blocks (at 2s block time)."
             presets={[
-              { label: "25%", value: Math.floor(gasLimit * 0.25) },
-              { label: "50%", value: Math.floor(gasLimit * 0.5) },
-              { label: "75%", value: Math.floor(gasLimit * 0.75) }
+              { label: "Dynamic (50%)", value: Math.floor(gasLimit * 0.5), description: "Congestion-based pricing" },
+              { label: "Dynamic (75%)", value: Math.floor(gasLimit * 0.75), description: "Less sensitive pricing" },
+              { label: "Static", value: Math.ceil((gasLimit * 10) / targetBlockRate) + 1000000, description: "Fixed gas price" }
             ]}
-            formatValue={(val) => `${(val / 1000000).toFixed(1)}M (${Math.round(val / gasLimit * 100)}%)`}
+            formatValue={(val) => {
+              const percentage = Math.round(val / gasLimit * 100);
+              if (percentage > 999) {
+                return `${(val / 1000000).toFixed(0)}M`;
+              }
+              return `${(val / 1000000).toFixed(1)}M (${percentage}%)`;
+            }}
             error={validationMessages.errors.targetGas}
             warning={validationMessages.warnings.targetGas}
             onFocus={() => handleFocus('targetGas')}
             onBlur={handleBlur}
           />
+
+          {/* Static Gas Price Info */}
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-md p-3">
+            <div className="flex gap-2">
+              <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1">
+                <div className="font-medium text-blue-900 dark:text-blue-100">Static Gas Price Configuration</div>
+                <div className="text-blue-800 dark:text-blue-200">
+                  For a static gas price (no congestion pricing), set Target Gas &gt; (Gas Limit × 10 ÷ Block Time).
+                  With current settings, use &gt;{Math.ceil((gasLimit * 10) / targetBlockRate / 1000000)}M gas.
+                  Use the "Static" preset button above for easy configuration.
+                </div>
+                <div className="text-blue-700 dark:text-blue-300">
+                  This is ideal for permissioned chains or when transactions go through backend services,
+                  simplifying transaction creation and speeding up posting.
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         /* Advanced Mode with All Fields */
@@ -286,7 +311,7 @@ function FeeConfigBase({
             warning={validationMessages.warnings.gasLimit}
           />
           <Field
-            label="Target Block Rate (seconds)"
+            label="Target Block Time (seconds)"
             value={targetBlockRate.toString()}
             onChange={(value) => handleNumberInput(value, setTargetBlockRate, 1)}
             onFocus={() => handleFocus('targetBlockRate')}
@@ -347,15 +372,30 @@ function FeeConfigBase({
             warning={validationMessages.warnings.blockGasCostStep}
           />
           <Field
-            label="Target Gas"
+            label="Target Gas (per 10s window)"
             value={feeConfig.targetGas.toString()}
-            onChange={(value) => handleFeeConfigNumberInput(value, 'targetGas', 500000)}
+            onChange={(value) => handleFeeConfigNumberInput(value, 'targetGas', 100000)}
             onFocus={() => handleFocus('targetGas')}
             onBlur={handleBlur}
             placeholder="15000000"
             error={validationMessages.errors.targetGas}
             warning={validationMessages.warnings.targetGas}
           />
+        </div>
+
+        {/* Static Gas Price Info for Advanced Mode */}
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-md p-3 mt-3">
+          <div className="flex gap-2">
+            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="text-xs space-y-1">
+              <div className="font-medium text-blue-900 dark:text-blue-100">Tip: Static Gas Price</div>
+              <div className="text-blue-800 dark:text-blue-200">
+                For static gas pricing (no congestion-based adjustments), set Target Gas &gt; (Gas Limit × 10 ÷ Block Time).
+                Current threshold: &gt;{Math.ceil((gasLimit * 10) / targetBlockRate)} gas (~{Math.ceil((gasLimit * 10) / targetBlockRate / 1000000)}M).
+                Useful for permissioned chains where congestion pricing isn't needed.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       )}

@@ -198,7 +198,7 @@ export const PrecompilesSection = ({
                         <div className="mt-2">
                         <AllowlistPrecompileConfigurator
                             title=""
-                            description={compact ? '' : 'Addresses allowed to deploy smart contracts'}
+                            description={compact ? '' : 'Configure Admin, Manager, and Enabled roles for contract deployment permissions.'}
                             precompileAction="deploy contracts"
                             config={deployerConfig}
                             onUpdateConfig={setDeployerConfig}
@@ -254,7 +254,7 @@ export const PrecompilesSection = ({
                         <div className="mt-2">
                         <AllowlistPrecompileConfigurator
                             title=""
-                            description={compact ? '' : 'Addresses allowed to submit transactions'}
+                            description={compact ? '' : 'Set Admin, Manager, and Enabled roles to control transaction submission rights.'}
                             precompileAction="submit transactions"
                             config={txConfig}
                             onUpdateConfig={setTxConfig}
@@ -310,7 +310,7 @@ export const PrecompilesSection = ({
                         <div className="mt-2">
                         <AllowlistPrecompileConfigurator
                             title=""
-                            description={compact ? '' : 'Addresses allowed to mint native tokens'}
+                            description={compact ? '' : 'Assign Admin, Manager, and Enabled roles for native token minting authority.'}
                             precompileAction="mint native tokens"
                             config={nativeMinterConfig}
                             onUpdateConfig={setNativeMinterConfig}
