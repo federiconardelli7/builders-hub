@@ -15,7 +15,8 @@ export async function triggerCertificateWebhook(
 ) {
   try {
     // Only send webhook for Codebase Entrepreneur courses
-    if (!courseId.startsWith('codebase-entrepreneur-')) {
+    const codebaseCourseIds = ['foundations-web3-venture', 'go-to-market', 'web3-community-architect', 'fundraising-finance'];
+    if (!codebaseCourseIds.includes(courseId)) {
       console.log(`Skipping HubSpot webhook for non-Codebase course: ${courseId}`);
       return;
     }
