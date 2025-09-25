@@ -1,9 +1,10 @@
 "use client";
 
 import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
-import { useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import { useViemChainStore, useWrappedNativeToken as useWrappedNativeTokenAddress, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import { useWrappedNativeToken } from "@/components/toolbox/hooks/useWrappedNativeToken";
+import { balanceService } from "@/components/toolbox/services/balanceService";
 import { useState, useEffect } from "react";
-import { wrappedTokenBalanceService, WrappedTokenBalanceState } from "@/components/toolbox/services/wrappedTokenBalanceService";
 
 interface DisplayWrappedBalanceProps {
     wrappedNativeTokenAddress: string;
@@ -14,9 +15,10 @@ export default function DisplayWrappedBalance({ wrappedNativeTokenAddress, onErr
     const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
     const viemChain = useViemChainStore();
     const setWrappedNativeToken = useSetWrappedNativeToken();
+    const wrappedNativeToken = useWrappedNativeToken();
     
     // Get cached values from wallet store
-    const cachedWrappedToken = useWrappedNativeToken();
+    const cachedWrappedToken = useWrappedNativeTokenAddress();
     const cachedNativeCurrency = useNativeCurrencyInfo();
 
     // Balance state
@@ -27,45 +29,43 @@ export default function DisplayWrappedBalance({ wrappedNativeTokenAddress, onErr
     const nativeTokenSymbol = cachedNativeCurrency?.symbol || viemChain?.nativeCurrency?.symbol || 'COIN';
     const wrappedTokenSymbol = `W${nativeTokenSymbol}`;
 
-    // Set up balance service callbacks
-    useEffect(() => {
-        wrappedTokenBalanceService.setCallbacks({
-            setWrappedBalance,
-            setLoading: setIsLoading,
-            onError
-        });
-    }, [onError]);
-
     // Fetch wrapped token balance
     const fetchWrappedBalance = async () => {
-        if (!viemChain || !walletEVMAddress || !wrappedNativeTokenAddress) return;
+        if (!wrappedNativeToken.isReady || !walletEVMAddress) return;
 
-        const chainIdStr = walletChainId.toString();
-        
-        // Cache native currency info if not already cached
-        if (!cachedNativeCurrency && viemChain.nativeCurrency) {
-            setNativeCurrencyInfo(chainIdStr, viemChain.nativeCurrency);
+        setIsLoading(true);
+        try {
+            const chainIdStr = walletChainId.toString();
+            
+            // Cache native currency info if not already cached
+            if (!cachedNativeCurrency && viemChain?.nativeCurrency) {
+                setNativeCurrencyInfo(chainIdStr, viemChain.nativeCurrency);
+            }
+            
+            // Cache the token address if we found one
+            if (wrappedNativeTokenAddress && !cachedWrappedToken) {
+                setWrappedNativeToken(wrappedNativeTokenAddress);
+            }
+
+            // Use balanceService to fetch ERC20 balance
+            const balance = await balanceService.fetchERC20Balance(
+                wrappedNativeTokenAddress,
+                walletEVMAddress,
+                wrappedNativeToken.publicClient
+            );
+            setWrappedBalance(balance);
+        } catch (error) {
+            console.error('Error fetching wrapped balance:', error);
+            onError(error instanceof Error ? error : new Error(String(error)));
+        } finally {
+            setIsLoading(false);
         }
-        
-        // Cache the token address if we found one
-        if (wrappedNativeTokenAddress && !cachedWrappedToken) {
-            setWrappedNativeToken(wrappedNativeTokenAddress);
-        }
-
-        const state: WrappedTokenBalanceState = {
-            walletEVMAddress,
-            wrappedNativeTokenAddress,
-            viemChain,
-            walletChainId
-        };
-
-        await wrappedTokenBalanceService.fetchWrappedBalance(state);
     };
 
     // Fetch balance on mount and when dependencies change
     useEffect(() => {
         fetchWrappedBalance();
-    }, [viemChain, walletEVMAddress, wrappedNativeTokenAddress, walletChainId, cachedWrappedToken, cachedNativeCurrency, setWrappedNativeToken, setNativeCurrencyInfo]);
+    }, [viemChain, walletEVMAddress, wrappedNativeTokenAddress, walletChainId, cachedWrappedToken, cachedNativeCurrency]);
 
     if (isLoading) {
         return (

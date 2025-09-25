@@ -1,12 +1,10 @@
 "use client";
 
-import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
 import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
-import { useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
-import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { useViemChainStore, useWrappedNativeToken as useWrappedNativeTokenAddress, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import { useWrappedNativeToken } from "@/components/toolbox/hooks/useWrappedNativeToken";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
-import { http, createPublicClient, parseEther } from "viem";
 import { Input } from "@/components/toolbox/components/Input";
 
 interface UnwrapNativeTokenProps {
@@ -15,13 +13,13 @@ interface UnwrapNativeTokenProps {
 }
 
 export default function UnwrapNativeToken({ wrappedNativeTokenAddress, onError }: UnwrapNativeTokenProps) {
-    const { coreWalletClient, walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
-    const { notify } = useConsoleNotifications();
+    const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
     const viemChain = useViemChainStore();
     const setWrappedNativeToken = useSetWrappedNativeToken();
+    const wrappedNativeToken = useWrappedNativeToken();
     
     // Get cached values from wallet store
-    const cachedWrappedToken = useWrappedNativeToken();
+    const cachedWrappedToken = useWrappedNativeTokenAddress();
     const cachedNativeCurrency = useNativeCurrencyInfo();
 
     // Unwrap state
@@ -50,36 +48,15 @@ export default function UnwrapNativeToken({ wrappedNativeTokenAddress, onError }
     }, [viemChain, walletEVMAddress, wrappedNativeTokenAddress, walletChainId, cachedWrappedToken, cachedNativeCurrency, setWrappedNativeToken, setNativeCurrencyInfo]);
 
     async function handleUnwrap() {
-        if (!coreWalletClient || !wrappedNativeTokenAddress) {
-            onError(new Error('Core wallet or wrapped token not found'));
+        if (!wrappedNativeToken.isReady) {
+            onError(new Error('Wrapped native token contract not ready'));
             return;
         }
 
         setIsUnwrapping(true);
         try {
-            if (!viemChain) throw new Error("No chain selected");
-
-            const publicClient = createPublicClient({
-                transport: http(viemChain.rpcUrls.default.http[0] || "")
-            });
-
-            const writePromise = coreWalletClient.writeContract({
-                address: wrappedNativeTokenAddress as `0x${string}`,
-                abi: WrappedNativeToken.abi,
-                functionName: 'withdraw',
-                args: [parseEther(unwrapAmount)],
-                chain: viemChain,
-                account: walletEVMAddress as `0x${string}`
-            });
-
-            notify({
-                type: 'call',
-                name: 'Unwrap Native Token'
-            }, writePromise, viemChain ?? undefined);
-
-            const hash = await writePromise;
-            await publicClient.waitForTransactionReceipt({ hash });
-
+            const hash = await wrappedNativeToken.withdraw(unwrapAmount);
+            await wrappedNativeToken.publicClient.waitForTransactionReceipt({ hash });
             setUnwrapAmount('');
         } catch (error) {
             onError(error instanceof Error ? error : new Error(String(error)));
