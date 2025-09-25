@@ -1,69 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument } from 'pdf-lib';
-
-const courseMapping: Record<string, string> = {
-  'avalanche-fundamentals': 'Avalanche Fundamentals',
-  'codebase-entrepreneur-foundations': 'Foundations of a Web3 Venture',
-  'codebase-entrepreneur-go-to-market': 'Go-to-Market Strategist',
-  'codebase-entrepreneur-community': 'Web3 Community Architect',
-  'codebase-entrepreneur-fundraising': 'Fundraising & Finance Pro',
-};
-
-const certificateTemplates: Record<string, string> = {
-  'avalanche-fundamentals': 'AvalancheAcademy_Certificate.pdf',
-  'codebase-entrepreneur-foundations': 'CodebaseEntrepreneur_Foundations_Certificate_interactive_fields.pdf',
-  'codebase-entrepreneur-go-to-market': 'CodebaseEntrepreneur_GTM_Certificate.pdf',
-  'codebase-entrepreneur-community': 'CodebaseEntrepreneur_Community_Certificate.pdf',
-  'codebase-entrepreneur-fundraising': 'CodebaseEntrepreneur_Fundraising_Certificate.pdf',
-};
-
-function getCourseName(courseId: string): string {
-  return courseMapping[courseId] || courseId;
-}
-
-function getCertificateTemplate(courseId: string): string {
-  // Check if we have a specific template for this course
-  if (certificateTemplates[courseId]) {
-    return certificateTemplates[courseId];
-  }
-
-  // Fallback for codebase entrepreneur courses
-  if (courseId.startsWith('codebase-entrepreneur')) {
-    return 'CodebaseEntrepreneur_Certificate.pdf';
-  }
-
-  // Default fallback
-  return 'AvalancheAcademy_Certificate.pdf';
-}
+import { getServerSession } from 'next-auth';
+import { AuthOptions } from '@/lib/auth/authOptions';
+import { triggerCertificateWebhook } from '@/server/services/hubspotCodebaseCertificateWebhook';
+import { getCourseConfig } from '@/content/courses';
 
 export async function POST(req: NextRequest) {
-  let courseId: string = '';
-  let userName: string = '';
-
   try {
-    ({ courseId, userName } = await req.json());
-    if (!courseId || !userName) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // Require auth and derive the user's name from the connected BuilderHub account
+    const session = await getServerSession(AuthOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ 
+        error: 'Unauthorized. Please sign in to BuilderHub to generate certificates.' 
+      }, { status: 401 });
+    }
+    
+    // Email is mandatory for certificate generation
+    if (!session.user.email) {
+      return NextResponse.json({ 
+        error: 'Email address required. Please ensure your BuilderHub account has a valid email address.' 
+      }, { status: 400 });
     }
 
-    const courseName = getCourseName(courseId);
-    const templateFile = getCertificateTemplate(courseId);
+    const { courseId } = await req.json();
+    if (!courseId) {
+      return NextResponse.json({ error: 'Missing course ID' }, { status: 400 });
+    }
 
-    const protocol = req.headers.get('x-forwarded-proto') || 'http';
-    const host = req.headers.get('host') || 'localhost:3000';
-    const serverUrl = `${protocol}://${host}`;
-    const templateUrl = `${serverUrl}/certificates/${templateFile}`;
+    // Get course configuration from centralized source
+    const courseConfig = getCourseConfig();
+    console.log('Certificate generation - courseId:', courseId);
+    console.log('Available courses:', Object.keys(courseConfig));
+    
+    const course = courseConfig[courseId];
+    if (!course) {
+      return NextResponse.json({ 
+        error: `No certificate template found for course: ${courseId}` 
+      }, { status: 404 });
+    }
+
+    const userName = session.user.name || session.user.email || 'BuilderHub User';
+    const { name: courseName, template: templateUrl } = course;
 
     const templateResponse = await fetch(templateUrl);
     if (!templateResponse.ok) {
-      throw new Error(`Failed to fetch template: ${templateFile}`);
+      throw new Error(`Failed to fetch template: ${templateUrl}`);
     }
 
     const templateArrayBuffer = await templateResponse.arrayBuffer();
     const pdfDoc = await PDFDocument.load(templateArrayBuffer);
     const form = pdfDoc.getForm();
 
-    const isAvalancheTemplate = templateFile === 'AvalancheAcademy_Certificate.pdf';
+    const isAvalancheTemplate = templateUrl.includes('AvalancheAcademy_Certificate.pdf');
 
     try {
       if (isAvalancheTemplate) {
@@ -87,9 +75,9 @@ export async function POST(req: NextRequest) {
           );
       } else {
         // Codebase Entrepreneur certificates: only Name and Date
-        form.getTextField('Name').setText(userName);
+        form.getTextField('Enter Name').setText(userName);
         form
-          .getTextField('Date')
+          .getTextField('Enter Date')
           .setText(
             new Date().toLocaleDateString('en-US', {
               day: 'numeric',
@@ -104,6 +92,16 @@ export async function POST(req: NextRequest) {
 
     form.flatten();
     const pdfBytes = await pdfDoc.save();
+    
+    // Trigger HubSpot webhook for certificate completion
+    // At this point we know email exists due to the check above
+    await triggerCertificateWebhook(
+      session.user.id,
+      session.user.email!,
+      userName,
+      courseId
+    );
+    
     return new NextResponse(Buffer.from(pdfBytes), {
       status: 200,
       headers: {
@@ -116,8 +114,6 @@ export async function POST(req: NextRequest) {
       {
         error: 'Failed to generate certificate, contact the Avalanche team.',
         details: (error as Error).message,
-        courseId,
-        userName: userName || 'undefined',
       },
       { status: 500 }
     );
