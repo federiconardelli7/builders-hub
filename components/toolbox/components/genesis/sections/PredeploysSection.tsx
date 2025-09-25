@@ -4,7 +4,7 @@ import { useMemo, useCallback } from 'react';
 import { useGenesisHighlight } from '../GenesisHighlightContext';
 import { cn } from '@/lib/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import { Info, ExternalLink } from 'lucide-react';
 
 type PredeploysSectionProps = {
     config: PreinstallConfig;
@@ -36,37 +36,44 @@ export const PredeploysSection = ({
         proxy: {
             address: '0xfacade0000000000000000000000000000000000',
             name: 'Transparent Upgradeable Proxy',
-            description: 'Enables upgradeability for smart contracts. Delegates calls to implementation contracts while preserving storage.'
+            description: 'Enables upgradeability for smart contracts. Delegates calls to implementation contracts while preserving storage.',
+            githubUrl: 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/TransparentUpgradeableProxy.sol'
         },
         proxyAdmin: {
             address: '0xdad0000000000000000000000000000000000000',
             name: 'Proxy Admin Contract',
-            description: 'Manages upgrades for transparent proxies. Controls which addresses can upgrade proxy implementations.'
+            description: 'Manages upgrades for transparent proxies. Controls which addresses can upgrade proxy implementations.',
+            githubUrl: 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/proxy/transparent/ProxyAdmin.sol'
         },
         icmMessenger: {
             address: '0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf',
             name: 'ICM Messenger',
-            description: 'Avalanche Interchain Messaging contract for cross-subnet communication and message relaying.'
+            description: 'Avalanche Interchain Messaging contract for cross-subnet communication and message relaying.',
+            githubUrl: 'https://github.com/ava-labs/icm-contracts/blob/main/contracts/teleporter/TeleporterMessenger.sol'
         },
         wrappedNativeToken: {
             address: '0x1111111111111111111111111111111111111111',
             name: `Wrapped ${tokenName || 'Native Token'}`,
-            description: 'ERC-20 wrapper for the native token, enabling DeFi integrations and smart contract interactions.'
+            description: 'ERC-20 wrapper for the native token, enabling DeFi integrations and smart contract interactions.',
+            githubUrl: 'https://github.com/ava-labs/icm-contracts/blob/main/contracts/ictt/WrappedNativeToken.sol'
         },
         safeSingletonFactory: {
             address: '0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7',
             name: 'Safe Singleton Factory',
-            description: 'Deploys Safe multisig wallet contracts at deterministic addresses across all chains.'
+            description: 'Deploys Safe multisig wallet contracts at deterministic addresses across all chains.',
+            githubUrl: 'https://github.com/safe-global/safe-singleton-factory/blob/main/source/deterministic-deployment-proxy.yul'
         },
         multicall3: {
             address: '0xcA11bde05977b3631167028862bE2a173976CA11',
             name: 'Multicall3',
-            description: 'Batches multiple contract calls into a single transaction, reducing gas costs and improving efficiency.'
+            description: 'Batches multiple contract calls into a single transaction, reducing gas costs and improving efficiency.',
+            githubUrl: 'https://github.com/mds1/multicall/blob/main/src/Multicall3.sol'
         },
         create2Deployer: {
             address: '0x13b0D85CcB8bf860b6b79AF3029fCA081AE9beF2',
             name: 'Create2 Deployer',
-            description: 'Enables deterministic contract deployment using CREATE2 opcode for same address across chains.'
+            description: 'Enables deterministic contract deployment using CREATE2 opcode for same address across chains.',
+            githubUrl: 'https://github.com/pcaversaccio/create2deployer/blob/main/contracts/Create2Deployer.sol'
         }
     };
 
@@ -101,10 +108,13 @@ export const PredeploysSection = ({
         
         // Highlight the predeploy in JSON when enabled
         if (enabled) {
-            // Use the actual predeploy key for highlighting
-            const highlightKey = `predeploy-${key}`;
-            setHighlightPath(highlightKey);
-            setTimeout(() => clearHighlight(), 2000);
+            // Delay highlight to allow JSON to regenerate (debounced at 300ms)
+            setTimeout(() => {
+                // Use the actual predeploy key for highlighting  
+                const highlightKey = `predeploy-${key}`;
+                setHighlightPath(highlightKey);
+                setTimeout(() => clearHighlight(), 2000);
+            }, 400);
         }
     }, [config, onConfigChange, setHighlightPath, clearHighlight]);
 
@@ -121,6 +131,7 @@ export const PredeploysSection = ({
         <SectionWrapper
             title="Pre-Deploys"
             description={compact ? '' : 'Enable pre-deployed contracts to ship with your genesis.'}
+            titleTooltip="Pre-deployed contracts are smart contracts that exist on your blockchain from the moment it launches. These provide essential functionality like multi-sig wallets, token wrapping, and cross-chain messaging without requiring manual deployment."
             isExpanded={isExpanded}
             toggleExpand={toggleExpand}
             sectionId="predeploys"
@@ -137,17 +148,30 @@ export const PredeploysSection = ({
                     {items.map((item) => (
                         <div key={item.id} className="flex items-center justify-between px-3 py-2 text-[12px] bg-white dark:bg-zinc-950">
                             <div className="flex items-center gap-2">
-                                <span className="text-zinc-800 dark:text-zinc-200 truncate">{item.label}</span>
+                                <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate">{item.label}</span>
                                 {predeployInfo[item.id as keyof typeof predeployInfo] && (
                                     <Tooltip>
                                         <TooltipTrigger>
                                             <Info className="h-3 w-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
-                                            <div className="space-y-1">
-                                                <div className="font-semibold">{predeployInfo[item.id as keyof typeof predeployInfo].name}</div>
-                                                <div className="text-xs font-mono">{predeployInfo[item.id as keyof typeof predeployInfo].address}</div>
+                                            <div className="space-y-2">
+                                                <div>
+                                                    <div className="font-semibold">{predeployInfo[item.id as keyof typeof predeployInfo].name}</div>
+                                                    <div className="text-xs font-mono mt-1">{predeployInfo[item.id as keyof typeof predeployInfo].address}</div>
+                                                </div>
                                                 <div className="text-xs">{predeployInfo[item.id as keyof typeof predeployInfo].description}</div>
+                                                {predeployInfo[item.id as keyof typeof predeployInfo].githubUrl && (
+                                                    <a 
+                                                        href={predeployInfo[item.id as keyof typeof predeployInfo].githubUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
+                                                    >
+                                                        View contract source
+                                                        <ExternalLink className="h-3 w-3" />
+                                                    </a>
+                                                )}
                                             </div>
                                         </TooltipContent>
                                     </Tooltip>

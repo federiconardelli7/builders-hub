@@ -65,9 +65,9 @@ export type FeeConfigType = {
   targetGas: number;
 };
 
-export type SectionId = 'chainParams' | 'tokenomics' | 'permissions' | 'transactionFees' | 'warpMessenger';
+export type SectionId = 'chainParams' | 'tokenomics' | 'permissioning' | 'feeConfiguration' | 'predeploys' | 'warpMessenger';
 
-export const ALL_SECTIONS: SectionId[] = ['chainParams', 'tokenomics', 'permissions', 'transactionFees']; // Removed warpMessenger for now
+export const ALL_SECTIONS: SectionId[] = ['chainParams', 'tokenomics', 'permissioning', 'feeConfiguration', 'predeploys']; // Removed warpMessenger for now
 
 export type ValidationMessages = {
   errors: { [key: string]: string };

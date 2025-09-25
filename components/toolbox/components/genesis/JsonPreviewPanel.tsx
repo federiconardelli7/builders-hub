@@ -127,6 +127,13 @@ export function JsonPreviewPanel({
                 'precompile-feeManager': { section: 'feeManagerConfig', offset: 0 },
                 'precompile-rewardManager': { section: 'rewardManagerConfig', offset: 0 },
                 
+                // Precompile config paths (used by new sections)
+                'config.contractDeployerAllowListConfig': { section: 'contractDeployerAllowListConfig', offset: 0 },
+                'config.contractNativeMinterConfig': { section: 'contractNativeMinterConfig', offset: 0 },
+                'config.txAllowListConfig': { section: 'txAllowListConfig', offset: 0 },
+                'config.feeManagerAddress': { section: 'feeManagerAddress', offset: 0 },
+                'config.rewardManagerAddress': { section: 'rewardManagerAddress', offset: 0 },
+                
                 // Predeploy contracts
                 'predeploy-proxy': { section: 'alloc', offset: 0 },
                 'predeploy-proxyAdmin': { section: 'alloc', offset: 0 },

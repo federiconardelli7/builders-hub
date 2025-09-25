@@ -3,14 +3,16 @@
 import { useEffect, useState, useCallback, SetStateAction } from "react";
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { Address } from "viem";
-
+import { Input } from '@/components/toolbox/components/Input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info, ExternalLink } from 'lucide-react';
+import { useGenesisHighlight } from '@/components/toolbox/components/genesis/GenesisHighlightContext';
 
 // Genesis Components
-import { ChainParamsSection } from "@/components/toolbox/components/genesis/sections/ChainParamsSection";
 import { TokenomicsSection } from "@/components/toolbox/components/genesis/sections/TokenomicsSection";
-import { TransactionFeesSection } from "@/components/toolbox/components/genesis/sections/TransactionFeesSection";
+import { PermissioningSection } from "@/components/toolbox/components/genesis/sections/PermissioningSection";
+import { FeeConfigurationSection } from "@/components/toolbox/components/genesis/sections/FeeConfigurationSection";
 import { PredeploysSection } from "@/components/toolbox/components/genesis/sections/PredeploysSection";
-import { PrecompilesSection } from "@/components/toolbox/components/genesis/sections/PrecompilesSection";
 
 // Genesis Utilities & Types
 import { generateGenesis } from "@/components/toolbox/components/genesis/genGenesis";
@@ -67,6 +69,7 @@ export default function GenesisBuilder({
     initiallyExpandedSections = ["chainParams"]
 }: GenesisBuilderProps) {
     const { walletEVMAddress } = useWalletStore();
+    const { setHighlightPath, clearHighlight } = useGenesisHighlight();
 
     // --- State ---
     const [evmChainId, setEvmChainId] = useState<number>(MIN_CHAIN_ID + Math.floor(Math.random() * (MAX_CHAIN_ID - MIN_CHAIN_ID)));
@@ -97,12 +100,8 @@ export default function GenesisBuilder({
     const [contractDeployerAllowListConfig, setContractDeployerAllowListConfig] = useState<AllowlistPrecompileConfig>(generateEmptyAllowlistPrecompileConfig());
     const [contractNativeMinterConfig, setContractNativeMinterConfig] = useState<AllowlistPrecompileConfig>(generateEmptyAllowlistPrecompileConfig());
     const [txAllowListConfig, setTxAllowListConfig] = useState<AllowlistPrecompileConfig>(generateEmptyAllowlistPrecompileConfig());
-
-    // State for simple precompiles (can be integrated into FeeConfig component later if needed)
-    const [feeManagerEnabled, setFeeManagerEnabled] = useState(false);
-    const [feeManagerAdmins, setFeeManagerAdmins] = useState<Address[]>([]);
-    const [rewardManagerEnabled, setRewardManagerEnabled] = useState(false);
-    const [rewardManagerAdmins, setRewardManagerAdmins] = useState<Address[]>([]);
+    const [feeManagerConfig, setFeeManagerConfig] = useState<AllowlistPrecompileConfig>(generateEmptyAllowlistPrecompileConfig());
+    const [rewardManagerConfig, setRewardManagerConfig] = useState<AllowlistPrecompileConfig>(generateEmptyAllowlistPrecompileConfig());
 
     // Fixed Warp config for now (can be made configurable later)
     const warpConfig = {
@@ -122,7 +121,7 @@ export default function GenesisBuilder({
     const [preinstallConfig, setPreinstallConfig] = useState<PreinstallConfig>({
         proxy: true,
         proxyAdmin: true,
-        safeSingletonFactory: false,
+        safeSingletonFactory: true,  // Enabled by default as requested
         multicall3: false,
         icmMessenger: true,
         wrappedNativeToken: true,
@@ -176,8 +175,8 @@ export default function GenesisBuilder({
         if (!isValidAllowlistPrecompileConfig(txAllowListConfig)) errors.txAllowList = "Transaction Allow List: Configuration is invalid or requires at least one valid address.";
 
         // Fee/Reward Manager
-        if (feeManagerEnabled && feeManagerAdmins.length === 0) errors.feeManager = "Fee Manager: At least one admin address is required when enabled.";
-        if (rewardManagerEnabled && rewardManagerAdmins.length === 0) errors.rewardManager = "Reward Manager: At least one admin address is required when enabled.";
+        if (!isValidAllowlistPrecompileConfig(feeManagerConfig)) errors.feeManager = "Fee Manager: Configuration is invalid or requires at least one valid address.";
+        if (!isValidAllowlistPrecompileConfig(rewardManagerConfig)) errors.rewardManager = "Reward Manager: Configuration is invalid or requires at least one valid address.";
 
         // Fee Config Parameters
         if (feeConfig.minBaseFee < 0) errors.minBaseFee = "Min base fee must be non-negative";
@@ -210,7 +209,7 @@ export default function GenesisBuilder({
     }, [
         evmChainId, tokenName, tokenSymbol, gasLimit, targetBlockRate, tokenAllocations,
         contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig,
-        feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins,
+        feeManagerConfig, rewardManagerConfig,
         feeConfig, preinstallConfig
     ]);
 
@@ -264,16 +263,24 @@ export default function GenesisBuilder({
                             ...warpConfig,
                         },
                         // Add fee and reward manager configurations
-                        ...(feeManagerEnabled && feeManagerAdmins.length > 0 && {
+                        ...(feeManagerConfig.activated && {
                             feeManagerAddress: {
-                                blockTimestamp: 0,
-                                adminAddresses: feeManagerAdmins
+                                blockTimestamp: feeManagerConfig.blockTimestamp || 0,
+                                adminAddresses: [
+                                    ...(feeManagerConfig.addresses?.Admin || []).map(a => a.address),
+                                    ...(feeManagerConfig.addresses?.Manager || []).map(a => a.address),
+                                    ...(feeManagerConfig.addresses?.Enabled || []).map(a => a.address)
+                                ].filter(Boolean)
                             }
                         }),
-                        ...(rewardManagerEnabled && rewardManagerAdmins.length > 0 && {
+                        ...(rewardManagerConfig.activated && {
                             rewardManagerAddress: {
-                                blockTimestamp: 0,
-                                adminAddresses: rewardManagerAdmins
+                                blockTimestamp: rewardManagerConfig.blockTimestamp || 0,
+                                adminAddresses: [
+                                    ...(rewardManagerConfig.addresses?.Admin || []).map(a => a.address),
+                                    ...(rewardManagerConfig.addresses?.Manager || []).map(a => a.address),
+                                    ...(rewardManagerConfig.addresses?.Enabled || []).map(a => a.address)
+                                ].filter(Boolean)
                             }
                         })
                     },
@@ -285,7 +292,7 @@ export default function GenesisBuilder({
             console.error("Error generating genesis data:", error);
             setGenesisData(`Error generating genesis: ${error instanceof Error ? error.message : String(error)}`);
         }
-    }, [shouldGenerateGenesis, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, setGenesisData, blockTimestamp, tokenName, tokenSymbol]);
+    }, [shouldGenerateGenesis, evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerConfig, rewardManagerConfig, feeConfig, warpConfig, preinstallConfig, setGenesisData, blockTimestamp, tokenName, tokenSymbol]);
 
     // Effect to immediately generate genesis if it's empty (e.g., after reset or initial load)
     useEffect(() => {
@@ -301,7 +308,7 @@ export default function GenesisBuilder({
         }, 300);
 
         return () => clearTimeout(debounceTimer);
-    }, [evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerEnabled, feeManagerAdmins, rewardManagerEnabled, rewardManagerAdmins, feeConfig, warpConfig, preinstallConfig, tokenName, tokenSymbol, generateGenesisData]);
+    }, [evmChainId, gasLimit, targetBlockRate, tokenAllocations, contractDeployerAllowListConfig, contractNativeMinterConfig, txAllowListConfig, feeManagerConfig, rewardManagerConfig, feeConfig, warpConfig, preinstallConfig, tokenName, tokenSymbol, generateGenesisData]);
 
     // --- Handlers ---
 
@@ -355,20 +362,12 @@ export default function GenesisBuilder({
         setTargetBlockRate(rate);
     }, []);
 
-    const handleSetFeeManagerEnabled = useCallback((enabled: SetStateAction<boolean>) => {
-        setFeeManagerEnabled(enabled);
+    const handleSetFeeManagerConfig = useCallback((config: SetStateAction<AllowlistPrecompileConfig>) => {
+        setFeeManagerConfig(config);
     }, []);
 
-    const handleSetFeeManagerAdmins = useCallback((admins: SetStateAction<Address[]>) => {
-        setFeeManagerAdmins(admins);
-    }, []);
-
-    const handleSetRewardManagerEnabled = useCallback((enabled: SetStateAction<boolean>) => {
-        setRewardManagerEnabled(enabled);
-    }, []);
-
-    const handleSetRewardManagerAdmins = useCallback((admins: SetStateAction<Address[]>) => {
-        setRewardManagerAdmins(admins);
+    const handleSetRewardManagerConfig = useCallback((config: SetStateAction<AllowlistPrecompileConfig>) => {
+        setRewardManagerConfig(config);
     }, []);
 
     const handleSetEvmChainId = useCallback((id: SetStateAction<number>) => {
@@ -381,93 +380,107 @@ export default function GenesisBuilder({
             {/* Compact single-column: remove top tab bar per design */}
 
             {/* Configuration - single column */}
-            <div className="space-y-6">
-                    {/* Chain basics: Chain ID (only), no token fields here; Chain Name + VM ID live above */}
-                    <ChainParamsSection
-                        evmChainId={evmChainId}
-                        setEvmChainId={handleSetEvmChainId}
-                        tokenName={tokenName}
-                        setTokenName={setTokenName}
-                        tokenSymbol={tokenSymbol}
-                        setTokenSymbol={setTokenSymbol}
-                        isExpanded={isSectionExpanded('chainParams')}
-                        toggleExpand={() => toggleSection('chainParams')}
-                        validationError={validationMessages.errors.chainId}
-                        tokenNameError={validationMessages.errors.tokenName}
-                        tokenSymbolError={validationMessages.errors.tokenSymbol}
-                        compact
-                        hideTokenFields
-                    />
+            <div className="space-y-4">
+                    {/* EVM Chain ID - Outside of sections */}
+                    <div>
+                        <div className="flex items-baseline gap-1.5 mb-1.5">
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">EVM Chain ID</label>
+                            <Tooltip>
+                                <TooltipTrigger className="inline-flex">
+                                    <Info className="h-3.5 w-3.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                    <div className="space-y-2">
+                                        <p className="text-xs">A unique identifier for your blockchain network. Choose an ID that doesn't conflict with existing chains.</p>
+                                        <a 
+                                            href="https://chainlist.org" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
+                                        >
+                                            Check registered IDs on chainlist.org
+                                            <ExternalLink className="h-3 w-3" />
+                                        </a>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                        <Input
+                            label=""
+                            value={evmChainId.toString()}
+                            onChange={(value) => handleSetEvmChainId(Number(value))}
+                            placeholder="Enter chain ID"
+                            type="number"
+                            error={validationMessages.errors.chainId}
+                            className="max-w-xs"
+                            onFocus={() => setHighlightPath('chainId')}
+                            onBlur={() => clearHighlight()}
+                        />
+                    </div>
 
-                    {/* Coin name + allocations */}
-                    <TokenomicsSection
-                        tokenAllocations={tokenAllocations}
-                        setTokenAllocations={handleTokenAllocationsChange}
-                        nativeMinterConfig={contractNativeMinterConfig}
-                        setNativeMinterConfig={handleNativeMinterConfigChange}
-                        tokenName={tokenName}
-                        setTokenName={setTokenName}
-                        isExpanded={isSectionExpanded('tokenomics')}
-                        toggleExpand={() => toggleSection('tokenomics')}
-                        validationErrors={validationMessages.errors}
-                        compact
-                    />
+                    {/* Main Configuration Sections */}
+                    <div className="space-y-8">
+                        {/* TOKENOMICS: Coin name, initial token allocation, native minter */}
+                        <TokenomicsSection
+                            tokenAllocations={tokenAllocations}
+                            setTokenAllocations={handleTokenAllocationsChange}
+                            nativeMinterConfig={contractNativeMinterConfig}
+                            setNativeMinterConfig={handleNativeMinterConfigChange}
+                            tokenName={tokenName}
+                            setTokenName={setTokenName}
+                            tokenSymbol={tokenSymbol}
+                            setTokenSymbol={setTokenSymbol}
+                            isExpanded={true}
+                            toggleExpand={() => {}}
+                            validationErrors={validationMessages.errors}
+                            compact
+                            walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
+                        />
 
-                    {/* Precompiles enable/disable list */}
-                    <PrecompilesSection
-                        deployerConfig={contractDeployerAllowListConfig}
-                        setDeployerConfig={handleDeployerConfigChange}
-                        txConfig={txAllowListConfig}
-                        setTxConfig={handleTxConfigChange}
-                        nativeMinterConfig={contractNativeMinterConfig}
-                        setNativeMinterConfig={handleNativeMinterConfigChange}
-                        feeManagerEnabled={feeManagerEnabled}
-                        setFeeManagerEnabled={handleSetFeeManagerEnabled}
-                        feeManagerAdmins={feeManagerAdmins}
-                        setFeeManagerAdmins={handleSetFeeManagerAdmins}
-                        rewardManagerEnabled={rewardManagerEnabled}
-                        setRewardManagerEnabled={handleSetRewardManagerEnabled}
-                        rewardManagerAdmins={rewardManagerAdmins}
-                        setRewardManagerAdmins={handleSetRewardManagerAdmins}
-                        isExpanded={isSectionExpanded('precompiles' as SectionId)}
-                        toggleExpand={() => toggleSection('precompiles' as SectionId)}
-                        compact
-                        validationErrors={validationMessages.errors}
-                        walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
-                    />
+                        {/* PERMISSIONING: Contract deployer allowlist, transaction allowlist */}
+                        <PermissioningSection
+                            deployerConfig={contractDeployerAllowListConfig}
+                            setDeployerConfig={handleDeployerConfigChange}
+                            txConfig={txAllowListConfig}
+                            setTxConfig={handleTxConfigChange}
+                            isExpanded={true}
+                            toggleExpand={() => {}}
+                            compact
+                            validationErrors={validationMessages.errors}
+                            walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
+                        />
 
-                    {/* Predeploy enable list */}
-                    <PredeploysSection
-                        config={preinstallConfig}
-                        onConfigChange={setPreinstallConfig}
-                        ownerAddress={tokenAllocations[0]?.address}
-                        tokenName={tokenName}
-                        tokenSymbol={tokenSymbol}
-                        isExpanded={isSectionExpanded('predeploys' as SectionId)}
-                        toggleExpand={() => toggleSection('predeploys' as SectionId)}
-                        compact
-                    />
+                        {/* FEE CONFIGURATION: Fee config setup, fee manager, reward manager */}
+                        <FeeConfigurationSection
+                            gasLimit={gasLimit}
+                            setGasLimit={handleSetGasLimit}
+                            targetBlockRate={targetBlockRate}
+                            setTargetBlockRate={handleSetTargetBlockRate}
+                            feeConfig={feeConfig}
+                            setFeeConfig={handleFeeConfigChange}
+                            feeManagerConfig={feeManagerConfig}
+                            setFeeManagerConfig={handleSetFeeManagerConfig}
+                            rewardManagerConfig={rewardManagerConfig}
+                            setRewardManagerConfig={handleSetRewardManagerConfig}
+                            isExpanded={true}
+                            toggleExpand={() => {}}
+                            validationMessages={validationMessages}
+                            compact
+                            walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
+                        />
 
-                    <TransactionFeesSection
-                        gasLimit={gasLimit}
-                        setGasLimit={handleSetGasLimit}
-                        targetBlockRate={targetBlockRate}
-                        setTargetBlockRate={handleSetTargetBlockRate}
-                        feeConfig={feeConfig}
-                        setFeeConfig={handleFeeConfigChange}
-                        feeManagerEnabled={feeManagerEnabled}
-                        setFeeManagerEnabled={handleSetFeeManagerEnabled}
-                        feeManagerAdmins={feeManagerAdmins}
-                        setFeeManagerAdmins={handleSetFeeManagerAdmins}
-                        rewardManagerEnabled={rewardManagerEnabled}
-                        setRewardManagerEnabled={handleSetRewardManagerEnabled}
-                        rewardManagerAdmins={rewardManagerAdmins}
-                        setRewardManagerAdmins={handleSetRewardManagerAdmins}
-                        isExpanded={isSectionExpanded('transactionFees')}
-                        toggleExpand={() => toggleSection('transactionFees')}
-                        validationMessages={validationMessages} // Pass both errors and warnings
-                        compact
-                    />
+                        {/* PRE-DEPLOYS: Pre-deployed contracts (Safe Singleton enabled by default) */}
+                        <PredeploysSection
+                            config={preinstallConfig}
+                            onConfigChange={setPreinstallConfig}
+                            ownerAddress={tokenAllocations[0]?.address}
+                            tokenName={tokenName}
+                            tokenSymbol={tokenSymbol}
+                            isExpanded={true}
+                            toggleExpand={() => {}}
+                            compact
+                        />
+                    </div>
 
                     {/* Validation Summary & Actions */}
                    

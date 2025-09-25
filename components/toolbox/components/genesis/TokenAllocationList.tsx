@@ -168,10 +168,10 @@ export default function TokenAllocationList({
   const totalSupply = useMemo(() => allocations.reduce((sum, a) => sum + (isNaN(a.amount) ? 0 : a.amount), 0), [allocations])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="bg-white dark:bg-zinc-950 rounded-md border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div className={`flex items-center justify-between ${compact ? 'px-3 py-2' : 'px-4 py-3'} border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/40`}>
-          <div className="text-[12px] font-medium text-zinc-700 dark:text-zinc-300">Token allocations</div>
+          <div className="text-[12px] font-medium text-zinc-700 dark:text-zinc-300">Token Allocations</div>
           <div className="flex items-center gap-3 text-[12px] text-zinc-600 dark:text-zinc-400">
             <span>Total: <span className="font-medium text-zinc-800 dark:text-zinc-200">{totalSupply.toLocaleString()}</span></span>
             {allocations.length > 0 && (
@@ -182,77 +182,78 @@ export default function TokenAllocationList({
 
         <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
           {allocations.map((entry, index) => (
-            <div key={index} className={`grid grid-cols-[2fr_1fr_auto] items-center ${compact ? 'p-3' : 'p-4'} hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors`}>
-              <div>
+            <div key={index} className={`flex items-center gap-3 ${compact ? 'p-3' : 'p-4'} hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors`}>
+              <div className="flex-1 min-w-0">
                 <div className={`font-mono ${compact ? 'text-[12px]' : 'text-sm'} break-all ${validationErrors[index] ? 'text-red-500' : 'text-zinc-700 dark:text-zinc-300'}`}>
                   {entry.address}
                   {validationErrors[index] && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{validationErrors[index]}</p>}
                 </div>
               </div>
-              <div>
-                <RawInput
-                  type="text"
-                  inputMode="decimal"
-                  value={amountInputs[index] ?? allocations[index]?.amount?.toString() ?? ''}
-                  onChange={(e) => handleAmountInputChange(index, e.target.value)}
-                  onBlur={() => {
-                    handleAmountInputBlur(index);
-                    handleBlur();
-                  }}
-                  onFocus={handleFocus}
-                  className={`w-full font-mono ${compact ? 'text-[12px] py-1' : 'text-sm'}`}
-                />
-              </div>
-              <div className="flex justify-center w-10">
-                <button
-                  onClick={() => handleDeleteAllocation(index)}
-                  className={`${compact ? 'p-1.5' : 'p-2'} hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors`}
-                  aria-label="Delete allocation"
-                >
-                  <Trash2 className="h-4 w-4 text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors" />
-                </button>
-              </div>
+              <RawInput
+                type="text"
+                inputMode="decimal"
+                value={amountInputs[index] ?? allocations[index]?.amount?.toString() ?? ''}
+                onChange={(e) => handleAmountInputChange(index, e.target.value)}
+                onBlur={() => {
+                  handleAmountInputBlur(index);
+                  handleBlur();
+                }}
+                onFocus={handleFocus}
+                className={`w-32 font-mono ${compact ? 'text-[12px] py-1' : 'text-sm'}`}
+              />
+              <button
+                onClick={() => handleDeleteAllocation(index)}
+                className={`${compact ? 'p-1.5' : 'p-2'} hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors`}
+                aria-label="Delete allocation"
+              >
+                <Trash2 className="h-4 w-4 text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors" />
+              </button>
             </div>
           ))}
 
-          <div className={`grid grid-cols-[2fr_1fr_auto_auto] items-center ${compact ? 'p-3' : 'p-4'} gap-3 bg-zinc-50/80 dark:bg-zinc-900/40`}>
-            <Plus className="h-4 w-4 text-blue-500 shrink-0" />
-            <RawInput
-              type="text"
-              placeholder="Add address"
-              value={newAddress}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              className={`flex-1 font-mono ${compact ? 'text-[12px] py-1' : 'text-sm'}`}
-            />
-            <RawInput
-              type="text"
-              inputMode="decimal"
-              pattern="[0-9]*\.?[0-9]*"
-              placeholder="Amount"
-              value={newAmount}
-              onChange={(e) => setNewAmount(e.target.value)}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              className={`${compact ? 'text-[12px] py-1' : 'text-sm'}`}
-            />
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleAddAddress}
-                disabled={!isValidInput(newAddress)}
-                className={`${compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'} bg-blue-500 hover:bg-blue-600 text-white rounded-md disabled:opacity-50 transition-colors font-medium`}
-              >
-                Add
-              </button>
-              <AddConnectedWalletButtonSimple 
-                onAddAddress={(address) => handleAddAllocations([{ 
-                  address: address as Address, 
-                  amount: parseFloat(newAmount) || 0 
-                }])}
-                addressSource={allocations}
+          <div className={`${compact ? 'p-3' : 'p-4'} bg-zinc-50/80 dark:bg-zinc-900/40`}>
+            <div className={`flex items-center gap-3`}>
+              <div className="flex-1 min-w-0 relative">
+                <RawInput
+                  type="text"
+                  placeholder="Add address (0x...)"
+                  value={newAddress}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  className={`w-full font-mono ${compact ? 'text-[12px] py-1 pl-7' : 'text-sm pl-8'} pr-2`}
+                />
+                <Plus className={`absolute left-2 top-1/2 -translate-y-1/2 ${compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} text-zinc-400`} />
+              </div>
+              <RawInput
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                placeholder="Amount"
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                className={`w-32 ${compact ? 'text-[12px] py-1' : 'text-sm'}`}
               />
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAddAddress}
+                  disabled={!isValidInput(newAddress)}
+                  className={`${compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} bg-blue-500 hover:bg-blue-600 text-white rounded-md disabled:opacity-50 transition-colors font-medium flex items-center gap-1.5`}
+                >
+                  Add
+                </button>
+                <div className="h-6 w-px bg-zinc-300 dark:bg-zinc-600" />
+                <AddConnectedWalletButtonSimple 
+                  onAddAddress={(address) => handleAddAllocations([{ 
+                    address: address as Address, 
+                    amount: parseFloat(newAmount) || 0 
+                  }])}
+                  addressSource={allocations}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -266,4 +267,5 @@ export default function TokenAllocationList({
     </div>
   )
 }
+
 
