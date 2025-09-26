@@ -22,8 +22,6 @@ type TransactionFeesSectionProps = {
     setRewardManagerEnabled: Dispatch<SetStateAction<boolean>>;
     rewardManagerAdmins: Address[];
     setRewardManagerAdmins: Dispatch<SetStateAction<Address[]>>;
-    isExpanded: boolean;
-    toggleExpand: () => void;
     validationMessages: ValidationMessages;
     compact?: boolean;
 };
@@ -43,8 +41,6 @@ export const TransactionFeesSection = ({
     setRewardManagerEnabled,
     rewardManagerAdmins,
     setRewardManagerAdmins,
-    isExpanded,
-    toggleExpand,
     validationMessages,
     compact
 }: TransactionFeesSectionProps) => {
@@ -78,11 +74,8 @@ export const TransactionFeesSection = ({
         <SectionWrapper
             title="Transaction Fees & Gas"
             description={compact ? "" : "Configure fee parameters and optional dynamic managers."}
-            isExpanded={isExpanded}
-            toggleExpand={toggleExpand}
             sectionId="transactionFees"
             compact={compact}
-            variant="flat"
         >
             {/* Pass all necessary props to FeeConfig */}
             <FeeConfig

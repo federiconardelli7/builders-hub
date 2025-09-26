@@ -25,8 +25,6 @@ type PrecompilesSectionProps = {
     setRewardManagerEnabled: Dispatch<SetStateAction<boolean>>;
     rewardManagerAdmins: Address[];
     setRewardManagerAdmins: Dispatch<SetStateAction<Address[]>>;
-    isExpanded: boolean;
-    toggleExpand: () => void;
     compact?: boolean;
     validationErrors: { [key: string]: string };
     walletAddress?: Address; // Add wallet address for auto-filling
@@ -47,8 +45,6 @@ export const PrecompilesSection = ({
     setRewardManagerEnabled,
     rewardManagerAdmins,
     setRewardManagerAdmins,
-    isExpanded,
-    toggleExpand,
     compact,
     validationErrors,
     walletAddress
@@ -136,11 +132,8 @@ export const PrecompilesSection = ({
         <SectionWrapper
             title="Precompiles"
             description={compact ? '' : 'Enable and configure optional precompiles for permissioning and dynamic parameters.'}
-            isExpanded={isExpanded}
-            toggleExpand={toggleExpand}
             sectionId="precompiles"
             compact={compact}
-            variant="flat"
         >
             <div className="space-y-3">
                 <div className="flex items-center justify-between text-[12px]">

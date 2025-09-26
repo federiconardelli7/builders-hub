@@ -8,8 +8,6 @@ type PermissionsSectionProps = {
     setDeployerConfig: Dispatch<SetStateAction<AllowlistPrecompileConfig>>;
     txConfig: AllowlistPrecompileConfig;
     setTxConfig: Dispatch<SetStateAction<AllowlistPrecompileConfig>>;
-    isExpanded: boolean;
-    toggleExpand: () => void;
     validationErrors: { [key: string]: string };
     compact?: boolean;
 };
@@ -19,8 +17,6 @@ export const PermissionsSection = ({
     setDeployerConfig,
     txConfig,
     setTxConfig,
-    isExpanded,
-    toggleExpand,
     validationErrors,
     compact
 }: PermissionsSectionProps) => {
@@ -28,11 +24,8 @@ export const PermissionsSection = ({
         <SectionWrapper
             title="Permissions"
             description={compact ? "" : "Optional permissioning for transaction submitters and contract deployers."}
-            isExpanded={isExpanded}
-            toggleExpand={toggleExpand}
             sectionId="permissions"
             compact={compact}
-            variant="flat"
         >
             <div className="space-y-6">
 
