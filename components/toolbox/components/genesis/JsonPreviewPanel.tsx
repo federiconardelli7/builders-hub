@@ -3,68 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Copy, Download, Check } from "lucide-react";
-import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
-
-// Simple JSON syntax highlighter component
-function SyntaxHighlightedJSON({ code, highlightedLine }: { code: string, highlightedLine: number | null }) {
-    const [highlightedElements, setHighlightedElements] = useState<Set<number>>(new Set());
-
-    useEffect(() => {
-        if (highlightedLine !== null) {
-            setHighlightedElements(new Set([highlightedLine]));
-        } else {
-            setHighlightedElements(new Set());
-        }
-    }, [highlightedLine]);
-
-    const syntaxHighlight = (json: string) => {
-        // Enhanced JSON syntax highlighting
-        return json
-            // Keys (strings that come before colons)
-            .replace(/(".*?")(\s*:)/g, '<span class="text-green-600 dark:text-green-400">$1</span>$2')
-            // Values that are strings
-            .replace(/:\s*(".*?")/g, ': <span class="text-yellow-600 dark:text-yellow-400">$1</span>')
-            // Numbers (including decimals)
-            .replace(/:\s*(\b\d+\.?\d*\b)/g, ': <span class="text-orange-600 dark:text-orange-400">$1</span>')
-            // Boolean and null literals
-            .replace(/:\s*(\b(?:true|false|null)\b)/g, ': <span class="text-blue-600 dark:text-blue-400">$1</span>')
-            // Hex values (addresses and hashes)
-            .replace(/("0x[0-9a-fA-F]+")/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-            // Structural elements
-            .replace(/(\{|\}|\[|\])/g, '<span class="text-zinc-600 dark:text-zinc-300">$1</span>');
-    };
-
-    const lines = code.split('\n');
-    const lineHeight = 20;
-
-    return (
-        <div className="relative font-mono text-[11px] leading-5">
-            <pre className="whitespace-pre-wrap overflow-x-auto">
-                {lines.map((line, index) => {
-                    const lineNumber = index + 1;
-                    const isHighlighted = highlightedElements.has(lineNumber);
-
-                    return (
-                        <div
-                            key={lineNumber}
-                            className={`relative ${isHighlighted ? 'bg-blue-200/30 dark:bg-blue-800/30' : ''}`}
-                            style={{
-                                paddingTop: '1px',
-                                paddingBottom: '1px'
-                            }}
-                            data-line={lineNumber}
-                        >
-                            <span className="text-zinc-500 dark:text-zinc-400 pr-3 select-none inline-block w-8 text-right">
-                                {lineNumber.toString().padStart(3, ' ')}
-                            </span>
-                            <span dangerouslySetInnerHTML={{ __html: syntaxHighlight(line) }} />
-                        </div>
-                    );
-                })}
-            </pre>
-        </div>
-    );
-}
+import { SyntaxHighlightedJSON } from "./SyntaxHighlightedJSON";
 
 interface JsonPreviewPanelProps {
     jsonData: string;

@@ -38,7 +38,7 @@ export function SubnetStep({ subnetId, onSubnetIdChange }: SubnetStepProps) {
     };
 
     return (
-        <div className="space-y-4 text-[13px]">
+        <div className="space-y-6 text-[13px]">
             <div>
                 <h2 className="text-[14px] font-semibold mb-1">Create or Select a Subnet</h2>
                 <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
@@ -46,47 +46,47 @@ export function SubnetStep({ subnetId, onSubnetIdChange }: SubnetStepProps) {
                 </p>
             </div>
 
-            <div className="space-y-3">
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-md border border-zinc-200 dark:border-zinc-800">
-                    <h3 className="text-[12px] font-medium mb-2">Create New Subnet</h3>
+            <div className="space-y-4">
+                {/* Create New Subnet Option */}
+                <div className="space-y-3">
+                    <h3 className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">Create New Subnet</h3>
                     <Input
                         label="Subnet Owner"
                         value={pChainAddress}
                         disabled={true}
                         type="text"
-                        className="mb-2"
                     />
                     <Button
                         onClick={handleCreateSubnet}
                         loading={isCreatingSubnet}
+                        loadingText="Creating Subnet..."
                         variant="primary"
-                        className="w-full h-8 text-[12px]"
+                        className="w-full"
                     >
                         Create Subnet
                     </Button>
                 </div>
 
-                <div className="flex items-center">
-                    <div className="flex-1 border-t border-zinc-200 dark:border-zinc-800"></div>
-                    <span className="px-3 text-[12px] text-zinc-500">or</span>
-                    <div className="flex-1 border-t border-zinc-200 dark:border-zinc-800"></div>
+                <div className="flex items-center gap-3 my-6">
+                    <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">or</span>
+                    <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
                 </div>
 
-                <div>
-                    <h3 className="text-[12px] font-medium mb-2">Use Existing Subnet</h3>
+                {/* Use Existing Subnet Option */}
+                <div className="space-y-3">
+                    <h3 className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">Use Existing Subnet</h3>
                     <InputSubnetId
                         id="create-chain-subnet-id"
-                        label="Subnet ID"
+                        label=""
                         value={subnetId}
                         onChange={onSubnetIdChange}
                         validationDelayMs={3000}
                         hideSuggestions={true}
-                        placeholder="Enter SubnetID"
+                        placeholder="Enter an existing Subnet ID"
                     />
                 </div>
             </div>
-
-            {/* Success notice intentionally removed for a cleaner compact UI */}
         </div>
     );
 }

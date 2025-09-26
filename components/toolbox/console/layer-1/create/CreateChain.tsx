@@ -3,7 +3,7 @@
 import { useCreateChainStore } from "@/components/toolbox/stores/createChainStore";
 import { useState, useRef } from "react";
 import { Button } from "@/components/toolbox/components/Button";
-import GenesisBuilder from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
+import { GenesisBuilderInner } from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { SUBNET_EVM_VM_ID } from "@/constants/console";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
@@ -151,7 +151,7 @@ function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
                             onGenesisDataChange={setGenesisData}
                             embedded={embedded}
                         >
-                            <GenesisBuilder
+                            <GenesisBuilderInner
                                 genesisData={genesisData}
                                 setGenesisData={setGenesisData}
                                 initiallyExpandedSections={["chainParams"]}

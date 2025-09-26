@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from 'react';
-import { SectionWrapper } from '../SectionWrapper';
 import { Input } from '../../Input';
 import { Select } from '../../Select';
 import { useGenesisHighlight } from '../GenesisHighlightContext';
@@ -15,8 +14,6 @@ type ChainParamsSectionProps = {
     setTokenName: Dispatch<SetStateAction<string>>;
     tokenSymbol: string;
     setTokenSymbol: Dispatch<SetStateAction<string>>;
-    isExpanded: boolean;
-    toggleExpand: () => void;
     validationError?: string;
     tokenNameError?: string;
     tokenSymbolError?: string;
@@ -33,8 +30,6 @@ export const ChainParamsSection = ({
     setTokenName,
     tokenSymbol,
     setTokenSymbol,
-    isExpanded,
-    toggleExpand,
     validationError,
     tokenNameError,
     tokenSymbolError,
@@ -51,15 +46,6 @@ export const ChainParamsSection = ({
         clearHighlight();
     };
     return (
-        // <SectionWrapper
-        //     title="Chain Parameters"
-        //     description={compact ? "" : "Configure the basic parameters of your L1 blockchain."}
-        //     isExpanded={isExpanded}
-        //     toggleExpand={toggleExpand}
-        //     sectionId="chainParams"
-        //     compact={compact}
-        //     variant="flat"
-        // >
             <div className="space-y-2">
                 {/* Chain Name handled outside this section; this focuses on ID and VM */}
                 <div>
@@ -122,6 +108,5 @@ export const ChainParamsSection = ({
                     </div>
                 )}
             </div>
-        // </SectionWrapper>
     );
 }; 

@@ -6,7 +6,7 @@ import { Address } from "viem";
 import { Input } from '@/components/toolbox/components/Input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info, ExternalLink } from 'lucide-react';
-import { useGenesisHighlight } from '@/components/toolbox/components/genesis/GenesisHighlightContext';
+import { GenesisHighlightProvider, useGenesisHighlight } from '@/components/toolbox/components/genesis/GenesisHighlightContext';
 
 // Genesis Components
 import { TokenomicsSection } from "@/components/toolbox/components/genesis/sections/TokenomicsSection";
@@ -63,7 +63,7 @@ type GenesisBuilderProps = {
     initiallyExpandedSections?: SectionId[];
 };
 
-export default function GenesisBuilder({
+function GenesisBuilderInner({
     genesisData,
     setGenesisData,
     initiallyExpandedSections = ["chainParams"]
@@ -437,8 +437,6 @@ export default function GenesisBuilder({
                             setTokenName={setTokenName}
                             tokenSymbol={tokenSymbol}
                             setTokenSymbol={setTokenSymbol}
-                            isExpanded={true}
-                            toggleExpand={() => {}}
                             validationErrors={validationMessages.errors}
                             compact
                             walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
@@ -450,8 +448,6 @@ export default function GenesisBuilder({
                             setDeployerConfig={handleDeployerConfigChange}
                             txConfig={txAllowListConfig}
                             setTxConfig={handleTxConfigChange}
-                            isExpanded={true}
-                            toggleExpand={() => {}}
                             compact
                             validationErrors={validationMessages.errors}
                             walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
@@ -469,8 +465,6 @@ export default function GenesisBuilder({
                             setFeeManagerConfig={handleSetFeeManagerConfig}
                             rewardManagerConfig={rewardManagerConfig}
                             setRewardManagerConfig={handleSetRewardManagerConfig}
-                            isExpanded={true}
-                            toggleExpand={() => {}}
                             validationMessages={validationMessages}
                             compact
                             walletAddress={walletEVMAddress ? walletEVMAddress as Address : undefined}
@@ -483,8 +477,6 @@ export default function GenesisBuilder({
                             ownerAddress={tokenAllocations[0]?.address}
                             tokenName={tokenName}
                             tokenSymbol={tokenSymbol}
-                            isExpanded={true}
-                            toggleExpand={() => {}}
                             compact
                         />
                     </div>
@@ -494,5 +486,17 @@ export default function GenesisBuilder({
                 </div>
 
         </div>
+    );
+}
+
+// Export the inner component for use within contexts that already provide GenesisHighlightProvider
+export { GenesisBuilderInner };
+
+// Default export wraps with provider for standalone use
+export default function GenesisBuilder(props: GenesisBuilderProps) {
+    return (
+        <GenesisHighlightProvider>
+            <GenesisBuilderInner {...props} />
+        </GenesisHighlightProvider>
     );
 }
