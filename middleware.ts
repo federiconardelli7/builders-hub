@@ -82,6 +82,6 @@ export const config = {
     "/profile/:path*",
     "/academy/:path*/get-certificate",
     "/academy/:path*/certificate",
-    "/console/utilities/glacier-api-tokens",
+    "/console/utilities/data-api-keys",
   ],
 };

@@ -237,11 +237,11 @@ const data = {
           url: "/console/utilities/vmcMigrateFromV1",
           icon: Wrench,
         },
-        {
-          title: "Glacier API Tokens",
-          url: "/console/utilities/glacier-api-tokens",
-          icon: BookKey,
-        },
+        // {
+        //   title: "Data API Keys",
+        //   url: "/console/utilities/data-api-keys",
+        //   icon: BookKey,
+        // },
       ],
     },
   ],

@@ -162,8 +162,8 @@ export default function TokenManagement({
       />
 
       <Container
-        title="Glacier API Keys"
-        description="Manage your API keys for accessing the Glacier API. Create, view, and revoke keys as needed for your applications."
+        title="API Keys"
+        description="Manage your API keys for accessing the Data & Metrics APIs. Create, view, and revoke keys as needed for your applications."
       >
         {/* Header with Create Button */}
         <div className="mb-8 not-prose">
@@ -173,7 +173,7 @@ export default function TokenManagement({
                 Your API Keys
               </h2>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Manage access tokens for the Glacier API
+                Manage access tokens for the Data & Metrics API
               </p>
             </div>
             <Button

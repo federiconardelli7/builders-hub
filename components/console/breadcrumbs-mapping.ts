@@ -37,5 +37,5 @@ export const pathToBreadcrumb = {
   // Utilities
   "/console/utilities/format-converter": ["Console", "Utilities", "Format Converter"],
   "/console/utilities/vmcMigrateFromV1": ["Console", "Utilities", "Migrate VMC From V1 to V2"],
-  "/console/utilities/glacier-api-tokens": ["Console", "Utilities", "Glacier API Tokens"],
+  "/console/utilities/data-api-keys": ["Console", "Utilities", "Data API Keys"],
 };
