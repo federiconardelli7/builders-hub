@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useWalletStore } from '../stores/walletStore';
-import { useViemChainStore, useWrappedNativeToken as useWrappedNativeTokenAddress } from '../stores/toolboxStore';
+import { useViemChainStore } from '../stores/toolboxStore';
+import { useWrappedNativeToken as useWrappedNativeTokenAddress } from '../stores/l1ListStore';
 import { http, createPublicClient, parseEther, formatEther } from 'viem';
 import WrappedNativeToken from '@/contracts/icm-contracts/compiled/WrappedNativeToken.json';
 import useConsoleNotifications from '@/hooks/useConsoleNotifications';

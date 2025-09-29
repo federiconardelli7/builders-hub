@@ -15,7 +15,6 @@ const toolboxInitialState = {
     teleporterRegistryAddress: "",
     icmReceiverAddress: "",
     exampleErc20Address: "",
-    wrappedNativeTokenAddress: "",
     erc20TokenHomeAddress: "",
     erc20TokenRemoteAddress: "",
     nativeTokenHomeAddress: "",
@@ -34,16 +33,11 @@ export const getToolboxStore = (chainId: string) => create(
             setTeleporterRegistryAddress: (address: string) => set({ teleporterRegistryAddress: address }),
             setIcmReceiverAddress: (address: string) => set({ icmReceiverAddress: address }),
             setExampleErc20Address: (address: string) => set({ exampleErc20Address: address }),
-            setWrappedNativeTokenAddress: (address: string) => set({ wrappedNativeTokenAddress: address }),
             setErc20TokenHomeAddress: (address: string) => set({ erc20TokenHomeAddress: address }),
             setNativeTokenHomeAddress: (address: string) => set({ nativeTokenHomeAddress: address }),
             setErc20TokenRemoteAddress: (address: string) => set({ erc20TokenRemoteAddress: address }),
             setNativeTokenRemoteAddress: (address: string) => set({ nativeTokenRemoteAddress: address }),
             setPoaManagerAddress: (address: string) => set({ poaManagerAddress: address }),
-
-            // Wrapped native token helpers for backward compatibility
-            setWrappedNativeToken: (address: string) => set({ wrappedNativeTokenAddress: address }),
-            getWrappedNativeToken: () => get().wrappedNativeTokenAddress,
 
             reset: () => {
                 if (typeof window !== 'undefined') {
@@ -93,13 +87,3 @@ export function useViemChainStore() {
     return viemChain;
 }
 
-// Selectors for wrapped native token from toolbox store
-export const useWrappedNativeToken = () => {
-    const toolboxStore = useToolboxStore();
-    return toolboxStore.wrappedNativeTokenAddress;
-};
-
-export const useSetWrappedNativeToken = () => {
-    const toolboxStore = useToolboxStore();
-    return toolboxStore.setWrappedNativeToken;
-};

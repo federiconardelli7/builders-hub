@@ -1,7 +1,9 @@
 "use client";
 
-import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
-import { useViemChainStore, useWrappedNativeToken as useWrappedNativeTokenAddress, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
+import { useWalletStore } from "@/components/toolbox/stores/walletStore";
+import { useNativeCurrencyInfo, useSetNativeCurrencyInfo } from "@/components/toolbox/stores/l1ListStore";
+import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
+import { useWrappedNativeToken as useWrappedNativeTokenAddress, useSetWrappedNativeToken } from "@/components/toolbox/stores/l1ListStore";
 import { useWrappedNativeToken } from "@/components/toolbox/hooks/useWrappedNativeToken";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
@@ -13,7 +15,8 @@ interface UnwrapNativeTokenProps {
 }
 
 export default function UnwrapNativeToken({ wrappedNativeTokenAddress, onError }: UnwrapNativeTokenProps) {
-    const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
+    const { walletEVMAddress, walletChainId } = useWalletStore();
+    const setNativeCurrencyInfo = useSetNativeCurrencyInfo();
     const viemChain = useViemChainStore();
     const setWrappedNativeToken = useSetWrappedNativeToken();
     const wrappedNativeToken = useWrappedNativeToken();
@@ -38,7 +41,7 @@ export default function UnwrapNativeToken({ wrappedNativeTokenAddress, onError }
         
         // Cache native currency info if not already cached
         if (!cachedNativeCurrency && viemChain.nativeCurrency) {
-            setNativeCurrencyInfo(chainIdStr, viemChain.nativeCurrency);
+            setNativeCurrencyInfo(walletChainId, viemChain.nativeCurrency);
         }
         
         // Cache the token address if we found one

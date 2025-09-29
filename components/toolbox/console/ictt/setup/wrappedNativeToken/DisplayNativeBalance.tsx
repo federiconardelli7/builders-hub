@@ -1,6 +1,7 @@
 "use client";
 
-import { useWalletStore, useNativeCurrencyInfo, useL1Balance, useL1Loading } from "@/components/toolbox/stores/walletStore";
+import { useWalletStore, useL1Balance, useL1Loading } from "@/components/toolbox/stores/walletStore";
+import { useNativeCurrencyInfo, useSetNativeCurrencyInfo } from "@/components/toolbox/stores/l1ListStore";
 import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
 import { useEffect } from "react";
 
@@ -9,7 +10,8 @@ interface DisplayNativeBalanceProps {
 }
 
 export default function DisplayNativeBalance({ onError }: DisplayNativeBalanceProps) {
-    const { walletChainId, setNativeCurrencyInfo } = useWalletStore();
+    const { walletChainId } = useWalletStore();
+    const setNativeCurrencyInfo = useSetNativeCurrencyInfo();
     const viemChain = useViemChainStore();
     
     // Get cached values from wallet store
@@ -26,9 +28,9 @@ export default function DisplayNativeBalance({ onError }: DisplayNativeBalancePr
     // Cache native currency info if not already cached
     useEffect(() => {
         if (!cachedNativeCurrency && viemChain?.nativeCurrency) {
-            setNativeCurrencyInfo(chainIdStr, viemChain.nativeCurrency);
+            setNativeCurrencyInfo(walletChainId, viemChain.nativeCurrency);
         }
-    }, [cachedNativeCurrency, viemChain?.nativeCurrency, chainIdStr, setNativeCurrencyInfo]);
+    }, [cachedNativeCurrency, viemChain?.nativeCurrency, walletChainId, setNativeCurrencyInfo]);
 
     if (isLoading) {
         return (

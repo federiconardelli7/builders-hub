@@ -39,8 +39,6 @@ interface WalletState {
   bootstrapped: boolean;
   
   
-  // Native currency info cache
-  nativeCurrencyCache: Record<string, { name: string; symbol: string; decimals: number }>; // Key: chainId
 }
 
 interface WalletActions {
@@ -99,9 +97,6 @@ interface WalletActions {
   setBootstrapped: (bootstrapped: boolean) => void;
   
   
-  // Native currency cache actions
-  setNativeCurrencyInfo: (chainId: string, info: { name: string; symbol: string; decimals: number }) => void;
-  getNativeCurrencyInfo: (chainId: string) => { name: string; symbol: string; decimals: number } | undefined;
 }
 
 type WalletStore = WalletState & WalletActions;
@@ -134,7 +129,6 @@ export const useWalletStore = create<WalletStore>((set, get) => {
       l1Chains: {},
     },
     bootstrapped: false,
-    nativeCurrencyCache: {},
 
     // Actions
     updateWalletConnection: (data: { coreWalletClient?: ReturnType<typeof createCoreWalletClient>; walletEVMAddress?: string; walletChainId?: number; pChainAddress?: string; coreEthAddress?: string; }) => {
@@ -251,19 +245,6 @@ export const useWalletStore = create<WalletStore>((set, get) => {
     getBootstrapped: () => get().bootstrapped,
     setBootstrapped: (bootstrapped: boolean) => set({ bootstrapped: bootstrapped }),
     
-    // Native currency cache actions
-    setNativeCurrencyInfo: (chainId: string, info: { name: string; symbol: string; decimals: number }) => {
-      set((state) => ({
-        nativeCurrencyCache: {
-          ...state.nativeCurrencyCache,
-          [chainId]: info,
-        },
-      }));
-    },
-    
-    getNativeCurrencyInfo: (chainId: string) => {
-      return get().nativeCurrencyCache[chainId];
-    },
   };
 
   // Set up balance service callbacks
@@ -331,9 +312,5 @@ export const useL1Balance = (chainId: string) => useWalletStore((state) => state
 export const useL1Loading = (chainId: string) => useWalletStore((state) => state.isLoading.l1Chains[chainId] || false);
 
 
-export const useNativeCurrencyInfo = (chainId?: string) => {
-  const walletChainId = useWalletStore((state) => state.walletChainId);
-  const getNativeCurrencyInfo = useWalletStore((state) => state.getNativeCurrencyInfo);
-  const effectiveChainId = chainId || walletChainId.toString();
-  return getNativeCurrencyInfo(effectiveChainId);
-};
+// Native currency info moved to L1 store
+// Use useNativeCurrencyInfo and useSetNativeCurrencyInfo from l1ListStore instead

@@ -1,8 +1,10 @@
 "use client";
 
 import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
-import { useToolboxStore, useViemChainStore, useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/toolboxStore";
-import { useWalletStore, useNativeCurrencyInfo } from "@/components/toolbox/stores/walletStore";
+import { useToolboxStore, useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
+import { useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/l1ListStore";
+import { useWalletStore } from "@/components/toolbox/stores/walletStore";
+import { useNativeCurrencyInfo, useSetNativeCurrencyInfo } from "@/components/toolbox/stores/l1ListStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
@@ -34,14 +36,14 @@ const metadata: ConsoleToolMetadata = {
 function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
 
-    const { wrappedNativeTokenAddress: wrappedNativeTokenAddressStore, setWrappedNativeTokenAddress } = useToolboxStore();
     const setWrappedNativeToken = useSetWrappedNativeToken();
     const selectedL1 = useSelectedL1()();
     const [wrappedNativeTokenAddress, setLocalWrappedNativeTokenAddress] = useState<string>('');
     const [hasPredeployedToken, setHasPredeployedToken] = useState(false);
     const [isCheckingToken, setIsCheckingToken] = useState(false);
     const { coreWalletClient } = useConnectedWallet();
-    const { walletEVMAddress, walletChainId, setNativeCurrencyInfo } = useWalletStore();
+    const { walletEVMAddress, walletChainId } = useWalletStore();
+    const setNativeCurrencyInfo = useSetNativeCurrencyInfo();
     const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const [isDeploying, setIsDeploying] = useState(false);
@@ -70,7 +72,7 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                 
                 // Cache native currency info if not already cached
                 if (!cachedNativeCurrency && viemChain.nativeCurrency) {
-                    setNativeCurrencyInfo(chainIdStr, viemChain.nativeCurrency);
+                    setNativeCurrencyInfo(walletChainId, viemChain.nativeCurrency);
                 }
                 
                 // Check cache first for wrapped token
@@ -78,9 +80,7 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                 
                 // If not in cache, check other sources
                 if (!tokenAddress) {
-                    if (wrappedNativeTokenAddressStore) {
-                        tokenAddress = wrappedNativeTokenAddressStore;
-                    } else if (selectedL1?.wrappedTokenAddress) {
+                    if (selectedL1?.wrappedTokenAddress) {
                         tokenAddress = selectedL1.wrappedTokenAddress;
                     } else {
                         // Check if pre-deployed wrapped native token exists
@@ -106,8 +106,8 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                 setLocalWrappedNativeTokenAddress(tokenAddress);
                 
                 // If we detected pre-deployed token and nothing in store, save it
-                if (tokenAddress === PREDEPLOYED_WRAPPED_NATIVE_ADDRESS && !wrappedNativeTokenAddressStore && !selectedL1?.wrappedTokenAddress) {
-                    setWrappedNativeTokenAddress(PREDEPLOYED_WRAPPED_NATIVE_ADDRESS);
+                if (tokenAddress === PREDEPLOYED_WRAPPED_NATIVE_ADDRESS && !selectedL1?.wrappedTokenAddress) {
+                    setWrappedNativeToken(PREDEPLOYED_WRAPPED_NATIVE_ADDRESS);
                 }
             } catch (error) {
                 console.error('Error checking token:', error);
@@ -117,7 +117,7 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
         }
 
         checkToken();
-    }, [viemChain, walletEVMAddress, wrappedNativeTokenAddressStore, selectedL1, walletChainId, cachedWrappedToken, cachedNativeCurrency, setNativeCurrencyInfo]);
+    }, [viemChain, walletEVMAddress, selectedL1, walletChainId, cachedWrappedToken, cachedNativeCurrency, setNativeCurrencyInfo]);
 
     async function handleDeploy() {
         setIsDeploying(true);
@@ -146,10 +146,8 @@ function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
                 throw new Error('No contract address in receipt');
             }
 
-            setWrappedNativeTokenAddress(receipt.contractAddress);
-            setLocalWrappedNativeTokenAddress(receipt.contractAddress);
-            // Also update the cached wrapped native token for consistency
             setWrappedNativeToken(receipt.contractAddress);
+            setLocalWrappedNativeTokenAddress(receipt.contractAddress);
         } catch (error) {
             setCriticalError(error instanceof Error ? error : new Error(String(error)));
         } finally {
