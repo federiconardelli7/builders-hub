@@ -141,7 +141,7 @@ export default function AvalancheForBuildersPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Link href="#grants">
+              <Link href="https://4h8ew.share.hsforms.com/2DhyJTNzhRXmMMDebQMY1QQ" target="_blank" rel="noopener noreferrer">
                 <Button
                   size="lg"
                   className="bg-avax-red hover:bg-avax-red/90 text-white px-8 h-12 rounded-xl font-medium text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-avax-red/25"
