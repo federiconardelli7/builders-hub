@@ -32,7 +32,7 @@ function CaseCard({ title, company, description, icon, link }: CaseCardProps) {
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-avax-red/0 to-avax-red/0 transition-all duration-300 group-hover:from-avax-red/10 group-hover:to-avax-red/5" />
       <div className="relative">
         <div className="flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-avax-red flex items-center justify-center text-white text-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-avax-red/90 flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-avax-red/20 flex items-center justify-center text-white text-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-avax-red/90 flex-shrink-0">
             {icon}
           </div>
           <div className="flex-1 min-w-0">
@@ -103,7 +103,7 @@ function MetricCard({
       {featured && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-avax-red rounded-t-2xl" />
       )}
-      <div className="text-avax-red text-3xl mb-5 transition-transform duration-300 group-hover:scale-110">
+      <div className="text-3xl mb-5 transition-transform duration-300 group-hover:scale-110">
         {icon}
       </div>
       <div>
@@ -130,8 +130,8 @@ interface AdvantageCardProps {
 
 function AdvantageCard({ title, description, spec, icon }: AdvantageCardProps) {
   return (
-    <div className="group relative p-8 border border-border rounded-2xl bg-card transition-all duration-300 hover:border-avax-red/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5">
-      <div className="absolute inset-0 rounded-2xl bg-avax-red/0 transition-all duration-300 group-hover:bg-avax-red/[0.02]" />
+    <div className="group relative p-8 border border-border rounded-2xl bg-card transition-all duration-300 hover:border-avax-red hover:-translate-y-1 hover:shadow-xl hover:shadow-avax-red/40 hover:bg-avax-red/10">
+      <div className="absolute inset-0 rounded-2xl bg-avax-red/0 transition-all duration-300 group-hover:bg-avax-red/20" />
       <div className="relative">
         <div className="w-14 h-14 bg-foreground/5 rounded-xl flex items-center justify-center text-foreground text-xl mb-6 transition-all duration-300 group-hover:bg-avax-red/10 group-hover:text-avax-red group-hover:scale-110">
           {icon}
@@ -158,24 +158,28 @@ export default function AvalancheForBuildersPage() {
         <div className="container relative max-w-7xl mx-auto px-6 py-8 lg:py-20">
           {/* Hero Section */}
           <section className="text-center space-y-8 pt-16 pb-32 lg:pt-24 lg:pb-40">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-avax-red/10 border border-avax-red/20 text-avax-red text-sm font-medium mb-6">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-avax-red/10 border border-avax-red/20 text-sm font-medium mb-6"
+              style={{ color: "#e84142" }}
+            >
               <span className="w-2 h-2 rounded-full bg-avax-red animate-pulse" />
-              Announcing $250M+ in Grants Available
+              Avalanche For Builders
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-balance max-w-5xl mx-auto">
-              Get Funded to Build the{" "}
-              <span className="text-avax-red">Future</span>
+              Get Funded to{" "}
+              <span style={{ color: "#e84142" }}>Build the Future</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-3xl mx-auto text-balance">
-              Join the most successful builders who are already funded and
-              shipping
+              $250M+ in Grants Available for Visionary Builders
             </p>
 
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
-              From breakthrough infrastructure to viral consumer apps – we're
-              backing the teams that will define Web3's next chapter.
+              Stop waiting for the perfect moment. Join the most successful
+              builders who are already funded and shipping. From breakthrough
+              infrastructure to viral consumer apps - we're backing the teams
+              that will define Web3's next chapter.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
