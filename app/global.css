@@ -137,6 +137,11 @@ nav a:not(:first-child) {
   background-color: #e84142;
 }
 
+.text-avax-red {
+  --tw-text-opacity: 1;
+  color: #e84142;
+}
+
 /* Avax red opacity variants */
 .bg-avax-red\/5 {
   background-color: rgba(232, 65, 66, 0.05);

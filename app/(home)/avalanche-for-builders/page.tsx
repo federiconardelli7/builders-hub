@@ -28,42 +28,33 @@ interface CaseCardProps {
 
 function CaseCard({ title, company, description, icon, link }: CaseCardProps) {
   const content = (
-    <div className="group relative bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-avax-red/40 hover:border-avax-red hover:bg-avax-red/5 hover:-translate-y-2">
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-avax-red/0 to-avax-red/0 transition-all duration-300 group-hover:from-avax-red/10 group-hover:to-avax-red/5" />
-      <div className="relative">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-avax-red/20 flex items-center justify-center text-white text-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-avax-red/90 flex-shrink-0">
-            {icon}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-foreground mb-2 leading-tight">
-              {title}
-            </h3>
-            <div className="text-avax-red font-semibold text-xs uppercase tracking-widest opacity-90">
-              {company}
-            </div>
+    <div className="group bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-avax-red/40 hover:border-avax-red hover:bg-avax-red/10 hover:-translate-y-2">
+      <div className="flex items-start gap-4 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-avax-red/20 flex items-center justify-center text-white text-xl transition-all duration-300 group-hover:scale-110 flex-shrink-0">
+          {icon}
+        </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold mb-2">{title}</h3>
+          <div className="text-avax-red font-semibold text-xs uppercase tracking-widest opacity-90">
+            {company}
           </div>
         </div>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-          {description}
-        </p>
-        <div className="inline-flex items-center gap-2 text-avax-red font-medium text-sm transition-all duration-300 group-hover:gap-3">
-          Learn More{" "}
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-        </div>
+      </div>
+      <p className="text-muted-foreground text-sm mb-6">{description}</p>
+      <div className="inline-flex items-center gap-2 text-avax-red font-medium text-sm transition-all duration-300 group-hover:gap-3">
+        Learn More{" "}
+        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
       </div>
     </div>
   );
 
-  if (link) {
-    return (
-      <Link href={link} className="block">
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
+  return link ? (
+    <Link href={link} className="block">
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }
 
 interface MetricCardProps {
@@ -83,22 +74,20 @@ function MetricCard({
   featured,
   gradientIndex = 0,
 }: MetricCardProps) {
+  const gradients = [
+    "bg-gradient-to-br from-blue-50/50 to-indigo-100/50 border-blue-200/40 dark:from-blue-950/20 dark:to-indigo-950/30 dark:border-blue-800/30",
+    "bg-gradient-to-br from-emerald-50/50 to-teal-100/50 border-emerald-200/40 dark:from-emerald-950/20 dark:to-teal-950/30 dark:border-emerald-800/30",
+    "bg-gradient-to-br from-purple-50/50 to-violet-100/50 border-purple-200/40 dark:from-purple-950/20 dark:to-violet-950/30 dark:border-purple-800/30",
+    "bg-gradient-to-br from-orange-50/50 to-amber-100/50 border-orange-200/40 dark:from-orange-950/20 dark:to-amber-950/30 dark:border-orange-800/30",
+  ];
+
   return (
     <div
-      className={`
-      group relative rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10
-      ${
+      className={`group relative rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 ${
         featured
           ? "bg-gradient-to-br from-red-50/70 to-rose-100/70 border-red-200/50 dark:from-red-950/30 dark:to-rose-950/40 dark:border-red-800/40"
-          : gradientIndex === 0
-            ? "bg-gradient-to-br from-blue-50/50 to-indigo-100/50 border-blue-200/40 dark:from-blue-950/20 dark:to-indigo-950/30 dark:border-blue-800/30"
-            : gradientIndex === 1
-              ? "bg-gradient-to-br from-emerald-50/50 to-teal-100/50 border-emerald-200/40 dark:from-emerald-950/20 dark:to-teal-950/30 dark:border-emerald-800/30"
-              : gradientIndex === 2
-                ? "bg-gradient-to-br from-purple-50/50 to-violet-100/50 border-purple-200/40 dark:from-purple-950/20 dark:to-violet-950/30 dark:border-purple-800/30"
-                : "bg-gradient-to-br from-orange-50/50 to-amber-100/50 border-orange-200/40 dark:from-orange-950/20 dark:to-amber-950/30 dark:border-orange-800/30"
-      }
-    `}
+          : gradients[gradientIndex]
+      }`}
     >
       {featured && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-avax-red rounded-t-2xl" />
@@ -106,17 +95,11 @@ function MetricCard({
       <div className="text-3xl mb-5 transition-transform duration-300 group-hover:scale-110">
         {icon}
       </div>
-      <div>
-        <h3 className="text-base font-medium text-muted-foreground mb-3">
-          {title}
-        </h3>
-        <div className="text-4xl font-bold text-foreground mb-4 leading-none tracking-tight">
-          {number}
-        </div>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          {description}
-        </p>
-      </div>
+      <h3 className="text-base font-medium text-muted-foreground mb-3">
+        {title}
+      </h3>
+      <div className="text-4xl font-bold mb-4">{number}</div>
+      <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   );
 }
@@ -130,21 +113,14 @@ interface AdvantageCardProps {
 
 function AdvantageCard({ title, description, spec, icon }: AdvantageCardProps) {
   return (
-    <div className="group relative p-8 border border-border rounded-2xl bg-card transition-all duration-300 hover:border-avax-red hover:-translate-y-1 hover:shadow-xl hover:shadow-avax-red/40 hover:bg-avax-red/10">
-      <div className="absolute inset-0 rounded-2xl bg-avax-red/0 transition-all duration-300 group-hover:bg-avax-red/20" />
-      <div className="relative">
-        <div className="w-14 h-14 bg-foreground/5 rounded-xl flex items-center justify-center text-foreground text-xl mb-6 transition-all duration-300 group-hover:bg-avax-red/10 group-hover:text-avax-red group-hover:scale-110">
-          {icon}
-        </div>
-        <h3 className="text-base font-semibold text-foreground mb-3 leading-tight">
-          {title}
-        </h3>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-          {description}
-        </p>
-        <div className="text-avax-red font-semibold text-xs uppercase tracking-widest opacity-90">
-          {spec}
-        </div>
+    <div className="group p-8 border border-border rounded-2xl bg-card transition-all duration-300 hover:border-avax-red hover:-translate-y-1 hover:shadow-xl hover:shadow-avax-red/40 hover:bg-avax-red/10">
+      <div className="w-14 h-14 bg-foreground/5 rounded-xl flex items-center justify-center text-xl mb-6 transition-all duration-300 group-hover:bg-avax-red/10 group-hover:text-avax-red group-hover:scale-110">
+        {icon}
+      </div>
+      <h3 className="text-base font-semibold mb-3">{title}</h3>
+      <p className="text-muted-foreground text-sm mb-5">{description}</p>
+      <div className="text-avax-red font-semibold text-xs uppercase tracking-widest opacity-90">
+        {spec}
       </div>
     </div>
   );
