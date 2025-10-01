@@ -1,20 +1,7 @@
 "use client";
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  TrendingUp,
-  DollarSign,
-  LinkIcon,
-  Bitcoin,
-  Zap,
-  Shield,
-  Wrench,
-  Coins,
-  Globe,
-  Flame,
-} from "lucide-react";
+import { ArrowRight, TrendingUp, DollarSign, LinkIcon, Bitcoin, Zap, Shield, Wrench, Coins, Flame, Globe } from "lucide-react";
 import Link from "next/link";
 import { HeroBackground } from "@/components/landing/hero";
 
@@ -84,9 +71,7 @@ function MetricCard({
   return (
     <div
       className={`group relative rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 ${
-        featured
-          ? "bg-gradient-to-br from-red-50/70 to-rose-100/70 border-red-200/50 dark:from-red-950/30 dark:to-rose-950/40 dark:border-red-800/40"
-          : gradients[gradientIndex]
+        featured ? "bg-gradient-to-br from-red-50/70 to-rose-100/70 border-red-200/50 dark:from-red-950/30 dark:to-rose-950/40 dark:border-red-800/40" : gradients[gradientIndex]
       }`}
     >
       {featured && (
@@ -135,8 +120,7 @@ export default function AvalancheForBuildersPage() {
           {/* Hero Section */}
           <section className="text-center space-y-8 pt-16 pb-32 lg:pt-24 lg:pb-40">
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-avax-red/10 border border-avax-red/20 text-sm font-medium mb-6"
-              style={{ color: "#e84142" }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-avax-red/10 border border-avax-red/20 text-sm font-medium mb-6 text-avax-red"
             >
               <span className="w-2 h-2 rounded-full bg-avax-red animate-pulse" />
               Avalanche For Builders
@@ -144,7 +128,7 @@ export default function AvalancheForBuildersPage() {
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] text-balance max-w-5xl mx-auto">
               Get Funded to{" "}
-              <span style={{ color: "#e84142" }}>Build the Future</span>
+              <span className="text-avax-red">Build the Future</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-3xl mx-auto text-balance">
@@ -152,10 +136,8 @@ export default function AvalancheForBuildersPage() {
             </p>
 
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
-              Stop waiting for the perfect moment. Join the most successful
-              builders who are already funded and shipping. From breakthrough
-              infrastructure to viral consumer apps - we're backing the teams
-              that will define Web3's next chapter.
+              Stop waiting for the perfect moment. Join the most successful builders who are already funded and shipping. From breakthrough
+              infrastructure to viral consumer apps - we're backing the teams that will define Web3's next chapter.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -191,8 +173,7 @@ export default function AvalancheForBuildersPage() {
                 Momentum is Everything
               </h2>
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed text-pretty">
-                September 2025 proves it: builders who choose Avalanche see
-                explosive growth and real adoption
+                September 2025 proves it: builders who choose Avalanche see explosive growth and real adoption
               </p>
             </div>
 
@@ -230,7 +211,7 @@ export default function AvalancheForBuildersPage() {
             <div className="text-center max-w-4xl mx-auto p-8 bg-gradient-to-br from-violet-50/60 to-purple-100/60 border border-violet-200/40 rounded-2xl dark:from-violet-950/20 dark:to-purple-950/30 dark:border-violet-800/30">
               <p className="text-foreground/90 text-sm md:text-base leading-relaxed text-pretty">
                 Smart builders recognize momentum when they see it. Avalanche
-                isn't just growing – it's becoming the platform where serious
+                isn't just growing - it's becoming the platform where serious
                 projects get built, funded, and adopted at scale.
               </p>
             </div>
