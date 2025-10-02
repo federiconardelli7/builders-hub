@@ -46,16 +46,21 @@ export function BlogSearch({ blogs, onFilteredResults }: BlogSearchProps) {
 
   return (
     <div className="relative w-full max-w-md mx-auto mb-8">
-      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-        <Search className="h-5 w-5 text-muted-foreground" />
-      </div>
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
-        type="search"
         placeholder="Search blogs by title, topic, author, or description..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 pr-4 py-2 w-full rounded-lg border border-border bg-background/50 backdrop-blur-sm focus:bg-background transition-colors"
+        className="pl-10 pr-10 rounded-xl bg-white text-sm"
       />
+      {searchQuery && (
+        <button
+          onClick={() => setSearchQuery("")}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
