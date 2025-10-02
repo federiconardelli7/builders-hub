@@ -21,9 +21,6 @@ export async function createSubnet(client: WalletClient<any, any, any, CoreWalle
 
     const pChainAddress = await getPChainAddress(client);
 
-
-
-
     const { utxos } = await pvmApi.getUTXOs({
         addresses: [pChainAddress]
     });
