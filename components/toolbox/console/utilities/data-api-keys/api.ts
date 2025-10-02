@@ -5,7 +5,7 @@ import {
     ApiKeyDetailsResponse,
 } from './types';
 
-const DATA_API_ENDPOINT = 'https://data-api-dev.avax.network/v1';
+const DATA_API_ENDPOINT = process.env.VERCEL_ENV === "production" ? 'https://data-api.avax.network/v1' : 'https://data-api-dev.avax.network/v1';
 
 export class GlacierApiClient {
     constructor(private jwt: string) { }
