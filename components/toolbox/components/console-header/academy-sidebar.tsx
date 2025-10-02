@@ -237,11 +237,11 @@ const data = {
           url: "/console/utilities/vmcMigrateFromV1",
           icon: Wrench,
         },
-        // {
-        //   title: "Data API Keys",
-        //   url: "/console/utilities/data-api-keys",
-        //   icon: BookKey,
-        // },
+        {
+          title: "Data API Keys",
+          url: "/console/utilities/data-api-keys",
+          icon: BookKey,
+        },
       ],
     },
   ],
