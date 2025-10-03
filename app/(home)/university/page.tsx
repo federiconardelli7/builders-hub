@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { HeroBackground } from "@/components/landing/hero";
+import UniversitySlideshow from "@/components/university/UniversitySlideshow";
 
 interface ProgramCardProps {
   title: string;
@@ -155,30 +156,7 @@ export default function Page() {
 
         {/* Photo Slideshow Section */}
         <section className="mt-16">
-          <div className="w-full relative mb-8">
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-muted-foreground/20 flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-muted-foreground/50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-muted-foreground">
-                  Photo slideshow - Add your university photos here
-                </p>
-              </div>
-            </div>
-          </div>
+          <UniversitySlideshow className="mb-8" />
           <p className="text-center text-xl font-semibold">
             Learn, connect, build and innovate with Avalanche.
           </p>
