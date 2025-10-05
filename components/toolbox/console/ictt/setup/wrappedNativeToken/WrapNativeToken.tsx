@@ -58,7 +58,7 @@ export default function WrapNativeToken({ wrappedNativeTokenAddress, onError }: 
         setIsWrapping(true);
         try {
             const hash = await wrappedNativeToken.deposit(wrapAmount);
-            await wrappedNativeToken.publicClient.waitForTransactionReceipt({ hash });
+            // Transaction will be handled by the notify system in the hook
             setWrapAmount('');
         } catch (error) {
             onError(error instanceof Error ? error : new Error(String(error)));

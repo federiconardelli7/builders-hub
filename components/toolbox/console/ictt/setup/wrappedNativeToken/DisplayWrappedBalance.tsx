@@ -5,7 +5,6 @@ import { useNativeCurrencyInfo, useSetNativeCurrencyInfo } from "@/components/to
 import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
 import { useWrappedNativeToken as useWrappedNativeTokenAddress, useSetWrappedNativeToken } from "@/components/toolbox/stores/l1ListStore";
 import { useWrappedNativeToken } from "@/components/toolbox/hooks/useWrappedNativeToken";
-import { balanceService } from "@/components/toolbox/services/balanceService";
 import { useState, useEffect } from "react";
 
 interface DisplayWrappedBalanceProps {
@@ -50,12 +49,8 @@ export default function DisplayWrappedBalance({ wrappedNativeTokenAddress, onErr
                 setWrappedNativeToken(wrappedNativeTokenAddress);
             }
 
-            // Use balanceService to fetch ERC20 balance
-            const balance = await balanceService.fetchERC20Balance(
-                wrappedNativeTokenAddress,
-                walletEVMAddress,
-                wrappedNativeToken.publicClient
-            );
+            // Use the wrapped native token hook to fetch balance
+            const balance = await wrappedNativeToken.balanceOf(walletEVMAddress);
             setWrappedBalance(balance);
         } catch (error) {
             console.error('Error fetching wrapped balance:', error);

@@ -1,7 +1,5 @@
 import { getPChainBalance, getNativeTokenBalance, getChains } from '../coreViem/utils/glacier';
 import { avalancheFuji, avalanche } from 'viem/chains';
-import { http, createPublicClient, formatEther } from 'viem';
-import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
 
 // Local debounce function
 function debounce<T extends (...args: any[]) => any>(
@@ -185,30 +183,6 @@ export class BalanceService {
       return Number(balance.balance) / (10 ** balance.decimals);
     } finally {
       // Handle any cleanup if needed
-    }
-  }
-
-  // ERC20 token balance fetching
-  async fetchERC20Balance(
-    tokenAddress: string,
-    userAddress: string,
-    publicClient: any,
-    tokenAbi: any = WrappedNativeToken.abi
-  ): Promise<string> {
-    if (!tokenAddress || !userAddress) return '0';
-
-    try {
-      const balanceWei = await publicClient.readContract({
-        address: tokenAddress as `0x${string}`,
-        abi: tokenAbi,
-        functionName: 'balanceOf',
-        args: [userAddress]
-      });
-      
-      return formatEther(balanceWei as bigint);
-    } catch (error) {
-      console.error('Failed to fetch ERC20 balance:', error);
-      return '0';
     }
   }
 

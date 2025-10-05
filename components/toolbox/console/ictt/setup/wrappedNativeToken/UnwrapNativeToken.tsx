@@ -59,7 +59,7 @@ export default function UnwrapNativeToken({ wrappedNativeTokenAddress, onError }
         setIsUnwrapping(true);
         try {
             const hash = await wrappedNativeToken.withdraw(unwrapAmount);
-            await wrappedNativeToken.publicClient.waitForTransactionReceipt({ hash });
+            // Transaction will be handled by the notify system in the hook
             setUnwrapAmount('');
         } catch (error) {
             onError(error instanceof Error ? error : new Error(String(error)));
