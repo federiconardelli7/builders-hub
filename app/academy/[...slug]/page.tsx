@@ -44,6 +44,7 @@ import CreateChain from "@/components/toolbox/console/layer-1/create/CreateChain
 import ConvertSubnetToL1 from "@/components/toolbox/console/layer-1/create/ConvertSubnetToL1"
 import GenesisBuilder from '@/components/toolbox/console/layer-1/create/GenesisBuilder';
 import DeployExampleERC20 from '@/components/toolbox/console/ictt/setup/DeployExampleERC20';
+import DeployWrappedNative from '@/components/toolbox/console/ictt/setup/DeployWrappedNative';
 import DeployTokenHome from '@/components/toolbox/console/ictt/setup/DeployTokenHome';
 import DeployERC20TokenRemote from '@/components/toolbox/console/ictt/setup/DeployERC20TokenRemote';
 import RegisterWithHome from '@/components/toolbox/console/ictt/setup/RegisterWithHome';
@@ -64,6 +65,7 @@ const toolboxComponents = {
   CreateManagedTestnetNode,
   ConvertToL1: ConvertSubnetToL1,
   DeployExampleERC20,
+  DeployWrappedNative,
   DeployTokenHome,
   DeployERC20TokenRemote,
   RegisterWithHome,
