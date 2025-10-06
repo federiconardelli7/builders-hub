@@ -186,6 +186,7 @@ class BalanceService {
     }
   }
 
+
   // These will be set up by initializeDebouncedMethods
   updatePChainBalance = async () => Promise.resolve();
   updateL1Balance = async (_chainId: string) => Promise.resolve();

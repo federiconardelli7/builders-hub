@@ -37,6 +37,8 @@ interface WalletState {
     l1Chains: Record<string, boolean>; // Key: chainId, Value: loading state
   };
   bootstrapped: boolean;
+  
+  
 }
 
 interface WalletActions {
@@ -93,6 +95,8 @@ interface WalletActions {
 
   getBootstrapped: () => boolean;
   setBootstrapped: (bootstrapped: boolean) => void;
+  
+  
 }
 
 type WalletStore = WalletState & WalletActions;
@@ -128,10 +132,7 @@ export const useWalletStore = create<WalletStore>((set, get) => {
 
     // Actions
     updateWalletConnection: (data: { coreWalletClient?: ReturnType<typeof createCoreWalletClient>; walletEVMAddress?: string; walletChainId?: number; pChainAddress?: string; coreEthAddress?: string; }) => {
-      set((state) => ({
-        ...state,
-        ...data,
-      }));
+      set((state) => ({ ...state, ...data }));
     },
 
     updateNetworkSettings: (data: { avalancheNetworkID?: typeof networkIDs.FujiID | typeof networkIDs.MainnetID; isTestnet?: boolean; evmChainName?: string; }) => {
@@ -243,6 +244,7 @@ export const useWalletStore = create<WalletStore>((set, get) => {
 
     getBootstrapped: () => get().bootstrapped,
     setBootstrapped: (bootstrapped: boolean) => set({ bootstrapped: bootstrapped }),
+    
   };
 
   // Set up balance service callbacks
