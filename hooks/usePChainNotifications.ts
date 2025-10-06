@@ -107,7 +107,10 @@ const usePChainNotifications = () => {
                 toast.loading('Waiting for transaction confirmation...', { id: toastId });
 
                 try {
-                    await waitForTransaction(client, txID);
+                    if (typeof txID !== 'string' && txID && 'txHash' in txID) {
+                        txID = (txID as { txHash: string }).txHash;
+                    }
+                    await waitForTransaction(client, txID as string);
                     toast.success(`${config.successMessage}`, {
                         id: toastId,
                         action: {

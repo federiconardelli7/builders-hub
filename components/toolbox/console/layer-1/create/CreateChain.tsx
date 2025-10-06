@@ -37,7 +37,7 @@ function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
     const setGenesisData = store(state => state.setGenesisData);
     const setChainName = store(state => state.setChainName);
 
-    const { coreWalletClient } = useConnectedWallet();
+    const { avalancheWalletClient } = useConnectedWallet();
     const { notify } = useConsoleNotifications();
 
     const [isCreatingChain, setIsCreatingChain] = useState(false);
@@ -57,20 +57,23 @@ function CreateChain({ onSuccess, embedded = false }: CreateChainProps) {
     async function handleCreateChain() {
         setIsCreatingChain(true);
 
-        const createChainTx = coreWalletClient.createChain({
+
+        const createChainTx = await avalancheWalletClient.pChain.prepareCreateChainTxn({
             chainName: localChainName,
             subnetId: subnetId,
             vmId,
             fxIds: [],
-            genesisData: genesisData,
+            genesisData: JSON.parse(genesisData),
             subnetAuth: [0],
         })
+      
+        const txnResponse = avalancheWalletClient.sendXPTransaction(createChainTx);
 
-        notify('createChain', createChainTx);
+        notify('createChain', txnResponse);
 
         try {
-            const txID = await createChainTx;
-            setChainID(txID);
+            const txID = await txnResponse;
+            setChainID(txID.txHash);
             setChainName(localChainName);
             setLocalChainName(generateRandomChainName());
         } finally {
