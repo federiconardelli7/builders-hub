@@ -31,7 +31,7 @@ async function getIndexedChains(): Promise<Number[]> {
   return indexedChainsPromise;
 }
 
-export interface BalanceUpdateCallbacks {
+interface BalanceUpdateCallbacks {
   setBalance: (type: 'pChain' | 'cChain' | string, amount: number) => void;
   setLoading: (type: 'pChain' | 'cChain' | string, loading: boolean) => void;
   getState: () => {
@@ -49,7 +49,7 @@ export interface BalanceUpdateCallbacks {
 }
 
 // Service class for managing balance operations
-export class BalanceService {
+class BalanceService {
   private callbacks: BalanceUpdateCallbacks | null = null;
 
 

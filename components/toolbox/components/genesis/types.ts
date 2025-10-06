@@ -67,24 +67,10 @@ export type FeeConfigType = {
 
 export type SectionId = 'chainParams' | 'tokenomics' | 'permissions' | 'transactionFees' | 'warpMessenger';
 
-export const ALL_SECTIONS: SectionId[] = ['chainParams', 'tokenomics', 'permissions', 'transactionFees']; // Removed warpMessenger for now
 
 export type ValidationMessages = {
   errors: { [key: string]: string };
   warnings: { [key: string]: string };
 };
 
-// Consolidated state type (example, adjust as needed during refactoring)
-export type GenesisConfigState = {
-  evmChainId: number;
-  gasLimit: number;
-  targetBlockRate: number;
-  tokenAllocations: AllocationEntry[];
-  contractDeployerAllowListConfig: AllowlistPrecompileConfig;
-  contractNativeMinterConfig: AllowlistPrecompileConfig;
-  txAllowListConfig: AllowlistPrecompileConfig;
-  feeConfig: FeeConfigType;
-  // Removed simpler precompile states (use Config objects)
-  // Removed warpMessenger state for simplicity
-  // Removed ownerAddress/ownerBalance (derive from allocations if needed)
-};
+
