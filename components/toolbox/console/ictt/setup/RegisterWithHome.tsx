@@ -15,6 +15,7 @@ import { utils } from "@avalabs/avalanchejs";
 import { ListContractEvents } from "@/components/toolbox/components/ListContractEvents";
 import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchainId";
 import { Container } from "@/components/toolbox/components/Container";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 export default function RegisterWithHome() {
@@ -185,6 +186,7 @@ export default function RegisterWithHome() {
         <Container
             title="Register Remote Contract with Home"
             description="Register the remote contract with the home contract."
+            githubUrl={generateConsoleToolGitHubUrl("ictt/setup/RegisterWithHome.tsx")}
         >
 
             <div>

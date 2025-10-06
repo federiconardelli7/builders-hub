@@ -8,6 +8,7 @@ import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
 import { http, createPublicClient } from "viem";
 import { Container } from "@/components/toolbox/components/Container";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import { ExternalLink } from "lucide-react";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
@@ -65,7 +66,7 @@ export default function DeployExampleERC20() {
     }
 
     return (
-        <Container title="Deploy Test ERC20 Token" description="Deploy an ERC20 token contract for testing. If you want to use an existing token like USDC, you can skip this step.">
+        <Container title="Deploy Test ERC20 Token" description="Deploy an ERC20 token contract for testing. If you want to use an existing token like USDC, you can skip this step." githubUrl={generateConsoleToolGitHubUrl("ictt/setup/DeployExampleERC20.tsx")}>
             <div className="space-y-4">
                 <div className="">
                     This will deploy an ERC20 token contract to your connected network (Chain ID: <code>{walletChainId}</code>).

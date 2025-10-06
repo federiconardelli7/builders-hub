@@ -13,6 +13,7 @@ import ExampleERC20 from "@/contracts/icm-contracts/compiled/ExampleERC20.json";
 import { createPublicClient, http } from "viem";
 import { Note } from "@/components/toolbox/components/Note";
 import { Container } from "@/components/toolbox/components/Container";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import TeleporterRegistryAddressInput from "@/components/toolbox/components/TeleporterRegistryAddressInput";
 import { RadioGroup } from "@/components/toolbox/components/RadioGroup";
 import { useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
@@ -162,6 +163,7 @@ export default function DeployTokenHome() {
         <Container
             title="Deploy Token Home Contract"
             description="Deploy the TokenHome contract for your token."
+            githubUrl={generateConsoleToolGitHubUrl("ictt/setup/DeployTokenHome.tsx")}
         >
             <div>
                 <p className="mt-2">

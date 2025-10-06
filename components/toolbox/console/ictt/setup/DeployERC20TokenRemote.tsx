@@ -16,6 +16,7 @@ import ERC20TokenHomeABI from "@/contracts/icm-contracts/compiled/ERC20TokenHome
 import ExampleERC20 from "@/contracts/icm-contracts/compiled/ExampleERC20.json";
 import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchainId";
 import { Container } from "@/components/toolbox/components/Container";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import TeleporterRegistryAddressInput from "@/components/toolbox/components/TeleporterRegistryAddressInput";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
@@ -214,6 +215,7 @@ export default function DeployERC20TokenRemote() {
         <Container
             title="Deploy ERC20 Token Remote Contract"
             description="Deploy the ERC20TokenRemote contract for your ERC20 token."
+            githubUrl={generateConsoleToolGitHubUrl("ictt/setup/DeployERC20TokenRemote.tsx")}
         >
 
             <div>
