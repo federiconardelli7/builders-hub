@@ -23,7 +23,7 @@ export interface BaseConsoleToolProps {
 type BaseConsoleToolComponent = React.ComponentType<BaseConsoleToolProps>;
 
 // Console Tool with Metadata
-export type ConsoleToolComponent = BaseConsoleToolComponent & {
+type ConsoleToolComponent = BaseConsoleToolComponent & {
     /** Required metadata for all console tools */
     metadata: ConsoleToolMetadata;
 };
