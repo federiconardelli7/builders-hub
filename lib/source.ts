@@ -11,7 +11,7 @@ export const documentation = loader({
     if (icon && icon in icons)
       return createElement(icons[icon as keyof typeof icons]);
   },
-  source: createMDXSource(docs, meta),
+  source: createMDXSource(docs, meta as any),
 });
 
 export const academy = loader({
@@ -20,7 +20,7 @@ export const academy = loader({
     if (icon && icon in icons)
       return createElement(icons[icon as keyof typeof icons]);
   },
-  source: createMDXSource(course, courseMeta),
+  source: createMDXSource(course, courseMeta as any),
 });
 
 export const codebaseEntrepreneurAcademy = loader({
@@ -29,7 +29,7 @@ export const codebaseEntrepreneurAcademy = loader({
     if (icon && icon in icons)
       return createElement(icons[icon as keyof typeof icons]);
   },
-  source: createMDXSource(codebaseEntrepreneur, codebaseEntrepreneurMeta),
+  source: createMDXSource(codebaseEntrepreneur, codebaseEntrepreneurMeta as any),
 });
 
 export const blog = loader({
