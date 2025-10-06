@@ -310,7 +310,3 @@ export const useL1LoadingStates = () => useWalletStore((state) => state.isLoadin
 // Selector for specific L1 balance
 export const useL1Balance = (chainId: string) => useWalletStore((state) => state.balances.l1Chains[chainId] || 0);
 export const useL1Loading = (chainId: string) => useWalletStore((state) => state.isLoading.l1Chains[chainId] || false);
-
-
-// Native currency info moved to L1 store
-// Use useNativeCurrencyInfo and useSetNativeCurrencyInfo from l1ListStore instead
