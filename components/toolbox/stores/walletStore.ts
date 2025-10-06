@@ -37,8 +37,8 @@ interface WalletState {
     l1Chains: Record<string, boolean>; // Key: chainId, Value: loading state
   };
   bootstrapped: boolean;
-  
-  
+
+
 }
 
 interface WalletActions {
@@ -95,8 +95,8 @@ interface WalletActions {
 
   getBootstrapped: () => boolean;
   setBootstrapped: (bootstrapped: boolean) => void;
-  
-  
+
+
 }
 
 type WalletStore = WalletState & WalletActions;
@@ -244,7 +244,7 @@ export const useWalletStore = create<WalletStore>((set, get) => {
 
     getBootstrapped: () => get().bootstrapped,
     setBootstrapped: (bootstrapped: boolean) => set({ bootstrapped: bootstrapped }),
-    
+
   };
 
   // Set up balance service callbacks
@@ -291,3 +291,6 @@ export const useNetworkInfo = () => {
   }, [isTestnet, chainId, avalancheNetworkID, evmChainName]);
 };
 
+// Selector for specific L1 balance
+export const useL1Balance = (chainId: string) => useWalletStore((state) => state.balances.l1Chains[chainId] || 0);
+export const useL1Loading = (chainId: string) => useWalletStore((state) => state.isLoading.l1Chains[chainId] || false);
