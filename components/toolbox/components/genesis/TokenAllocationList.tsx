@@ -7,7 +7,7 @@ import { AllocationEntry } from './types'
 import { isAddress, Address } from 'viem'
 import { AddConnectedWalletButtonSimple } from '@/components/toolbox/components/ConnectWallet/AddConnectedWalletButton'
 
-export interface TokenAllocationListProps {
+interface TokenAllocationListProps {
   allocations: AllocationEntry[];
   onAllocationsChange: (newAllocations: AllocationEntry[]) => void;
 }
@@ -74,7 +74,7 @@ export default function TokenAllocationList({
   const handleAmountInputBlur = (index: number) => {
     const localValue = amountInputs[index] ?? allocations[index]?.amount.toString() ?? '0'
     let numericAmount = parseFloat(localValue)
-    
+
     if (isNaN(numericAmount) || numericAmount < 0) {
       numericAmount = 0
     }
@@ -99,7 +99,7 @@ export default function TokenAllocationList({
   const handleAddAddress = () => {
     if (isValidInput(newAddress)) {
       const addressesToAdd = newAddress.split(/[\s,]+/).map(addr => addr.trim()).filter(addr => addr !== '' && isAddress(addr, { strict: false }))
-      
+
       const newEntries = addressesToAdd.map(address => ({
         address: address as Address,
         amount: 1_000_000
@@ -175,10 +175,10 @@ export default function TokenAllocationList({
             >
               Add
             </button>
-            <AddConnectedWalletButtonSimple 
-              onAddAddress={(address) => handleAddAllocations([{ 
-                address: address as Address, 
-                amount: 1_000_000 
+            <AddConnectedWalletButtonSimple
+              onAddAddress={(address) => handleAddAllocations([{
+                address: address as Address,
+                amount: 1_000_000
               }])}
               addressSource={allocations}
             />

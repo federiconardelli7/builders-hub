@@ -10,7 +10,7 @@ import validatorManagerAbi from '../../../contracts/icm-contracts/compiled/Valid
 import poaManagerAbi from '../../../contracts/icm-contracts/compiled/PoAManager.json';
 import { useWalletStore } from '../stores/walletStore';
 import { useViemChainStore } from '../stores/toolboxStore';
-import { useSafeAPI, SafeInfo, NonceResponse, AshWalletUrlResponse } from '../hooks';
+import { useSafeAPI, SafeInfo, NonceResponse, AshWalletUrlResponse } from '../hooks/useSafeAPI';
 
 
 

@@ -14,7 +14,6 @@ import { getPChainBalance } from './methods/getPChainbalance'
 import { sendTransaction } from './overrides/sendTransaction'
 import { writeContract } from './overrides/writeContract'
 //Warning! This api is not stable yet, it will change in the future
-export { type ConvertToL1Validator } from "./methods/convertToL1"
 import { deployContract } from './overrides/deployContract'
 import { registerL1Validator } from './methods/registerL1Validator'
 import { RegisterL1ValidatorParams } from './methods/registerL1Validator'
