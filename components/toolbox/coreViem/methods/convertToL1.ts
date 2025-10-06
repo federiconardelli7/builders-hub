@@ -20,7 +20,7 @@ export type ConvertToL1Params = {
     validators: ConvertToL1Validator[];
 }
 
-export type ConvertToL1Validator = {
+type ConvertToL1Validator = {
     nodeID: string;
     nodePOP: {
         publicKey: string;
@@ -32,7 +32,7 @@ export type ConvertToL1Validator = {
     deactivationOwner: ConvertToL1PChainOwner;
 }
 
-export type ConvertToL1PChainOwner = {
+type ConvertToL1PChainOwner = {
     addresses: string[];
     threshold: number;
 }
@@ -78,11 +78,16 @@ export async function convertToL1(client: WalletClient<any, any, any, CoreWallet
         context,
     );
 
+    const manager = utils.getManagerForVM(tx.getVM());
+    const [codec] = manager.getCodecFromBuffer(tx.toBytes());
+    const utxoHexes = tx.utxos.map(utxo => utils.bufferToHex(utxo.toBytes(codec)));
+
     const transactionID = await window.avalanche!.request({
         method: 'avalanche_sendTransaction',
         params: {
             transactionHex: utils.bufferToHex(tx.toBytes()),
             chainAlias: 'P',
+            utxos: utxoHexes,
         }
     }) as string;
 
