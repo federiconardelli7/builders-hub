@@ -39,7 +39,7 @@ export interface Suggestion {
   description: string
 }
 
-export interface InputProps extends Omit<RawInputProps, "onChange"> {
+interface InputProps extends Omit<RawInputProps, "onChange"> {
   label: string
   unit?: string
   onChange?: (newValue: string) => void

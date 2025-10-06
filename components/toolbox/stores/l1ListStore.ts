@@ -120,7 +120,6 @@ const defaultChainIds = [
     ...l1ListInitialStateFuji.l1List.map((l1) => l1.id),
     ...l1ListInitialStateMainnet.l1List.map((l1) => l1.id),
 ]
-export const isDefaultChain = (chainId: string) => defaultChainIds.includes(chainId)
 
 
 // Ensure singleton stores per network to keep state in sync across components
