@@ -8,7 +8,7 @@ import { isAddress, Address } from 'viem'
 import { AddConnectedWalletButtonSimple } from '@/components/toolbox/components/ConnectWallet/AddConnectedWalletButton'
 import { useGenesisHighlight } from './GenesisHighlightContext'
 
-export interface TokenAllocationListProps {
+interface TokenAllocationListProps {
   allocations: AllocationEntry[];
   onAllocationsChange: (newAllocations: AllocationEntry[]) => void;
   compact?: boolean;
@@ -100,15 +100,8 @@ export default function TokenAllocationList({
   }
 
   const handleAmountInputBlur = (index: number) => {
-    const inputValue = amountInputs[index]
-    if (inputValue === undefined || inputValue === '') {
-      // If no input value, reset to current allocation amount
-      const currentAmount = allocations[index]?.amount ?? 0
-      setAmountInputs(prev => ({ ...prev, [index]: currentAmount.toString() }))
-      return
-    }
-
-    let numericAmount = parseFloat(inputValue)
+    const localValue = amountInputs[index] ?? allocations[index]?.amount.toString() ?? '0'
+    let numericAmount = parseFloat(localValue)
 
     if (isNaN(numericAmount) || numericAmount < 0) {
       // If invalid input, reset to current allocation amount
@@ -141,21 +134,16 @@ export default function TokenAllocationList({
   }
 
   const handleAddAddress = () => {
-    if (!isValidInput(newAddress)) return
-    const parsedAmount = parseFloat(newAmount)
-    const safeAmount = isNaN(parsedAmount) || parsedAmount < 0 ? 0 : parsedAmount
-    const addressesToAdd = newAddress
-      .split(/[\s,]+/)
-      .map(addr => addr.trim())
-      .filter(addr => addr !== '' && isAddress(addr, { strict: false }))
+    if (isValidInput(newAddress)) {
+      const addressesToAdd = newAddress.split(/[\s,]+/).map(addr => addr.trim()).filter(addr => addr !== '' && isAddress(addr, { strict: false }))
 
-    const newEntries = addressesToAdd.map(address => ({
-      address: address as Address,
-      amount: safeAmount
-    }))
-    handleAddAllocations(newEntries)
-    setNewAddress('')
-    setNewAmount('1000000')
+      const newEntries = addressesToAdd.map(address => ({
+        address: address as Address,
+        amount: 1_000_000
+      }))
+      handleAddAllocations(newEntries)
+      setNewAddress('')
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -255,6 +243,32 @@ export default function TokenAllocationList({
                 />
               </div>
             </div>
+          ))}
+
+          <div className="flex items-center p-4 gap-3 bg-zinc-50/80 dark:bg-zinc-800/50">
+            <Plus className="h-4 w-4 text-blue-500 shrink-0" />
+            <RawInput
+              type="text"
+              placeholder="Add address (or multiple separated by space/comma)"
+              value={newAddress}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 border-transparent bg-transparent shadow-none focus:ring-0 p-0 font-mono text-sm"
+            />
+            <button
+              onClick={handleAddAddress}
+              disabled={!isValidInput(newAddress)}
+              className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-md disabled:opacity-50 transition-colors font-medium"
+            >
+              Add
+            </button>
+            <AddConnectedWalletButtonSimple
+              onAddAddress={(address) => handleAddAllocations([{
+                address: address as Address,
+                amount: 1_000_000
+              }])}
+              addressSource={allocations}
+            />
           </div>
         </div>
       </div>

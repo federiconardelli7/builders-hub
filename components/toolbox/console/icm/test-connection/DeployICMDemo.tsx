@@ -13,7 +13,7 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
-export const SENDER_C_CHAIN_ADDRESS = "0x05c474824e7d2cc67cf22b456f7cf60c0e3a1289";
+const SENDER_C_CHAIN_ADDRESS = "0x05c474824e7d2cc67cf22b456f7cf60c0e3a1289";
 
 const metadata: ConsoleToolMetadata = {
     title: "Deploy ICM Demo Contract",
@@ -88,34 +88,34 @@ function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {
 
     return (
         <>
-                <div className="space-y-4">
-                    <div className="">
-                        This will deploy the <code>ICMDemo</code> contract to your connected network (Chain ID: <code>{selectedL1?.evmChainId}</code>). This contract can receive messages from the C-Chain using Avalanche's Inter-Chain Messaging (ICM) protocol. Once deployed, you can use the pre-deployed sender contract on the C-Chain at address <a href={`https://subnets-test.avax.network/c-chain/address/${SENDER_C_CHAIN_ADDRESS}`} target="_blank" className="text-blue-500 hover:underline">{SENDER_C_CHAIN_ADDRESS}</a> to send messages to this receiver.
-                    </div>
-                    <div className="">
-                        Read more about the <a href="https://build.avax.network/academy/interchain-messaging/04-icm-basics/04-create-sender-contract" target="_blank" className="text-blue-500 hover:underline">Sender Contract</a> and <a href="https://build.avax.network/academy/interchain-messaging/04-icm-basics/06-create-receiver-contract" target="_blank" className="text-blue-500 hover:underline">Receiver Contract</a> in the Avalanche documentation.
-                    </div>
-                    {!isTeleporterDeployed && (
-                        <div className="text-red-500">
-                            TeleporterMessenger contract is not deployed on this network. Please <a href="#teleporterMessenger" className="text-blue-500 hover:underline">deploy the TeleporterMessenger contract first</a>.
-                        </div>
-                    )}
-                    {isTeleporterDeployed && <div>
-                        ✅  TeleporterMessenger contract is detected at address <code>{TeleporterMessengerAddress.content}</code>.
-                    </div>}
-                    <Button
-                        variant={icmReceiverAddress ? "secondary" : "primary"}
-                        onClick={handleDeploy}
-                        loading={isDeploying}
-                        disabled={isDeploying || !isTeleporterDeployed}
-                    >
-                        {icmReceiverAddress ? "Re-Deploy ICMDemo" : "Deploy ICMDemo"}
-                    </Button>
-                    <Success
-                        label="ICMDemo Address"
-                        value={icmReceiverAddress}
-                    />
+            <div className="space-y-4">
+                <div className="">
+                    This will deploy the <code>ICMDemo</code> contract to your connected network (Chain ID: <code>{selectedL1?.evmChainId}</code>). This contract can receive messages from the C-Chain using Avalanche's Inter-Chain Messaging (ICM) protocol. Once deployed, you can use the pre-deployed sender contract on the C-Chain at address <a href={`https://subnets-test.avax.network/c-chain/address/${SENDER_C_CHAIN_ADDRESS}`} target="_blank" className="text-blue-500 hover:underline">{SENDER_C_CHAIN_ADDRESS}</a> to send messages to this receiver.
                 </div>
+                <div className="">
+                    Read more about the <a href="https://build.avax.network/academy/interchain-messaging/04-icm-basics/04-create-sender-contract" target="_blank" className="text-blue-500 hover:underline">Sender Contract</a> and <a href="https://build.avax.network/academy/interchain-messaging/04-icm-basics/06-create-receiver-contract" target="_blank" className="text-blue-500 hover:underline">Receiver Contract</a> in the Avalanche documentation.
+                </div>
+                {!isTeleporterDeployed && (
+                    <div className="text-red-500">
+                        TeleporterMessenger contract is not deployed on this network. Please <a href="#teleporterMessenger" className="text-blue-500 hover:underline">deploy the TeleporterMessenger contract first</a>.
+                    </div>
+                )}
+                {isTeleporterDeployed && <div>
+                    ✅  TeleporterMessenger contract is detected at address <code>{TeleporterMessengerAddress.content}</code>.
+                </div>}
+                <Button
+                    variant={icmReceiverAddress ? "secondary" : "primary"}
+                    onClick={handleDeploy}
+                    loading={isDeploying}
+                    disabled={isDeploying || !isTeleporterDeployed}
+                >
+                    {icmReceiverAddress ? "Re-Deploy ICMDemo" : "Deploy ICMDemo"}
+                </Button>
+                <Success
+                    label="ICMDemo Address"
+                    value={icmReceiverAddress}
+                />
+            </div>
 
         </>
     );

@@ -15,13 +15,15 @@ import DeleteConfirmDialog from './DeleteConfirmDialog';
 
 interface TokenManagementProps {
   glacierJwt: string;
+  endpoint: string;
 }
 
 export default function TokenManagement({
-  glacierJwt
+  glacierJwt,
+  endpoint,
 }: TokenManagementProps) {
   // API client
-  const apiClient = new GlacierApiClient(glacierJwt);
+  const apiClient = new GlacierApiClient(glacierJwt, endpoint);
 
   // State
   const [apiKeys, setApiKeys] = useState<ApiKeyListItem[]>([]);
