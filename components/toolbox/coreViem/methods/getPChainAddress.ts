@@ -7,7 +7,7 @@ import {
 import { Buffer as BufferPolyfill } from "buffer";
 import { CoreWalletRpcSchema } from "../rpcSchema";
 import { isTestnet } from "./isTestnet";
-import { secp256k1 as nobleSecp256k1 } from '@noble/curves/secp256k1';
+import { secp256k1 as nobleSecp256k1 } from '@noble/curves/secp256k1.js';
 
 export async function getPChainAddress(client: WalletClient<any, any, any, CoreWalletRpcSchema>) {
     const networkID = (await isTestnet(client)) ? networkIDs.FujiID : networkIDs.MainnetID

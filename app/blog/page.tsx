@@ -1,39 +1,39 @@
-import { blog } from '@/lib/source';
-import { HeroBackground } from '@/components/landing/hero';
-import { createMetadata } from '@/utils/metadata';
-import { BlogList } from '@/components/blog/blog-list';
+import { blog } from "@/lib/source";
+import { HeroBackground } from "@/components/landing/hero";
+import { createMetadata } from "@/utils/metadata";
+import { BlogList } from "@/components/blog/blog-list";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = createMetadata({
-  title: 'Blog',
+  title: "Blog",
   description:
-    'Takeaways and tutorials from building a network of fast, efficient, highly-optimized chains.',
+    "Takeaways and tutorials from building a network of fast, efficient, highly-optimized chains.",
   openGraph: {
-    images: '/api/og/blog',
+    images: "/api/og/blog",
   },
   twitter: {
-    images: '/api/og/blog',
+    images: "/api/og/blog",
   },
 });
 
 export default function Page(): React.ReactElement {
   const blogPages = [...blog.getPages()].sort(
     (a, b) =>
-      new Date(b.data.date ?? b.file.name).getTime() -
-      new Date(a.data.date ?? a.file.name).getTime()
+      new Date((b.data.date as string) ?? b.file.name).getTime() -
+      new Date((a.data.date as string) ?? a.file.name).getTime()
   );
 
   const blogs = blogPages.map((page) => ({
     url: page.url,
     data: {
-      title: page.data.title,
+      title: page.data.title || "Untitled",
       description: page.data.description || "",
-      topics: page.data.topics || [],
+      topics: (page.data.topics as string[]) || [],
       date:
         page.data.date instanceof Date
           ? page.data.date.toISOString()
-          : page.data.date || page.file.name,
-      authors: page.data.authors || [],
+          : (page.data.date as string) || page.file.name,
+      authors: (page.data.authors as string[]) || [],
     },
     file: {
       name: page.file.name,
