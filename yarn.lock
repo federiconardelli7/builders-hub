@@ -379,10 +379,10 @@
   dependencies:
     tslib "2"
 
-"@formatjs/intl-localematcher@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.6.1.tgz"
-  integrity sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==
+"@formatjs/intl-localematcher@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.6.2.tgz"
+  integrity sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==
   dependencies:
     tslib "^2.8.0"
 
@@ -3230,7 +3230,7 @@ esbuild@^0.21.3:
     "@esbuild/win32-ia32" "0.21.5"
     "@esbuild/win32-x64" "0.21.5"
 
-esbuild@^0.25.9, esbuild@~0.25.0:
+esbuild@^0.25.10, esbuild@~0.25.0:
   version "0.25.10"
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.25.10"
@@ -3448,12 +3448,12 @@ fsevents@~2.3.2, fsevents@~2.3.3:
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
-fumadocs-core@^15.1.0, fumadocs-core@15.8.3:
-  version "15.8.3"
-  resolved "https://registry.npmjs.org/fumadocs-core/-/fumadocs-core-15.8.3.tgz"
-  integrity sha512-33ZqR7PYbBRhMsVfe5/PAc+Kq+QX+r4UiIVDmQNltf50vVDsl8rhA5jy+4ZJSt2iBhJJNZDyocfXiPGNO+tS3g==
+fumadocs-core@^15.8.4, fumadocs-core@15.8.4:
+  version "15.8.4"
+  resolved "https://registry.npmjs.org/fumadocs-core/-/fumadocs-core-15.8.4.tgz"
+  integrity sha512-KrUtFzca+Y9g/Bu4j5SOsIIwAF7wgsx7qcSmECEEjc2jru5QMuOAmOjVE0jlzAfuT795u2S37bFZ7MqxLGN32A==
   dependencies:
-    "@formatjs/intl-localematcher" "^0.6.1"
+    "@formatjs/intl-localematcher" "^0.6.2"
     "@orama/orama" "^3.1.14"
     "@shikijs/rehype" "^3.13.0"
     "@shikijs/transformers" "^3.13.0"
@@ -3465,7 +3465,7 @@ fumadocs-core@^15.1.0, fumadocs-core@15.8.3:
     npm-to-yarn "^3.0.1"
     path-to-regexp "^8.3.0"
     react-remove-scroll "^2.7.1"
-    remark "^15.0.0"
+    remark "^15.0.1"
     remark-gfm "^4.0.1"
     remark-rehype "^11.1.2"
     scroll-into-view-if-needed "^3.1.0"
@@ -3493,18 +3493,19 @@ fumadocs-core@14.7.7:
     shiki "^2.0.3"
     unist-util-visit "^5.0.0"
 
-fumadocs-mdx@^11.8.3:
-  version "11.10.1"
-  resolved "https://registry.npmjs.org/fumadocs-mdx/-/fumadocs-mdx-11.10.1.tgz"
-  integrity sha512-WoEzzzoKncXl7PM++GRxEplAb73y3A4ow+QdTYybhVtoYXgJzvTzkLc5OIlNQm72Dv+OxSAx7uk11zTTOX9YMQ==
+fumadocs-mdx@^12.0.3:
+  version "12.0.3"
+  resolved "https://registry.npmjs.org/fumadocs-mdx/-/fumadocs-mdx-12.0.3.tgz"
+  integrity sha512-OYqbHSmzkejG+iUMlZJJOitaVbCgBdo/REc/9Sq1WaZ1vq6bH9PCFU0cKJlRdHbQSGRfVg5EJJy5uKy5+iNFGQ==
   dependencies:
     "@mdx-js/mdx" "^3.1.1"
     "@standard-schema/spec" "^1.0.0"
     chokidar "^4.0.3"
-    esbuild "^0.25.9"
+    esbuild "^0.25.10"
     estree-util-value-to-estree "^3.4.0"
     js-yaml "^4.1.0"
-    lru-cache "^11.2.1"
+    lru-cache "^11.2.2"
+    mdast-util-to-markdown "^2.1.2"
     picocolors "^1.1.1"
     remark-mdx "^3.1.1"
     remark-parse "^11.0.0"
@@ -3512,7 +3513,7 @@ fumadocs-mdx@^11.8.3:
     tinyglobby "^0.2.15"
     unified "^11.0.5"
     unist-util-visit "^5.0.0"
-    zod "^4.1.8"
+    zod "^4.1.11"
 
 fumadocs-twoslash@^3.1.7:
   version "3.1.7"
@@ -3543,10 +3544,10 @@ fumadocs-typescript@^3.1.0:
     ts-morph "^25.0.1"
     unist-util-visit "^5.0.0"
 
-fumadocs-ui@^15.1.0:
-  version "15.8.3"
-  resolved "https://registry.npmjs.org/fumadocs-ui/-/fumadocs-ui-15.8.3.tgz"
-  integrity sha512-KJcbOSu28shZ330R+F+Zgvbl5ehZlA+heB171x2eZJpy0JY9ihJGi9fXk5IIbcwaz4okKM/YPOY3K7THvRO1Kw==
+fumadocs-ui@^15.8.4:
+  version "15.8.4"
+  resolved "https://registry.npmjs.org/fumadocs-ui/-/fumadocs-ui-15.8.4.tgz"
+  integrity sha512-l71pOaHH4mDzd7rPfbh30MemwV5tvyysQbtxRci/wHKfxTw+TW1VFQIr4XEzIJQo7Uk7paeuzav70NDeRy+GxQ==
   dependencies:
     "@radix-ui/react-accordion" "^1.2.12"
     "@radix-ui/react-collapsible" "^1.1.12"
@@ -3559,7 +3560,7 @@ fumadocs-ui@^15.1.0:
     "@radix-ui/react-slot" "^1.2.3"
     "@radix-ui/react-tabs" "^1.1.13"
     class-variance-authority "^0.7.1"
-    fumadocs-core "15.8.3"
+    fumadocs-core "15.8.4"
     lodash.merge "^4.6.2"
     next-themes "^0.4.6"
     postcss-selector-parser "^7.1.0"
@@ -4260,7 +4261,7 @@ loupe@^3.1.0, loupe@^3.1.2:
   resolved "https://registry.npmjs.org/loupe/-/loupe-3.2.1.tgz"
   integrity sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ==
 
-lru-cache@^11.2.1:
+lru-cache@^11.2.2:
   version "11.2.2"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-11.2.2.tgz"
   integrity sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==
@@ -4499,7 +4500,7 @@ mdast-util-to-hast@^13.0.0, mdast-util-to-hast@^13.2.0:
     unist-util-visit "^5.0.0"
     vfile "^6.0.0"
 
-mdast-util-to-markdown@^2.0.0, mdast-util-to-markdown@^2.1.0:
+mdast-util-to-markdown@^2.0.0, mdast-util-to-markdown@^2.1.0, mdast-util-to-markdown@^2.1.2:
   version "2.1.2"
   resolved "https://registry.npmjs.org/mdast-util-to-markdown/-/mdast-util-to-markdown-2.1.2.tgz"
   integrity sha512-xj68wMTvGXVOKonmog6LwyJKrYXZPvlwabaryTjLh9LuvovB/KAH+kvi8Gjj+7rJjsFi23nkUxRQv1KqSroMqA==
@@ -6630,18 +6631,15 @@ zod-to-json-schema@^3.24.1:
   resolved "https://registry.npmjs.org/zod-to-json-schema/-/zod-to-json-schema-3.24.6.tgz"
   integrity sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==
 
-zod@^3.20.0, zod@^3.25.76:
+zod@^3.20.0:
   version "3.25.76"
   resolved "https://registry.npmjs.org/zod/-/zod-3.25.76.tgz"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
 
-zod@^4.0.5:
-  version "4.1.9"
-
-zod@^4.1.8:
-  version "4.1.11"
-  resolved "https://registry.npmjs.org/zod/-/zod-4.1.11.tgz"
-  integrity sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==
+zod@^4.0.5, zod@^4.1.11, zod@^4.1.12:
+  version "4.1.12"
+  resolved "https://registry.npmjs.org/zod/-/zod-4.1.12.tgz"
+  integrity sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==
 
 zustand@^5.0.8:
   version "5.0.8"

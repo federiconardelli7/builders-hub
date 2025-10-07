@@ -1,9 +1,12 @@
-import { loader } from 'fumadocs-core/source';
+import { createMDXSource } from 'fumadocs-mdx/runtime/next';
+import {
+  type InferMetaType,
+  type InferPageType,
+  loader,
+} from 'fumadocs-core/source';
 import { createElement } from 'react';
 import { icons } from 'lucide-react';
-import { createMDXSource } from 'fumadocs-mdx';
 import { meta, docs, blog as blogs, course, courseMeta, integrations, codebaseEntrepreneur, codebaseEntrepreneurMeta } from '@/.source';
-import type { InferMetaType, InferPageType } from 'fumadocs-core/source';
 
 export const documentation = loader({
   baseUrl: '/docs',
