@@ -20,7 +20,7 @@ export type ConvertToL1Params = {
     validators: ConvertToL1Validator[];
 }
 
-export type ConvertToL1Validator = {
+type ConvertToL1Validator = {
     nodeID: string;
     nodePOP: {
         publicKey: string;
@@ -32,7 +32,7 @@ export type ConvertToL1Validator = {
     deactivationOwner: ConvertToL1PChainOwner;
 }
 
-export type ConvertToL1PChainOwner = {
+type ConvertToL1PChainOwner = {
     addresses: string[];
     threshold: number;
 }

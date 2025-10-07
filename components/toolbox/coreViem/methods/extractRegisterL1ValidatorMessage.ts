@@ -46,11 +46,11 @@ interface RegisterMessageResponse {
   result: TransactionResult;
 }
 
-export type ExtractRegisterL1ValidatorMessageParams = {
+type ExtractRegisterL1ValidatorMessageParams = {
   txId: string;
 }
 
-export type ExtractRegisterL1ValidatorMessageResponse = {
+type ExtractRegisterL1ValidatorMessageResponse = {
   message: string;
   subnetID: string;
   nodeID: string;
@@ -67,7 +67,7 @@ export type ExtractRegisterL1ValidatorMessageResponse = {
  * @returns The extracted registration message data
  */
 export async function extractRegisterL1ValidatorMessage(
-  client: WalletClient<any, any, any, CoreWalletRpcSchema>, 
+  client: WalletClient<any, any, any, CoreWalletRpcSchema>,
   { txId }: ExtractRegisterL1ValidatorMessageParams
 ): Promise<ExtractRegisterL1ValidatorMessageResponse> {
   const isTestnetMode = await isTestnet(client);
@@ -110,13 +110,13 @@ export async function extractRegisterL1ValidatorMessage(
   // Parse the WarpMessage to extract the AddressedCall
   const warpMessageBytes = Buffer.from(utils.hexToBuffer(unsignedTx.message));
   const addressedCallBytes = extractPayloadFromWarpMessage(warpMessageBytes);
-  
+
   // Extract the actual RegisterL1ValidatorMessage payload from the AddressedCall
   const registerL1ValidatorPayload = extractPayloadFromAddressedCall(addressedCallBytes);
   if (!registerL1ValidatorPayload) {
     throw new Error("Failed to extract RegisterL1ValidatorMessage payload from AddressedCall");
   }
-  
+
   // Parse the RegisterL1ValidatorMessage from the payload
   const parsedData = parseRegisterL1ValidatorMessage(registerL1ValidatorPayload);
 
@@ -169,7 +169,7 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
     // Source Address Length starts at index 6
     const sourceAddrLen = (addressedCall[6] << 24) | (addressedCall[7] << 16) | (addressedCall[8] << 8) | addressedCall[9];
     if (sourceAddrLen < 0) {
-        return null;
+      return null;
     }
 
     // Position where Payload Length starts
@@ -182,13 +182,13 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
 
     // Read Payload Length
     const payloadLen = (addressedCall[payloadLenPos] << 24) |
-                       (addressedCall[payloadLenPos + 1] << 16) |
-                       (addressedCall[payloadLenPos + 2] << 8) |
-                       addressedCall[payloadLenPos + 3];
+      (addressedCall[payloadLenPos + 1] << 16) |
+      (addressedCall[payloadLenPos + 2] << 8) |
+      addressedCall[payloadLenPos + 3];
 
     // Check if payload length is valid
     if (payloadLen <= 0) {
-        return null;
+      return null;
     }
 
     const payloadStartPos = payloadLenPos + 4;
@@ -196,7 +196,7 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
 
     // Check if payload extends beyond data bounds
     if (payloadEndPos > addressedCall.length) {
-        return null;
+      return null;
     }
 
     // Extract Payload
@@ -228,10 +228,10 @@ function extractPayloadFromWarpMessage(warpMessageBytes: Buffer): Buffer {
 
   // Skip codecVersion (2 bytes) + networkID (4 bytes) + sourceChainID (32 bytes) = 38 bytes
   // Then read message length (4 bytes)
-  const messageLength = (warpMessageBytes[38] << 24) | 
-                        (warpMessageBytes[39] << 16) | 
-                        (warpMessageBytes[40] << 8) | 
-                        warpMessageBytes[41];
+  const messageLength = (warpMessageBytes[38] << 24) |
+    (warpMessageBytes[39] << 16) |
+    (warpMessageBytes[40] << 8) |
+    warpMessageBytes[41];
 
   if (messageLength <= 0 || 42 + messageLength > warpMessageBytes.length) {
     throw new Error('Invalid message length or message extends beyond WarpMessage data bounds');
@@ -352,7 +352,7 @@ function parsePChainOwner(payloadBytes: Buffer, offset: number): {
   addresses: Uint8Array[];
 } {
   const view = new DataView(payloadBytes.buffer, payloadBytes.byteOffset, payloadBytes.byteLength);
-  
+
   // threshold (uint32, 4 bytes)
   const threshold = view.getUint32(offset, false); // big-endian
   offset += 4;
@@ -392,9 +392,9 @@ function packRegisterL1ValidatorMessage(payload: RegisterL1ValidatorMessagePaylo
   const nodeIDLength = payload.nodeID.length;
   const remainingBalanceOwnerSize = getPChainOwnerSize(payload.remainingBalanceOwner);
   const disableOwnerSize = getPChainOwnerSize(payload.disableOwner);
-  
+
   const totalSize = 2 + 4 + 32 + 4 + nodeIDLength + 48 + 8 + remainingBalanceOwnerSize + disableOwnerSize + 8;
-  
+
   const buffer = new ArrayBuffer(totalSize);
   const view = new DataView(buffer);
   const uint8Array = new Uint8Array(buffer);
