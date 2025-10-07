@@ -2,7 +2,7 @@
 import { type SharedProps } from "fumadocs-ui/components/dialog/search";
 import React, { useState, useEffect } from "react";
 import { liteClient } from "algoliasearch/lite";
-import { Search, X, ArrowUpRight } from "lucide-react";
+import { Search, ArrowUpRight } from "lucide-react";
 
 const appId = "0T4ZBDJ3AF";
 const apiKey = "9b74c8a3bba6e59a00209193be3eb63a";
@@ -22,6 +22,7 @@ export default function CustomSearchDialog(props: SharedProps) {
   const [tag, setTag] = useState<string>("");
   const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const modalRef = React.useRef<HTMLDivElement>(null);
 
   const performSearch = async (searchTerm: string) => {
     if (!searchTerm || searchTerm.length < 2) {
@@ -34,12 +35,15 @@ export default function CustomSearchDialog(props: SharedProps) {
       const searchParams: any = {
         hitsPerPage: 10,
         attributesToSnippet: ["content:30", "description:30"],
-        highlightPreTag: '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">',
+        highlightPreTag:
+          '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">',
         highlightPostTag: "</mark>",
         snippetEllipsisText: "...",
       };
 
-      if (tag && tag !== "") { searchParams.filters = `tag:${tag}` }
+      if (tag && tag !== "") {
+        searchParams.filters = `tag:${tag}`;
+      }
 
       const searchResults = await client.search([
         {
@@ -65,6 +69,42 @@ export default function CustomSearchDialog(props: SharedProps) {
     }, 300);
     return () => clearTimeout(timeoutId);
   }, [search, tag]);
+
+  // Handle ESC key to close dialog
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    if (props.open) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [props.open]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+
+    if (props.open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [props.open]);
 
   if (!props.open) {
     return null;
@@ -102,7 +142,10 @@ export default function CustomSearchDialog(props: SharedProps) {
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
       <div className="flex min-h-full items-start justify-center p-4 pt-[10vh]">
-        <div className="w-full max-w-2xl transform overflow-hidden rounded-xl bg-background shadow-2xl transition-all border">
+        <div
+          ref={modalRef}
+          className="w-full max-w-2xl transform overflow-hidden rounded-xl bg-background shadow-2xl transition-all border"
+        >
           {/* Header */}
           <div className="relative border-b">
             <div className="flex items-center px-4 py-3">
@@ -111,15 +154,15 @@ export default function CustomSearchDialog(props: SharedProps) {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search documentation..."
-                className="flex-1 bg-transparent border-0 text-foreground placeholder-muted-foreground focus:outline-none text-sm"
+                placeholder="Search"
+                className="flex-1 bg-transparent border-0 text-foreground placeholder-fd-muted-foreground focus:outline-none text-base"
                 autoFocus
               />
               <button
                 onClick={handleClose}
-                className="ml-3 p-1.5 rounded-md hover:bg-muted transition-colors"
+                className="ml-3 px-2 py-1 rounded-md hover:bg-muted transition-colors text-xs text-muted-foreground border border-muted-foreground/20"
               >
-                <X className="h-4 w-4 text-muted-foreground" />
+                ESC
               </button>
             </div>
           </div>
