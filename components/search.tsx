@@ -34,15 +34,12 @@ export default function CustomSearchDialog(props: SharedProps) {
       const searchParams: any = {
         hitsPerPage: 10,
         attributesToSnippet: ["content:30", "description:30"],
-        highlightPreTag:
-          '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">',
+        highlightPreTag: '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">',
         highlightPostTag: "</mark>",
         snippetEllipsisText: "...",
       };
 
-      if (tag && tag !== "") {
-        searchParams.filters = `tag:${tag}`;
-      }
+      if (tag && tag !== "") { searchParams.filters = `tag:${tag}` }
 
       const searchResults = await client.search([
         {
@@ -186,7 +183,7 @@ export default function CustomSearchDialog(props: SharedProps) {
             )}
           </div>
 
-          {/* Footer - Fumadocs Style */}
+          {/* Footer */}
           <div className="bg-fd-secondary/50 p-3 empty:hidden">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 flex-wrap">
