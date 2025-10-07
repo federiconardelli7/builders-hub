@@ -45,6 +45,7 @@ import ConvertSubnetToL1 from "@/components/toolbox/console/layer-1/create/Conve
 import GenesisBuilder from "@/components/toolbox/console/layer-1/create/GenesisBuilder";
 import DeployExampleERC20 from "@/components/toolbox/console/ictt/setup/DeployExampleERC20";
 import DeployTokenHome from "@/components/toolbox/console/ictt/setup/DeployTokenHome";
+import DeployWrappedNative from "@/components/toolbox/console/ictt/setup/DeployWrappedNative";
 import DeployERC20TokenRemote from "@/components/toolbox/console/ictt/setup/DeployERC20TokenRemote";
 import RegisterWithHome from "@/components/toolbox/console/ictt/setup/RegisterWithHome";
 import TestSend from "@/components/toolbox/console/ictt/token-transfer/TestSend";
@@ -65,6 +66,7 @@ const toolboxComponents = {
   ConvertToL1: ConvertSubnetToL1,
   DeployExampleERC20,
   DeployTokenHome,
+  DeployWrappedNative,
   DeployERC20TokenRemote,
   RegisterWithHome,
   TestSend,
