@@ -10,7 +10,7 @@ import validatorManagerAbi from '../../../contracts/icm-contracts/compiled/Valid
 import poaManagerAbi from '../../../contracts/icm-contracts/compiled/PoAManager.json';
 import { useWalletStore } from '../stores/walletStore';
 import { useViemChainStore } from '../stores/toolboxStore';
-import { useSafeAPI, SafeInfo, NonceResponse, AshWalletUrlResponse } from '../hooks';
+import { useSafeAPI, SafeInfo, NonceResponse, AshWalletUrlResponse } from '../hooks/useSafeAPI';
 
 
 
@@ -292,6 +292,12 @@ export const MultisigOption: React.FC<MultisigOptionProps> = ({
   };
 
   const executeDirectTransaction = async () => {
+    if (!coreWalletClient) {
+      onError('Core wallet not found');
+      return;
+    }
+
+
     if (!poaManagerAddress) {
       onError('PoAManager address not found');
       return;
@@ -310,7 +316,7 @@ export const MultisigOption: React.FC<MultisigOptionProps> = ({
 
       // Wait for transaction receipt
       const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
+        hash: txHash as `0x${string}`,
       });
 
       if (receipt.status === 'reverted') {

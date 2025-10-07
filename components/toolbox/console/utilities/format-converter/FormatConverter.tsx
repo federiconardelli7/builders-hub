@@ -8,7 +8,7 @@ import { Input } from "@/components/toolbox/components/Input";
 import { Container } from "@/components/toolbox/components/Container";
 
 // Utility functions for conversions
-export const hexToBytes = (hex: string): Uint8Array => {
+const hexToBytes = (hex: string): Uint8Array => {
   // Remove 0x prefix if present
   hex = hex.startsWith("0x") ? hex.slice(2) : hex;
   // Ensure even length
@@ -23,13 +23,13 @@ export const hexToBytes = (hex: string): Uint8Array => {
   return bytes;
 };
 
-export const bytesToHex = (bytes: Uint8Array): string => {
+const bytesToHex = (bytes: Uint8Array): string => {
   return Array.from(bytes)
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 };
 
-export const cleanHexString = (hex: string): string => {
+const cleanHexString = (hex: string): string => {
   // Remove non-hex characters but preserve 0x prefix if present
   const hasPrefix = hex.startsWith("0x");
   const cleaned = hex.replace(/^0x/, "").replace(/[^0-9a-fA-F]/g, "");
@@ -37,7 +37,7 @@ export const cleanHexString = (hex: string): string => {
 };
 
 // Add a new formatHexString function that adds spaces between bytes
-export const formatHexString = (hex: string): string => {
+const formatHexString = (hex: string): string => {
   // First clean the hex string
   let cleanedHex = cleanHexString(hex);
 
@@ -100,7 +100,7 @@ export const cb58ToHex = (cb58: string): string => {
 
 // For CB58 to hex with checksum, we add 0x prefix and preserve the checksum
 //instead of using utils.base58check.decode() which removes the checksum, use base58 directly and manually work with the raw bytes
-export const cb58ToHexWithChecksum = (cb58: string): string => {
+const cb58ToHexWithChecksum = (cb58: string): string => {
   try {
     if (!cb58 || cb58.trim() === "") {
       throw new Error("Empty CB58 string");
@@ -260,7 +260,6 @@ export default function FormatConverter() {
     <Container
       title="Format Converter"
       description="Convert between different encodings"
-      logoColorTheme="red"
     >
       <div className="space-y-6">
         {/* Hex to CB58 */}
