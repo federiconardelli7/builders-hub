@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, type InputHTMLAttributes } from "react"
 import { cn } from "../lib/utils"
 
-export interface RawInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface RawInputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string | null | React.ReactNode
 }
 
@@ -39,7 +39,7 @@ export interface Suggestion {
   description: string
 }
 
-export interface InputProps extends Omit<RawInputProps, "onChange"> {
+interface InputProps extends Omit<RawInputProps, "onChange"> {
   label: string
   unit?: string
   onChange?: (newValue: string) => void
