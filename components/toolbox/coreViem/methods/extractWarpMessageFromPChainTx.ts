@@ -110,7 +110,7 @@ export type ExtractWarpMessageFromTxResponse = {
  * @param blockchainId The blockchain ID to query
  * @returns The subnet ID associated with the blockchain
  */
-export async function getSubnetIdFromChainId(network: "fuji" | "mainnet", blockchainId: string): Promise<string> {
+async function getSubnetIdFromChainId(network: "fuji" | "mainnet", blockchainId: string): Promise<string> {
     try {
         const response = await fetch(`https://glacier-api.avax.network/v1/networks/${network}/blockchains/${blockchainId}`, {
             method: 'GET',
@@ -120,15 +120,15 @@ export async function getSubnetIdFromChainId(network: "fuji" | "mainnet", blockc
         });
 
         if (!response.ok) {
-            throw new Error(`Glacier API returned ${response.status}: ${response.statusText}`);
+            throw new Error(`Data API returned ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
-        
+
         if (!data.subnetId) {
             throw new Error('No subnetId found in response');
         }
-        
+
         return data.subnetId;
     } catch (error) {
         console.error('Error fetching subnet info from Glacier:', error);

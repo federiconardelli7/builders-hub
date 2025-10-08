@@ -116,5 +116,3 @@ export function WalletBootstrap() {
   return null
 }
 
-export default WalletBootstrap
-

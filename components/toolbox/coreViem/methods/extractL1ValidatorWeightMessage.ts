@@ -36,11 +36,11 @@ interface WeightMessageResponse {
   result: TransactionResult;
 }
 
-export type ExtractL1ValidatorWeightMessageParams = {
+type ExtractL1ValidatorWeightMessageParams = {
   txId: string;
 }
 
-export type ExtractL1ValidatorWeightMessageResponse = {
+type ExtractL1ValidatorWeightMessageResponse = {
   message: string;
   validationID: string;
   nonce: bigint;
@@ -55,7 +55,7 @@ export type ExtractL1ValidatorWeightMessageResponse = {
  * @returns The extracted weight message data
  */
 export async function extractL1ValidatorWeightMessage(
-  client: WalletClient<any, any, any, CoreWalletRpcSchema>, 
+  client: WalletClient<any, any, any, CoreWalletRpcSchema>,
   { txId }: ExtractL1ValidatorWeightMessageParams
 ): Promise<ExtractL1ValidatorWeightMessageResponse> {
   const isTestnetMode = await isTestnet(client);
@@ -98,13 +98,13 @@ export async function extractL1ValidatorWeightMessage(
   // Parse the WarpMessage to extract the AddressedCall
   const warpMessageBytes = Buffer.from(utils.hexToBuffer(unsignedTx.message));
   const addressedCallBytes = extractPayloadFromWarpMessage(warpMessageBytes);
-  
+
   // Extract the actual L1ValidatorWeightMessage payload from the AddressedCall
   const l1ValidatorWeightPayload = extractPayloadFromAddressedCall(addressedCallBytes);
   if (!l1ValidatorWeightPayload) {
     throw new Error("Failed to extract L1ValidatorWeightMessage payload from AddressedCall");
   }
-  
+
   // Parse the L1ValidatorWeightMessage from the payload
   const parsedData = parseL1ValidatorWeightMessage(l1ValidatorWeightPayload);
 
@@ -151,7 +151,7 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
     // Source Address Length starts at index 6
     const sourceAddrLen = (addressedCall[6] << 24) | (addressedCall[7] << 16) | (addressedCall[8] << 8) | addressedCall[9];
     if (sourceAddrLen < 0) {
-        return null;
+      return null;
     }
 
     // Position where Payload Length starts
@@ -164,13 +164,13 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
 
     // Read Payload Length
     const payloadLen = (addressedCall[payloadLenPos] << 24) |
-                       (addressedCall[payloadLenPos + 1] << 16) |
-                       (addressedCall[payloadLenPos + 2] << 8) |
-                       addressedCall[payloadLenPos + 3];
+      (addressedCall[payloadLenPos + 1] << 16) |
+      (addressedCall[payloadLenPos + 2] << 8) |
+      addressedCall[payloadLenPos + 3];
 
     // Check if payload length is valid
     if (payloadLen <= 0) {
-        return null;
+      return null;
     }
 
     const payloadStartPos = payloadLenPos + 4;
@@ -178,7 +178,7 @@ function extractPayloadFromAddressedCall(addressedCall: Buffer): Buffer | null {
 
     // Check if payload extends beyond data bounds
     if (payloadEndPos > addressedCall.length) {
-        return null;
+      return null;
     }
 
     // Extract Payload
@@ -210,10 +210,10 @@ function extractPayloadFromWarpMessage(warpMessageBytes: Buffer): Buffer {
 
   // Skip codecVersion (2 bytes) + networkID (4 bytes) + sourceChainID (32 bytes) = 38 bytes
   // Then read message length (4 bytes)
-  const messageLength = (warpMessageBytes[38] << 24) | 
-                        (warpMessageBytes[39] << 16) | 
-                        (warpMessageBytes[40] << 8) | 
-                        warpMessageBytes[41];
+  const messageLength = (warpMessageBytes[38] << 24) |
+    (warpMessageBytes[39] << 16) |
+    (warpMessageBytes[40] << 8) |
+    warpMessageBytes[41];
 
   if (messageLength <= 0 || 42 + messageLength > warpMessageBytes.length) {
     throw new Error('Invalid message length or message extends beyond WarpMessage data bounds');
