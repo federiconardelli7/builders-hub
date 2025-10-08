@@ -1,9 +1,81 @@
 ---
-title: Introduction
-description: ...
-updated: 2025-08-21
+title: Protocol Integration
+description: How precompiles integrate with the VM stack and optimize execution
+updated: 2025-01-15
 authors: [nicolasarnedo]
-icon: Book
+icon: BookOpen
 ---
 
-bla bla
+## Protocol Integration
+
+Precompiles exist at the **protocol layer** of the blockchain, sitting between the EVM execution engine and the underlying client software. This unique position allows them to bypass normal EVM execution while still being accessible to smart contracts.
+
+## VM Stack Architecture
+
+<Mermaid chart="graph TD
+    A[Smart Contract Call] --> B[EVM Interpreter]
+    B --> C{Is Precompile?}
+    C -->|Yes| D[Precompile Handler]
+    C -->|No| E[Bytecode Execution]
+    D --> F[Native Code Execution]
+    E --> G[EVM Opcodes]
+    F --> H[Protocol Layer Changes]
+    G --> I[State Changes]
+    H --> J[Blockchain State]
+    I --> J
+    J --> K[Next Block Processing]
+"/>
+
+## Execution Layers
+
+### Application Layer (Smart Contracts)
+- **Data**: Contract state, user balances, application logic
+- **Execution**: EVM bytecode interpretation
+- **Gas Cost**: High (opcode-based pricing)
+- **Flexibility**: Full programmability
+
+### Protocol Layer (Precompiles)
+- **Data**: Blockchain state, consensus data, cryptographic operations
+- **Execution**: Native client code
+- **Gas Cost**: Optimized (fixed pricing)
+- **Flexibility**: Limited to specific functions
+
+## Optimization Benefits
+
+**Performance Gains:**
+- **10-1000x faster** than equivalent smart contract implementations
+- **Fixed gas costs** regardless of input complexity
+- **Native code execution** without EVM overhead
+
+**Example: SHA-256 Hashing**
+- Smart contract: ~2,000-10,000 gas + computation time
+- Precompile: ~60 gas + near-instant execution
+
+## Data Flow Distinction
+
+<Callout type="info">
+**Critical Distinction**: Precompiles operate on **protocol-level data** (blockchain state, consensus mechanisms) while smart contracts operate on **application-level data** (user balances, contract state). This separation ensures security and efficiency.
+</Callout>
+
+### Application Layer Data
+- User account balances
+- Smart contract storage
+- Application-specific state
+- User-generated transactions
+
+### Protocol Layer Data
+- Block headers and hashes
+- Consensus mechanism state
+- Cryptographic proofs
+- Network-level operations
+
+## Integration Points
+
+Precompiles integrate at multiple levels:
+
+1. **EVM Level**: Recognized as special addresses during execution
+2. **Client Level**: Implemented in native client code
+3. **Consensus Level**: Can affect blockchain state directly
+4. **Network Level**: May interact with peer-to-peer protocols
+
+This multi-level integration makes precompiles powerful tools for blockchain optimization while maintaining the security and determinism of the EVM execution model.
