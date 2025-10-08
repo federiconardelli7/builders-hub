@@ -1,44 +1,45 @@
 ---
-title: What are Precompiles?
+title: Introduction
 description: Understanding precompiles and their role in blockchain optimization
 updated: 2025-01-15
 authors: [nicolasarnedo]
 icon: Book
 ---
 
-## What are Precompiles?
 
-Precompiles are **pre-compiled smart contracts** that are built directly into the EVM (Ethereum Virtual Machine) at the protocol level. Unlike regular smart contracts that are executed by the EVM, precompiles are implemented in the client software itself, making them significantly more efficient.
+A stateful precompile **injects state access** through the
+PrecompileAccessibleState interface to provide access to the EVM
+state including the ability to modify balances and read/write storage.
 
-## Key Characteristics
+This way we can provide even more customization of the EVM through
+Stateful Precompiles than we can with the original precompile interface!
 
-- **Native Implementation**: Written in the blockchain client's native language (Go, Rust, etc.) rather than EVM bytecode
-- **Gas Optimization**: Execute complex operations much faster and cheaper than equivalent smart contract code
-- **Protocol Integration**: Directly integrated into the blockchain's execution engine
-- **Standardized Addresses**: Each precompile has a fixed, well-known address (e.g., `0x0000000000000000000000000000000000000001`)
 
-## Common Precompiles
+Precompiles are a shortcut to execute a function implemented by the EVM itself, rather than an actual contract. A precompile is associated with a fixed address defined in the EVM. There is no byte code associated with that address.
 
-**Cryptographic Functions:**
-- `ecrecover` (0x01): Recover Ethereum address from signature
-- `sha256` (0x02): SHA-256 hashing
-- `ripemd160` (0x03): RIPEMD-160 hashing
-- `identity` (0x04): Identity function (data passthrough)
+When a precompile is called, the EVM checks if the input address is a precompile address, and if so it executes the precompile. Otherwise, it loads the smart contract at the input address and runs it on the EVM interpreter with the specified input data.
 
-**Advanced Operations:**
-- `modExp` (0x05): Modular exponentiation
-- `ecAdd` (0x06): Elliptic curve point addition
-- `ecMul` (0x07): Elliptic curve scalar multiplication
-- `ecPairing` (0x08): Bilinear pairing on elliptic curves
+A stateful precompile injects state access through the PrecompileAccessibleState interface to provide access to the EVM state including the ability to modify balances and read/write storage.
 
-## Why Precompiles Matter
+This way we can provide even more customization of the EVM through Stateful Precompiles than we can with the original precompile interface!
 
-Precompiles enable complex cryptographic and mathematical operations that would be:
-- **Too expensive** to implement as smart contracts
-- **Too slow** for practical use cases
-- **Impossible** due to EVM limitations
 
-They form the foundation for advanced blockchain features like zero-knowledge proofs, advanced cryptography, and efficient data structures.
+## Precompiles Structure
 
-## Precompiles Structure Image
-https://qizat5l3bwvomkny.public.blob.vercel-storage.com/precompile_strucutre.png
+![Precompiles Structure](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/precompile_strucutre.png)
+
+## Precompiles OOP
+
+![Precompiles OOP](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_OOP.png)
+
+## Precompiles Layers 1
+
+![Precompiles Layers 1](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers1.png)
+
+## Precompiles Layers 2
+
+![Precompiles Layers 2](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers2.png)
+
+## Precompile State
+
+![Precompile State](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_State.png)

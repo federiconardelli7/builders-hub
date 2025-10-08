@@ -1,0 +1,44 @@
+---
+title: What are Precompiles?
+description: Understanding precompiles and their role in blockchain optimization
+updated: 2025-01-15
+authors: [nicolasarnedo]
+icon: BookOpen
+---
+
+
+
+Precompiles are **pre-compiled smart contracts** that are built directly into the EVM (Ethereum Virtual Machine) at the protocol level. Unlike regular smart contracts that are executed by the EVM, precompiles are implemented in the client software itself, making them significantly more efficient.
+
+## Key Characteristics
+
+- **Native Implementation**: Written in the blockchain client's native language (Go, Rust, etc.) rather than EVM bytecode
+- **Gas Optimization**: Execute complex operations much faster and cheaper than equivalent smart contract code
+- **Protocol Integration**: Directly integrated into the blockchain's execution engine
+- **Standardized Addresses**: Each precompile has a fixed, well-known address (e.g., `0x0000000000000000000000000000000000000001`)
+
+## Common Precompiles
+
+**Cryptographic Functions:**
+- `ecrecover` (0x01): Recover Ethereum address from signature
+- `sha256` (0x02): SHA-256 hashing
+- `ripemd160` (0x03): RIPEMD-160 hashing
+- `identity` (0x04): Identity function (data passthrough)
+
+**Advanced Operations:**
+- `modExp` (0x05): Modular exponentiation
+- `ecAdd` (0x06): Elliptic curve point addition
+- `ecMul` (0x07): Elliptic curve scalar multiplication
+- `ecPairing` (0x08): Bilinear pairing on elliptic curves
+
+## Why Precompiles Matter
+
+Precompiles enable complex cryptographic and mathematical operations that would be:
+- **Too expensive** to implement as smart contracts
+- **Too slow** for practical use cases
+- **Impossible** due to EVM limitations
+
+They form the foundation for advanced blockchain features like zero-knowledge proofs, advanced cryptography, and efficient data structures.
+
+## Precompiles Structure Image
+https://qizat5l3bwvomkny.public.blob.vercel-storage.com/precompile_strucutre.png
