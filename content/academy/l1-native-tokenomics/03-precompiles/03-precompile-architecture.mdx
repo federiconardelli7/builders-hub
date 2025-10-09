@@ -6,76 +6,34 @@ authors: [nicolasarnedo]
 icon: BookOpen
 ---
 
-## Protocol Integration
+Blockchains are organized into three distinct layers, each with specific responsibilities:
 
-Precompiles exist at the **protocol layer** of the blockchain, sitting between the EVM execution engine and the underlying client software. This unique position allows them to bypass normal EVM execution while still being accessible to smart contracts.
+![Blockchain Layers](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers1.png)
 
-## VM Stack Architecture
+1. **Application Layer**: Where smart contracts and user applications run
+2. **Execution Layer**: Where the EVM processes transactions and executes code
+3. **Consensus Layer**: Where validators agree on the blockchain state
 
-<Mermaid chart="graph TD
-    A[Smart Contract Call] --> B[EVM Interpreter]
-    B --> C{Is Precompile?}
-    C -->|Yes| D[Precompile Handler]
-    C -->|No| E[Bytecode Execution]
-    D --> F[Native Code Execution]
-    E --> G[EVM Opcodes]
-    F --> H[Protocol Layer Changes]
-    G --> I[State Changes]
-    H --> J[Blockchain State]
-    I --> J
-    J --> K[Next Block Processing]
-"/>
+Precompiles live in the **Execution Layer**, directly integrated into the EVM itself:
 
-## Execution Layers
+![Precompiles in Execution Layer](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers2.png)
 
-### Application Layer (Smart Contracts)
-- **Data**: Contract state, user balances, application logic
-- **Execution**: EVM bytecode interpretation
-- **Gas Cost**: High (opcode-based pricing)
-- **Flexibility**: Full programmability
+## Why Aren't Precompiles in the Application Layer?
 
-### Protocol Layer (Precompiles)
-- **Data**: Blockchain state, consensus data, cryptographic operations
-- **Execution**: Native client code
-- **Gas Cost**: Optimized (fixed pricing)
-- **Flexibility**: Limited to specific functions
+You might wonder: if precompiles can be called like smart contracts, why aren't they stored with other smart contracts in the application layer?
 
-## Optimization Benefits
+The answer comes down to **performance and access**:
 
-**Performance Gains:**
-- **10-1000x faster** than equivalent smart contract implementations
-- **Fixed gas costs** regardless of input complexity
-- **Native code execution** without EVM overhead
+**1. Direct State Access**  
+Smart contracts in the application layer must go through the EVM interpreter to access blockchain state. Precompiles, living in the execution layer, have **direct access** to the EVM state—they can read and modify balances, storage, and consensus data without the overhead of bytecode interpretation.
 
-**Example: SHA-256 Hashing**
-- Smart contract: ~2,000-10,000 gas + computation time
-- Precompile: ~60 gas + near-instant execution
+**2. Native Code Execution**  
+Application layer contracts are compiled to EVM bytecode and executed opcode-by-opcode. Precompiles are written in Go (Avalanche's client language) and execute as **native code**, making them orders of magnitude faster for complex operations.
 
-## Data Flow Distinction
+**3. Protocol-Level Operations**  
+Precompiles need to perform operations that regular smart contracts cannot or should not do—like minting native tokens, configuring transaction fees, or managing validator permissions. These are **protocol-level concerns** that require execution layer access.
 
-<Callout type="info">
-**Critical Distinction**: Precompiles operate on **protocol-level data** (blockchain state, consensus mechanisms) while smart contracts operate on **application-level data** (user balances, contract state). This separation ensures security and efficiency.
-</Callout>
+**4. Security Boundaries**  
+By keeping precompiles in the execution layer, we maintain a clear security boundary. User-deployed contracts can't interfere with protocol operations, and protocol operations benefit from the stability and security of the client software itself.
 
-### Application Layer Data
-- User account balances
-- Smart contract storage
-- Application-specific state
-- User-generated transactions
-
-### Protocol Layer Data
-- Block headers and hashes
-- Consensus mechanism state
-- Cryptographic proofs
-- Network-level operations
-
-## Integration Points
-
-Precompiles integrate at multiple levels:
-
-1. **EVM Level**: Recognized as special addresses during execution
-2. **Client Level**: Implemented in native client code
-3. **Consensus Level**: Can affect blockchain state directly
-4. **Network Level**: May interact with peer-to-peer protocols
-
-This multi-level integration makes precompiles powerful tools for blockchain optimization while maintaining the security and determinism of the EVM execution model.
+This architectural separation is what makes stateful precompiles so powerful: they bridge the gap between user applications and the blockchain protocol, enabling customizations that would be impossible in the application layer alone.

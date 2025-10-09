@@ -1,45 +1,29 @@
 ---
 title: Introduction
-description: Understanding precompiles and their role in blockchain optimization
+description: Chapter overview and core blockchain concepts review
 updated: 2025-01-15
 authors: [nicolasarnedo]
 icon: Book
 ---
 
+In this section we are going to quickly address what Precompiles are, why we need them and how they are implemented. The reason we cover this in the L1 Native Tokenomics course is because in the next two sections we will be working with 2 precompiles that heavily influence the tokenomics of a chain, the [Native Minter](/l1-native-tokenomics/04-native-minter) and [Fee Config](/l1-native-tokenomics/05-fee-config) Precompiles.
 
-A stateful precompile **injects state access** through the
-PrecompileAccessibleState interface to provide access to the EVM
-state including the ability to modify balances and read/write storage.
+Specifically we are going to look into **Stateful Precompiles**, but if you wish to learn more in detail about Precompiles and how you can use them to configure your L1 please check out the [Customizing the VM](/customizing-evm) course!
 
-This way we can provide even more customization of the EVM through
-Stateful Precompiles than we can with the original precompile interface!
+## Core Concepts Review (Optional)
 
+Before we look more closely into precompiles, it is important we re-visit and fully understand some core concepts about how blockchains and virtual machines work.
 
-Precompiles are a shortcut to execute a function implemented by the EVM itself, rather than an actual contract. A precompile is associated with a fixed address defined in the EVM. There is no byte code associated with that address.
+### Deterministic State Transitions
 
-When a precompile is called, the EVM checks if the input address is a precompile address, and if so it executes the precompile. Otherwise, it loads the smart contract at the input address and runs it on the EVM interpreter with the specified input data.
+Blockchains rely on a **deterministic machine (the EVM)** to calculate transitions from one state to the next. Every transaction modifies the blockchain state in a predictable, reproducible way—ensuring all nodes reach consensus on the new state.
 
-A stateful precompile injects state access through the PrecompileAccessibleState interface to provide access to the EVM state including the ability to modify balances and read/write storage.
+![State Transitions](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_State.png)
 
-This way we can provide even more customization of the EVM through Stateful Precompiles than we can with the original precompile interface!
+### EVM as a Configurable Specification
 
+Think of the EVM like a class in Object-Oriented Programming: it's a specification that defines behavior. Each blockchain—Ethereum, Avalanche C-Chain, or your custom L1—is an **instance** of this EVM class, with its own configuration.
 
-## Precompiles Structure
+![EVM Instances](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_OOP.png)
 
-![Precompiles Structure](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/precompile_strucutre.png)
-
-## Precompiles OOP
-
-![Precompiles OOP](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_OOP.png)
-
-## Precompiles Layers 1
-
-![Precompiles Layers 1](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers1.png)
-
-## Precompiles Layers 2
-
-![Precompiles Layers 2](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_Layers2.png)
-
-## Precompile State
-
-![Precompile State](https://qizat5l3bwvomkny.public.blob.vercel-storage.com/Precompiles_State.png)
+**Through Avalanche, you can configure your EVM instance with precompiles that live at the execution level** (will dive deeper into this later), giving you control over core blockchain functionality like native token minting and transaction fee configuration.
