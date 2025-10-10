@@ -20,21 +20,19 @@ export function WalletBootstrap() {
   useEffect(() => {
     if (typeof window === 'undefined' || !window.avalanche) return;
 
-    const onChainChanged = (chainId: string | number) => {
+    const onChainChanged = async (chainId: string | number) => {
       const numericId = typeof chainId === 'string' ? Number.parseInt(chainId, 16) : chainId
       setWalletChainId(numericId)
 
       // Update network metadata
       try {
-        // @ts-ignore
-        const client = await createCoreWalletClient(useWalletStore.getState().walletEVMAddress as any)
+        const client = await createCoreWalletClient(useWalletStore.getState().walletEVMAddress as `0x${string}`)
         if (client) {
-          client.extended.getEthereumChain().then((data: { isTestnet: boolean; chainName: string }) => {
-            const { isTestnet, chainName } = data
-            setAvalancheNetworkID(isTestnet ? networkIDs.FujiID : networkIDs.MainnetID)
-            setIsTestnet(isTestnet)
-            setEvmChainName(chainName)
-          }).catch(() => { })
+          const data = await client.extended.getEthereumChain()
+          const { isTestnet, chainName } = data
+          setAvalancheNetworkID(isTestnet ? networkIDs.FujiID : networkIDs.MainnetID)
+          setIsTestnet(isTestnet)
+          setEvmChainName(chainName)
         }
       } catch { }
 
