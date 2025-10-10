@@ -106,8 +106,7 @@ export function ValidatorItem({
                   "shadow-sm focus:ring focus:ring-primary/30 focus:ring-opacity-50",
                 )}
               />
-              {l1TotalInitializedWeight && l1TotalInitializedWeight > 0n && validator.validatorWeight > 0n &&
-               (validator.validatorWeight * 100n / l1TotalInitializedWeight) >= 20n && (
+              {hasWeightError && (
                 <p className="text-xs mt-1 text-red-500 dark:text-red-400">
                   Warning: This validator's weight is 20% or more of the current L1 total stake ({ Number(validator.validatorWeight * 10000n / l1TotalInitializedWeight / 100n).toFixed(2) }%). Recommended to be less than 20%.
                 </p>
