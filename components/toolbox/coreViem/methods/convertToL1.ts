@@ -27,7 +27,6 @@ type ConvertToL1PChainOwner = {
 
 export async function convertToL1(client: AvalancheWalletClient, params: ConvertToL1Params): Promise<string> {
     // Convert validators from our format to SDK format
-    console.log("convertToL1", params)
     const sdkValidators = params.validators.map(validator => ({
         nodeId: validator.nodeID,
         nodePoP: {
