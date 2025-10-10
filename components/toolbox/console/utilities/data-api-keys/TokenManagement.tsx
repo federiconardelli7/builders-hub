@@ -166,6 +166,7 @@ export default function TokenManagement({
       <Container
         title="API Keys"
         description="Manage your API keys for accessing the Data & Metrics APIs. Create, view, and revoke keys as needed for your applications."
+        githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/utilities/data-api-keys/TokenManagement.tsx"
       >
         {/* Header with Create Button */}
         <div className="mb-8 not-prose">

@@ -393,6 +393,7 @@ const RemoveExpiredValidatorRegistration: React.FC = () => {
     <Container
       title="Remove Expired Validator Registration"
       description="Fetch InitiatedValidatorRegistration logs and show only expired PendingAdded registrations."
+      githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/RemoveExpiredValidatorRegistration/RemoveExpiredValidatorRegistration.tsx"
     >
       <div className="space-y-6">
         {error && (
