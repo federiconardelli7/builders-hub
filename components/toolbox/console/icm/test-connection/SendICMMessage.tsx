@@ -26,7 +26,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Send a test message between L1s using Avalanche's Inter-Chain Messaging (ICM) protocol",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/test-connection/SendICMMessage.tsx"
 };
 
 function SendICMMessage({ onSuccess }: BaseConsoleToolProps) {

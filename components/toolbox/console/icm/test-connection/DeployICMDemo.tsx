@@ -20,7 +20,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy a demo contract that can receive messages from the C-Chain using Avalanche's Inter-Chain Messaging (ICM) protocol",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/test-connection/DeployICMDemo.tsx"
 };
 
 function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {
