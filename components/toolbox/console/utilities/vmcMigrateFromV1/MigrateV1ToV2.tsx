@@ -18,7 +18,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Migrate validators from the Validator Manager contract v1 to v2",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/utilities/vmcMigrateFromV1/MigrateV1ToV2.tsx"
 };
 
 function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
