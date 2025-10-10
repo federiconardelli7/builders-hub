@@ -23,7 +23,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Mint native tokens (AVAX) to any address on your L1",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-tokenomics/NativeMinter.tsx"
 };
 
 function NativeMinter({ onSuccess }: BaseConsoleToolProps) {

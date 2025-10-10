@@ -22,7 +22,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Configure dynamic fee parameters and manage allowlist for your L1",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-tokenomics/FeeManager.tsx"
 };
 
 function FeeManager({ onSuccess }: BaseConsoleToolProps) {

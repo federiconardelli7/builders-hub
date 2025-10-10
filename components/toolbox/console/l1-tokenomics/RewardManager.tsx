@@ -50,7 +50,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Manage reward settings for the network including fee recipients and reward addresses",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-tokenomics/RewardManager.tsx"
 };
 
 function RewardManager({ onSuccess }: BaseConsoleToolProps) {
