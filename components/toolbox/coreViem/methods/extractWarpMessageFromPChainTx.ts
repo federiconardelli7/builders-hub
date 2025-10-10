@@ -110,7 +110,7 @@ export type ExtractWarpMessageFromTxResponse = {
  * @param blockchainId The blockchain ID to query
  * @returns The subnet ID associated with the blockchain
  */
-export async function getSubnetIdFromChainId(network: "fuji" | "mainnet", blockchainId: string): Promise<string> {
+async function getSubnetIdFromChainId(network: "fuji" | "mainnet", blockchainId: string): Promise<string> {
     try {
         const response = await fetch(`https://glacier-api.avax.network/v1/networks/${network}/blockchains/${blockchainId}`, {
             method: 'GET',

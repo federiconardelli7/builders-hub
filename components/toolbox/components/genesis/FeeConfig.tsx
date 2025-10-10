@@ -10,7 +10,7 @@ import { AddConnectedWalletButton } from '@/components/toolbox/components/Connec
 const gweiToWei = (gwei: number): number => gwei * 1000000000;
 
 // Define the type for the fee configuration
-export type FeeConfigType = {
+type FeeConfigType = {
   baseFeeChangeDenominator: number;
   blockGasCostStep: number;
   maxBlockGasCost: number;
