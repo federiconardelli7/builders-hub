@@ -22,7 +22,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Convert your existing Subnet to an L1 with validator management",
     walletRequirements: [
         WalletRequirementsConfigKey.PChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/layer-1/create/ConvertSubnetToL1.tsx"
 };
 
 function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {

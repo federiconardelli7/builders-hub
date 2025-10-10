@@ -31,7 +31,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Create a subnet and add a new blockchain with custom parameters and genesis data",
     walletRequirements: [
         WalletRequirementsConfigKey.PChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/layer-1/create/CreateChain.tsx"
 };
 
 function CreateChain({ onSuccess }: BaseConsoleToolProps) {
