@@ -26,7 +26,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy and initialize the PoAManager contract to manage Proof of Authority validators",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/multisig-setup/DeployPoAManager.tsx"
 };
 
 function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {

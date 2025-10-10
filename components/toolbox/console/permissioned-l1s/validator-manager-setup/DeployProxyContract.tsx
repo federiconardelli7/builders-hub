@@ -23,7 +23,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy ProxyAdmin and TransparentUpgradeableProxy contracts to the EVM network",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/DeployProxyContract.tsx"
 };
 
 function DeployProxyContract({ onSuccess }: BaseConsoleToolProps) {

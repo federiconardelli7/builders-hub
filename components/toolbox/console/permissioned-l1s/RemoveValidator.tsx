@@ -24,7 +24,8 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance,
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/RemoveValidator.tsx"
 }
 
 const RemoveValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {

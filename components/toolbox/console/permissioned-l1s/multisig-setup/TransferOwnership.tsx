@@ -22,7 +22,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Transfer the ownership of the Validator Manager to a new address (EOA, StakingManager, or PoAManager)",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/multisig-setup/TransferOwnership.tsx"
 };
 
 function TransferOwnership({ onSuccess }: BaseConsoleToolProps) {

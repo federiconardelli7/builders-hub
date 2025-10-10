@@ -24,7 +24,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Initialize the ValidatorManager contract with the initial configuration",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/Initialize.tsx"
 };
 
 function Initialize({ onSuccess }: BaseConsoleToolProps) {

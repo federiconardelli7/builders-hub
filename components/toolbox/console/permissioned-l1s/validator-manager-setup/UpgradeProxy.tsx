@@ -24,7 +24,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Upgrade the proxy implementation to the desired implementation",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/UpgradeProxy.tsx"
 };
 
 function UpgradeProxy({ onSuccess }: BaseConsoleToolProps) {

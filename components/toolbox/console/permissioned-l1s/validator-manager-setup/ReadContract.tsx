@@ -11,7 +11,6 @@ import { getSubnetInfo } from "@/components/toolbox/coreViem/utils/glacier"
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput"
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
-import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 
 type ViewData = {
   [key: string]: any
@@ -35,7 +34,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Read and view contract data from the ValidatorManager",
   walletRequirements: [
     WalletRequirementsConfigKey.CoreWalletConnected
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/ReadContract.tsx"
 }
 
 function ReadContract({ onSuccess }: BaseConsoleToolProps) {

@@ -30,7 +30,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy the ValidatorMessages library and ValidatorManager contract to the EVM network",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/DeployValidatorManager.tsx"
 };
 
 function DeployValidatorContracts({ onSuccess }: BaseConsoleToolProps) {

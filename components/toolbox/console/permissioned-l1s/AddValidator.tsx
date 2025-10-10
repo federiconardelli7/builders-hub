@@ -45,7 +45,8 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance,
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/AddValidator.tsx"
 };
 
 const AddValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {

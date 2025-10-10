@@ -23,7 +23,8 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance,
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/ChangeWeight.tsx"
 };
 
 const ChangeWeightStateless: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {
