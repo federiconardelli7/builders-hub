@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useConsoleLog } from './use-console-log';
 import { Chain, createPublicClient, http } from 'viem';
 import { usePathname } from 'next/navigation';
+import { showCustomErrorToast } from '@/components/ui/custom-error-toast';
 
 const getEVMExplorerUrl = (txHash: string, viemChain: Chain) => {
     if (viemChain.blockExplorers?.default?.url) {
@@ -142,12 +143,10 @@ const useEVMNotifications = () => {
             })
             .catch((error) => {
                 const errorMessage = messages.error + error.message;
-                const maxLength = 220;
-                const displayMessage = errorMessage.length > maxLength
-                    ? errorMessage.substring(0, maxLength) + '...'
-                    : errorMessage;
 
-                toast.error(displayMessage, { id: toastId });
+                toast.dismiss(toastId);
+                showCustomErrorToast(errorMessage);
+
                 addLog({
                     status: 'error',
                     actionPath,
