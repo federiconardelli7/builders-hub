@@ -202,6 +202,7 @@ export default function DeployNativeTokenRemote() {
             <Container
                 title="Deploy Native Token Remote Contract"
                 description="Deploy the NativeTokenRemote contract for your native token."
+                githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/ictt/setup/DeployNativeTokenRemote.tsx"
             >
 
                 <div>

@@ -12,6 +12,7 @@ import SelectSubnetId from "../../components/SelectSubnetId"
 import { WalletRequirementsConfigKey } from "../../hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Helper function for delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -27,7 +28,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Increase the balance of a validator to extend its validation period and maintain network participation",
   walletRequirements: [
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 }
 
 function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {

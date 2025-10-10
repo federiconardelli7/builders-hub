@@ -14,6 +14,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import versions from '@/scripts/versions.json';
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const MINIMUM_BALANCE = parseEther('11');
 
@@ -25,7 +26,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy the ICM messenger contract to your L1 to enable cross-L1 messaging and applications like ICTT",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 const TopUpComponent = ({

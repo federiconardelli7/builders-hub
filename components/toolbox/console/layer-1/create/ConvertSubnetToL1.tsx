@@ -16,13 +16,15 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
     title: "Convert Subnet to L1",
     description: "Convert your existing Subnet to an L1 with validator management",
     walletRequirements: [
         WalletRequirementsConfigKey.PChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {

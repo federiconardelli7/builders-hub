@@ -19,13 +19,15 @@ import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalle
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { DockerInstallation } from '@/components/toolbox/components/DockerInstallation';
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
     title: "ICM Relayer",
     description: "Configure the ICM Relayer for cross-chain message delivery",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {

@@ -12,6 +12,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const SENDER_C_CHAIN_ADDRESS = "0x05c474824e7d2cc67cf22b456f7cf60c0e3a1289";
 
@@ -20,7 +21,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy a demo contract that can receive messages from the C-Chain using Avalanche's Inter-Chain Messaging (ICM) protocol",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {

@@ -18,6 +18,7 @@ import DisplayWrappedBalance from "./wrappedNativeToken/DisplayWrappedBalance";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Pre-deployed wrapped native token address (from genesis)
 // This is the standard address used in the pre-installed contracts section
@@ -29,7 +30,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy a wrapped native token or use the pre-deployed one to wrap/unwrap native tokens.",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {
