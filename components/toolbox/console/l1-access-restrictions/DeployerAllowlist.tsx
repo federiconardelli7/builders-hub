@@ -14,7 +14,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Control which addresses can deploy smart contracts on your L1",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-access-restrictions/DeployerAllowlist.tsx"
 };
 
 function DeployerAllowlist({ onSuccess }: BaseConsoleToolProps) {

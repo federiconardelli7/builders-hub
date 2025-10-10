@@ -14,7 +14,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Manage addresses allowed to send transactions on your L1",
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-access-restrictions/TransactionAllowlist.tsx"
 };
 
 function TransactionAllowlist({ onSuccess }: BaseConsoleToolProps) {
