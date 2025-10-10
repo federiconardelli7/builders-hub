@@ -66,7 +66,7 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     async function handleCreateSubnet() {
         setIsCreatingSubnet(true);
 
-        const createSubnetTx = coreWalletClient.createSubnet({
+        const createSubnetTx = coreWalletClient.extended.createSubnet({
             subnetOwners: [pChainAddress]
         });
 
@@ -83,7 +83,7 @@ function CreateChain({ onSuccess }: BaseConsoleToolProps) {
     async function handleCreateChain() {
         setIsCreatingChain(true);
 
-        const createChainTx = coreWalletClient.createChain({
+        const createChainTx = coreWalletClient.extended.createChain({
             chainName: localChainName,
             subnetId: subnetId,
             vmId,

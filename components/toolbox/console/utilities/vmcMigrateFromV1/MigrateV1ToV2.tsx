@@ -22,7 +22,7 @@ const metadata: ConsoleToolMetadata = {
 };
 
 function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
-  const { publicClient } = useWalletStore();
+  const { publicClient, walletEVMAddress } = useWalletStore();
   const { coreWalletClient } = useConnectedWallet();
   const viemChain = useViemChainStore();
   const { validatorManagerAddress, setValidatorManagerAddress } = useToolboxStore();
@@ -112,6 +112,7 @@ function MigrateV1ToV2({ onSuccess }: BaseConsoleToolProps) {
           validationID as `0x${string}`,
           parseInt(receivedNonce)
         ],
+        account: walletEVMAddress as `0x${string}`,
         chain: viemChain as Chain
       });
 

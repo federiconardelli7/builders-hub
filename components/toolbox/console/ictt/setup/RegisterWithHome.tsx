@@ -2,7 +2,6 @@
 
 import { useL1ByChainId, useSelectedL1 } from "@/components/toolbox/stores/l1ListStore";
 import { useToolboxStore, useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
-import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { Button } from "@/components/toolbox/components/Button";
 import { Success } from "@/components/toolbox/components/Success";
@@ -14,14 +13,25 @@ import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput
 import { utils } from "@avalabs/avalanchejs";
 import { ListContractEvents } from "@/components/toolbox/components/ListContractEvents";
 import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchainId";
-import { Container } from "@/components/toolbox/components/Container";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { withConsoleToolMetadata } from "@/components/toolbox/components/WithConsoleToolMetadata";
+import { ConsoleToolMetadata } from "@/components/toolbox/components/WithConsoleToolMetadata";
+import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 
-export default function RegisterWithHome() {
+const metadata: ConsoleToolMetadata = {
+    title: "Register Remote Contract with Home",
+    description: "Register the remote contract with the home contract.",
+    walletRequirements: [
+        WalletRequirementsConfigKey.EVMChainBalance
+    ]
+};
+
+function RegisterWithHome() {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const { erc20TokenRemoteAddress, nativeTokenRemoteAddress } = useToolboxStore();
     const [remoteAddress, setRemoteAddress] = useState("");
-    const { coreWalletClient } = useWalletStore();
+    const { coreWalletClient } = useConnectedWallet();
     const { notify } = useConsoleNotifications();
     const viemChain = useViemChainStore();
     const selectedL1 = useSelectedL1()();
@@ -103,11 +113,6 @@ export default function RegisterWithHome() {
     async function handleRegister() {
         setLocalError("");
 
-        if (!coreWalletClient) {
-            setLocalError('Core wallet not found');
-            return;
-        }
-
         if (!remoteAddress) {
             setLocalError("Please enter a valid remote contract address");
             return;
@@ -131,12 +136,17 @@ export default function RegisterWithHome() {
 
             console.log(`Calling registerWithHome on ${remoteAddress} with feeInfo:`, feeInfo);
 
+            if (!coreWalletClient.account) {
+                throw new Error('No wallet account connected');
+            }
+
             // Simulate the transaction first
             const { request } = await publicClient.simulateContract({
                 address: remoteAddress as `0x${string}`,
                 abi: ERC20TokenRemoteABI.abi,
                 functionName: 'registerWithHome',
                 args: [feeInfo],
+                account: coreWalletClient.account,
                 chain: viemChain,
             });
 
@@ -182,10 +192,7 @@ export default function RegisterWithHome() {
     }, [erc20TokenRemoteAddress, nativeTokenRemoteAddress]);
 
     return (
-        <Container
-            title="Register Remote Contract with Home"
-            description="Register the remote contract with the home contract."
-        >
+        <>
 
             <div>
                 <p className="mt-2">
@@ -266,6 +273,8 @@ export default function RegisterWithHome() {
                     />
                 </div>
             )}
-        </Container>
+        </>
     );
 }
+
+export default withConsoleToolMetadata(RegisterWithHome, metadata);

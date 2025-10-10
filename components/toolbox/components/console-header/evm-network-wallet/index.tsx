@@ -66,7 +66,7 @@ export function EvmNetworkWallet() {
       }
 
       const account = accounts[0] as `0x${string}`
-      const client = createCoreWalletClient(account)
+      const client = await createCoreWalletClient(account)
       if (!client) return
 
       setCoreWalletClient(client)
@@ -74,9 +74,9 @@ export function EvmNetworkWallet() {
 
       try {
         const [pAddr, cAddr, chainInfo, chainId] = await Promise.all([
-          client.getPChainAddress().catch(() => ''),
-          client.getCorethAddress().catch(() => ''),
-          client.getEthereumChain().catch(() => ({ isTestnet: undefined as any, chainName: '' } as any)),
+          client.extended.getPChainAddress().catch(() => ''),
+          client.extended.getCorethAddress().catch(() => ''),
+          client.extended.getEthereumChain().catch(() => ({ isTestnet: undefined as any, chainName: '' } as any)),
           client.getChainId().catch(() => 0),
         ])
         if (pAddr) setPChainAddress(pAddr)
