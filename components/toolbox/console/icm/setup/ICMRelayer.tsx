@@ -185,7 +185,6 @@ function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
                     decimals: 18,
                 },
             };
-            console.log('viemChain', viemChain);
 
             const publicClient = createPublicClient({
                 transport: http(chain.rpcUrl),
@@ -199,8 +198,8 @@ function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {
             const transactionPromise = coreWalletClient.sendTransaction({
                 to: relayerAddress as `0x${string}`,
                 value: parseEther(amount),
+                account: walletEVMAddress as `0x${string}`,
                 chain: viemChain,
-                gas: 21000n,
                 nonce: nextNonce,
             });
             notify({
