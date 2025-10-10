@@ -25,7 +25,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Configure the ICM Relayer for cross-chain message delivery",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/ICMRelayer.tsx"
 };
 
 function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {

@@ -25,7 +25,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy the ICM messenger contract to your L1 to enable cross-L1 messaging and applications like ICTT",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/TeleporterMessenger.tsx"
 };
 
 const TopUpComponent = ({

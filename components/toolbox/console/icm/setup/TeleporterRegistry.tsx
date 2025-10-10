@@ -23,7 +23,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy the ICM Registry contract to your L1",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/TeleporterRegistry.tsx"
 };
 
 function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {
