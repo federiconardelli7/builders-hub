@@ -11,22 +11,10 @@
 export function generateConsoleToolGitHubUrl(importMetaUrl: string): string {
   try {
     const url = new URL(importMetaUrl);
-    let filePath = url.pathname;
+    const parts = url.pathname.split('components/toolbox/console/');
+    if (parts.length !== 2) { return ''; }
     
-    if (process.platform === 'win32' && filePath.startsWith('/')) {
-      filePath = filePath.slice(1);
-    }
-    
-    const consoleIndex = filePath.indexOf('components/toolbox/console/');
-    if (consoleIndex === -1) {
-      return '';
-    }
-    
-    const relativePath = filePath.substring(consoleIndex + 'components/toolbox/console/'.length);
-    const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
-    
-    // Generate the GitHub edit URL
-    return `https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/${cleanPath}`;
+    return `https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/${parts[1]}`;
   } catch {
     return '';
   }
