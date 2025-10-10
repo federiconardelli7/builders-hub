@@ -22,14 +22,14 @@ import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchain
 import { Container } from "@/components/toolbox/components/Container";
 import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
-import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 
 export default function RegisterWithHome() {
   const [criticalError, setCriticalError] = useState<Error | null>(null);
   const { erc20TokenRemoteAddress, nativeTokenRemoteAddress } =
     useToolboxStore();
   const [remoteAddress, setRemoteAddress] = useState("");
-  const { coreWalletClient } = useConnectedWallet();
+  const { coreWalletClient } = useWalletStore();
   const { notify } = useConsoleNotifications();
   const viemChain = useViemChainStore();
   const selectedL1 = useSelectedL1()();
@@ -131,8 +131,8 @@ export default function RegisterWithHome() {
   async function handleRegister() {
     setLocalError("");
 
-    if (!coreWalletClient.account) {
-      setLocalError("Core wallet account not found");
+    if (!coreWalletClient || !coreWalletClient.account) {
+      setLocalError("Core wallet not found");
       return;
     }
 
