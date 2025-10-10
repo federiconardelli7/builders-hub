@@ -29,7 +29,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Deploy a wrapped native token or use the pre-deployed one to wrap/unwrap native tokens.",
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/ictt/setup/DeployWrappedNative.tsx"
 };
 
 function DeployWrappedNative({ onSuccess }: BaseConsoleToolProps) {

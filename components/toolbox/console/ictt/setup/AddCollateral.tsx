@@ -337,6 +337,7 @@ export default function AddCollateral() {
         <Container
             title="Add Collateral"
             description="Approve and add collateral (ERC20 tokens) to the Token Home contract on the source chain for a remote bridge contract on the current chain."
+            githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/ictt/setup/AddCollateral.tsx"
         >
 
             <SelectBlockchainId
