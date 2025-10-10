@@ -281,9 +281,7 @@ export default function FormatConverter() {
     <Container
       title="Format Converter"
       description="Convert between different encodings"
-      githubUrl={generateConsoleToolGitHubUrl(
-        "utilities/format-converter/FormatConverter.tsx"
-      )}
+      githubUrl={generateConsoleToolGitHubUrl(import.meta.url)}
     >
       <div className="space-y-6">
         {/* Hex to CB58 */}

@@ -5,6 +5,7 @@ import { Droplets, Sparkles, AlertCircle } from "lucide-react";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { useL1List, L1ListItem } from "@/components/toolbox/stores/l1ListStore";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 function EVMFaucetCard({ chain }: { chain: L1ListItem }) {
   const getFeatures = () => {
@@ -57,7 +58,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.TestnetRequired
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/Faucet.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function Faucet({ onSuccess }: BaseConsoleToolProps) {

@@ -11,6 +11,7 @@ import { getSubnetInfo } from "@/components/toolbox/coreViem/utils/glacier"
 import { EVMAddressInput } from "@/components/toolbox/components/EVMAddressInput"
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 type ViewData = {
   [key: string]: any
@@ -35,7 +36,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.CoreWalletConnected
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/ReadContract.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 }
 
 function ReadContract({ onSuccess }: BaseConsoleToolProps) {

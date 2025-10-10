@@ -14,6 +14,7 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import versions from '@/scripts/versions.json';
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const ICM_COMMIT = versions["ava-labs/icm-contracts"];
 const TELEPORTER_REGISTRY_SOURCE_URL = `https://github.com/ava-labs/icm-contracts/blob/${ICM_COMMIT}/contracts/teleporter/registry/TeleporterRegistry.sol`;
@@ -24,7 +25,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/TeleporterRegistry.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function TeleporterRegistry({ onSuccess }: BaseConsoleToolProps) {

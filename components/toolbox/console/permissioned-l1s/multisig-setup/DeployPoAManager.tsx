@@ -20,6 +20,7 @@ import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
     title: "Deploy PoA Manager",
@@ -27,7 +28,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/multisig-setup/DeployPoAManager.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function DeployPoAManager({ onSuccess }: BaseConsoleToolProps) {

@@ -16,6 +16,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
     title: "Convert Subnet to L1",
@@ -23,7 +24,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.PChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/layer-1/create/ConvertSubnetToL1.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {

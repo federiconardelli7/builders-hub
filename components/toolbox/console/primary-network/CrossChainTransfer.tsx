@@ -11,6 +11,7 @@ import { AmountInput } from "@/components/toolbox/components/AmountInput"
 import { StepCard, StepIndicator } from "@/components/toolbox/components/StepCard"
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext"
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata"
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Extended props for this specific tool
 interface CrossChainTransferProps extends BaseConsoleToolProps {
@@ -24,7 +25,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.CoreWalletConnected
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/CrossChainTransfer.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function CrossChainTransfer({

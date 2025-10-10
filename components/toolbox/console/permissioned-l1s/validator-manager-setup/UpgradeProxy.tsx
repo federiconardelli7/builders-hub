@@ -15,6 +15,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Storage slot with the admin of the proxy (following EIP1967)
 const ADMIN_SLOT = "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103";
@@ -25,7 +26,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/validator-manager-setup/UpgradeProxy.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function UpgradeProxy({ onSuccess }: BaseConsoleToolProps) {

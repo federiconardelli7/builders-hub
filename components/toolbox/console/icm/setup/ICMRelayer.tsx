@@ -19,6 +19,7 @@ import { useConnectedWallet } from '@/components/toolbox/contexts/ConnectedWalle
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { Steps, Step } from "fumadocs-ui/components/steps";
 import { DockerInstallation } from '@/components/toolbox/components/DockerInstallation';
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
     title: "ICM Relayer",
@@ -26,7 +27,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/ICMRelayer.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ICMRelayer({ onSuccess }: BaseConsoleToolProps) {

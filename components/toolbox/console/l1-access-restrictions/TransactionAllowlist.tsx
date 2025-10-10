@@ -4,6 +4,7 @@ import { AllowlistComponent } from "@/components/toolbox/components/AllowListCom
 import { CheckPrecompile } from "@/components/toolbox/components/CheckPrecompile";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Default Transaction AllowList address
 const DEFAULT_TRANSACTION_ALLOWLIST_ADDRESS =
@@ -15,7 +16,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-access-restrictions/TransactionAllowlist.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function TransactionAllowlist({ onSuccess }: BaseConsoleToolProps) {

@@ -12,6 +12,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const SENDER_C_CHAIN_ADDRESS = "0x05c474824e7d2cc67cf22b456f7cf60c0e3a1289";
 
@@ -21,7 +22,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/test-connection/DeployICMDemo.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function DeployICMDemo({ onSuccess }: BaseConsoleToolProps) {

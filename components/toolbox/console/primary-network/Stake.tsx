@@ -16,6 +16,7 @@ import { AddValidatorControls } from '@/components/toolbox/components/ValidatorL
 import type { ConvertToL1Validator } from '@/components/toolbox/components/ValidatorListInput'
 import { Steps, Step } from 'fumadocs-ui/components/steps'
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Network-specific constants
 const NETWORK_CONFIG = {
@@ -51,7 +52,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.PChainBalance
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/Stake.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 }
 
 function Stake({ onSuccess }: BaseConsoleToolProps) {

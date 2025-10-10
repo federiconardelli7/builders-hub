@@ -100,7 +100,9 @@ export default function UnitConverter() {
       // Critical conversion error - wrong values could lead to financial loss
       // This will crash the component on next render
       const err = new Error(
-        `Unit conversion failed: ${error instanceof Error ? error.message : String(error)}`
+        `Unit conversion failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
       );
       setCriticalError(err);
       return {};
@@ -131,9 +133,7 @@ export default function UnitConverter() {
     <Container
       title="AVAX Unit Converter"
       description="Convert between AVAX, P-Chain nAVAX, and C-Chain wei"
-      githubUrl={generateConsoleToolGitHubUrl(
-        "primary-network/UnitConverter.tsx"
-      )}
+      githubUrl={generateConsoleToolGitHubUrl(import.meta.url)}
     >
       <div className="space-y-4">
         <div className="p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg space-y-2 border border-gray-100 dark:border-zinc-700">
@@ -170,8 +170,8 @@ export default function UnitConverter() {
                     unit.id === "nAVAX"
                       ? "text-red-600 dark:text-red-400"
                       : unit.id === "wei"
-                        ? "text-blue-600 dark:text-blue-400"
-                        : ""
+                      ? "text-blue-600 dark:text-blue-400"
+                      : ""
                   }`}
                 >
                   {unit.label}
@@ -191,8 +191,8 @@ export default function UnitConverter() {
                                           unit.id === "nAVAX"
                                             ? "border-red-300 dark:border-red-700"
                                             : unit.id === "wei"
-                                              ? "border-blue-300 dark:border-blue-700"
-                                              : "border-zinc-300 dark:border-zinc-700"
+                                            ? "border-blue-300 dark:border-blue-700"
+                                            : "border-zinc-300 dark:border-zinc-700"
                                         } 
                                         text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 
                                         focus:ring-primary/30 focus:border-primary shadow-sm transition-colors 
@@ -212,8 +212,8 @@ export default function UnitConverter() {
                                           unit.id === "nAVAX"
                                             ? "border-red-300 dark:border-red-700"
                                             : unit.id === "wei"
-                                              ? "border-blue-300 dark:border-blue-700"
-                                              : "border-zinc-300 dark:border-zinc-700"
+                                            ? "border-blue-300 dark:border-blue-700"
+                                            : "border-zinc-300 dark:border-zinc-700"
                                         } 
                                         rounded-r-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors`}
                 >

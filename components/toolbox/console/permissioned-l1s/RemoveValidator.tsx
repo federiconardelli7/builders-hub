@@ -17,6 +17,7 @@ import { Step, Steps } from "fumadocs-ui/components/steps"
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements"
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata"
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext"
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const metadata: ConsoleToolMetadata = {
   title: "Remove Validator",
@@ -25,7 +26,7 @@ const metadata: ConsoleToolMetadata = {
     WalletRequirementsConfigKey.EVMChainBalance,
     WalletRequirementsConfigKey.PChainBalance
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/permissioned-l1s/RemoveValidator.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 }
 
 const RemoveValidatorExpert: React.FC<BaseConsoleToolProps> = ({ onSuccess }) => {

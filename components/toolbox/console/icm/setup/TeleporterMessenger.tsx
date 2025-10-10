@@ -14,6 +14,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import versions from '@/scripts/versions.json';
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 const MINIMUM_BALANCE = parseEther('11');
 
@@ -26,7 +27,7 @@ const metadata: ConsoleToolMetadata = {
     walletRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
-    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/icm/setup/TeleporterMessenger.tsx"
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 const TopUpComponent = ({

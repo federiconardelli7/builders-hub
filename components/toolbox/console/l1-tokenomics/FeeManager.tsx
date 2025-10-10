@@ -12,6 +12,7 @@ import { CheckPrecompile } from "@/components/toolbox/components/CheckPrecompile
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Default Fee Manager address
 const DEFAULT_FEE_MANAGER_ADDRESS =
@@ -23,7 +24,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.EVMChainBalance
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/l1-tokenomics/FeeManager.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function FeeManager({ onSuccess }: BaseConsoleToolProps) {

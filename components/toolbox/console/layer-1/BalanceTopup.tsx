@@ -12,6 +12,7 @@ import SelectSubnetId from "../../components/SelectSubnetId"
 import { WalletRequirementsConfigKey } from "../../hooks/useWalletRequirements";
 import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } from "../../components/WithConsoleToolMetadata";
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Helper function for delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -28,7 +29,7 @@ const metadata: ConsoleToolMetadata = {
   walletRequirements: [
     WalletRequirementsConfigKey.PChainBalance
   ],
-  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/layer-1/BalanceTopup.tsx"
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 }
 
 function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
