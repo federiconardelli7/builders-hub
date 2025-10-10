@@ -22,7 +22,8 @@ import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../component
 const metadata: ConsoleToolMetadata = {
     title: "Managed Testnet Nodes",
     description: "Manage your hosted testnet nodes.",
-    walletRequirements: []
+    walletRequirements: [],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/testnet-infra/ManagedTestnetNodes/ManagedTestnetNodes.tsx"
 };
 
 function ManagedTestnetNodesBase() {
