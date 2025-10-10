@@ -27,7 +27,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Increase the balance of a validator to extend its validation period and maintain network participation",
   walletRequirements: [
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/layer-1/BalanceTopup.tsx"
 }
 
 function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
