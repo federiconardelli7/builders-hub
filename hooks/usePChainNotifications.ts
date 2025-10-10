@@ -125,7 +125,13 @@ const usePChainNotifications = () => {
                         data
                     });
                 } catch (error) {
-                    toast.error(config.errorMessagePrefix + (error as Error).message, { id: toastId });
+                    const errorMessage = config.errorMessagePrefix + (error as Error).message;
+                    const maxLength = 220;
+                    const displayMessage = errorMessage.length > maxLength
+                        ? errorMessage.substring(0, maxLength) + '...'
+                        : errorMessage;
+
+                    toast.error(displayMessage, { id: toastId });
                     addLog({
                         status: 'error',
                         actionPath,
@@ -134,7 +140,13 @@ const usePChainNotifications = () => {
                 }
             })
             .catch((error) => {
-                toast.error(config.errorMessagePrefix + error.message, { id: toastId });
+                const errorMessage = config.errorMessagePrefix + error.message;
+                const maxLength = 220;
+                const displayMessage = errorMessage.length > maxLength
+                    ? errorMessage.substring(0, maxLength) + '...'
+                    : errorMessage;
+
+                toast.error(displayMessage, { id: toastId });
                 addLog({
                     status: 'error',
                     actionPath,

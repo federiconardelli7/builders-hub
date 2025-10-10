@@ -141,7 +141,13 @@ const useEVMNotifications = () => {
                 });
             })
             .catch((error) => {
-                toast.error(messages.error + error.message, { id: toastId });
+                const errorMessage = messages.error + error.message;
+                const maxLength = 220;
+                const displayMessage = errorMessage.length > maxLength
+                    ? errorMessage.substring(0, maxLength) + '...'
+                    : errorMessage;
+
+                toast.error(displayMessage, { id: toastId });
                 addLog({
                     status: 'error',
                     actionPath,
