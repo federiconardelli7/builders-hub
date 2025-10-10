@@ -56,7 +56,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Request free test tokens for Fuji testnet and Avalanche L1s",
   walletRequirements: [
     WalletRequirementsConfigKey.TestnetRequired
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/Faucet.tsx"
 };
 
 function Faucet({ onSuccess }: BaseConsoleToolProps) {

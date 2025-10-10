@@ -23,7 +23,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Transfer AVAX between Platform (P) and Contract (C) chains.",
     walletRequirements: [
         WalletRequirementsConfigKey.CoreWalletConnected
-    ]
+    ],
+    githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/CrossChainTransfer.tsx"
 };
 
 function CrossChainTransfer({

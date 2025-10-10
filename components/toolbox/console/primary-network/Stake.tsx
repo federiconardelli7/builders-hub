@@ -50,7 +50,8 @@ const metadata: ConsoleToolMetadata = {
   description: "Stake AVAX as a validator on Avalanche's Primary Network to secure the network and earn rewards",
   walletRequirements: [
     WalletRequirementsConfigKey.PChainBalance
-  ]
+  ],
+  githubUrl: "https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/primary-network/Stake.tsx"
 }
 
 function Stake({ onSuccess }: BaseConsoleToolProps) {
