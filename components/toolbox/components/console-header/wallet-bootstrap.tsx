@@ -28,7 +28,7 @@ export function WalletBootstrap() {
       try {
         const client = await createCoreWalletClient(useWalletStore.getState().walletEVMAddress as `0x${string}`)
         if (client) {
-          const data = await client.extended.getEthereumChain()
+          const data = await client.getEthereumChain()
           const { isTestnet, chainName } = data
           setAvalancheNetworkID(isTestnet ? networkIDs.FujiID : networkIDs.MainnetID)
           setIsTestnet(isTestnet)
@@ -64,9 +64,9 @@ export function WalletBootstrap() {
 
       try {
         const [pAddr, cAddr, chainInfo, chainId] = await Promise.all([
-          client.extended.getPChainAddress().catch(() => ''),
-          client.extended.getCorethAddress().catch(() => ''),
-          client.extended.getEthereumChain().catch(() => ({ isTestnet: undefined as any, chainName: '' } as any)),
+          client.getPChainAddress().catch(() => ''),
+          client.getCorethAddress().catch(() => ''),
+          client.getEthereumChain().catch(() => ({ isTestnet: undefined as any, chainName: '' } as any)),
           client.getChainId().catch(() => 0),
         ])
         if (pAddr) setPChainAddress(pAddr)

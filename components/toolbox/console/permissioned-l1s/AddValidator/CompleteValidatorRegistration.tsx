@@ -109,7 +109,7 @@ const CompleteValidatorRegistration: React.FC<CompleteValidatorRegistrationProps
     setIsProcessing(true);
     try {
       // Step 1: Extract RegisterL1ValidatorMessage from P-Chain transaction
-      const registrationMessageData = await coreWalletClient.extended.extractRegisterL1ValidatorMessage({
+      const registrationMessageData = await coreWalletClient.extractRegisterL1ValidatorMessage({
         txId: pChainTxIdState
       });
 

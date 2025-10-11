@@ -46,7 +46,7 @@ export const CheckPrecompile = ({
             setState(prev => ({ ...prev, isLoading: true, error: null }));
 
             try {
-                const data = await coreWalletClient.extended.getActiveRulesAt();
+                const data = await coreWalletClient.getActiveRulesAt();
                 const isActive = Boolean(data.precompiles?.[configKey]?.timestamp);
                 setState({ isLoading: false, isActive, error: null });
             } catch (err) {

@@ -53,7 +53,7 @@ function ConvertToL1({ onSuccess }: BaseConsoleToolProps) {
         setConvertToL1TxId("");
         setIsConverting(true);
 
-        const convertSubnetToL1Tx = coreWalletClient.extended.convertToL1({
+        const convertSubnetToL1Tx = coreWalletClient.convertToL1({
             subnetId: selection.subnetId,
             chainId: validatorManagerChainID,
             managerAddress: validatorManagerAddress,

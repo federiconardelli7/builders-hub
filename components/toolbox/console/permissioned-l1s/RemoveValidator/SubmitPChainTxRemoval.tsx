@@ -291,7 +291,7 @@ const SubmitPChainTxRemoval: React.FC<SubmitPChainTxRemovalProps> = ({
       setSignedWarpMessage(signedMessage);
 
       // Step 2: Submit to P-Chain
-      const pChainTxIdPromise = coreWalletClient.extended.setL1ValidatorWeight({
+      const pChainTxIdPromise = coreWalletClient.setL1ValidatorWeight({
         signedWarpMessage: signedMessage,
       });
       notify('setL1ValidatorWeight', pChainTxIdPromise);

@@ -208,7 +208,7 @@ const SubmitPChainTxRegisterL1Validator: React.FC<SubmitPChainTxRegisterL1Valida
       setSignedWarpMessage(signedMessage);
 
       // Submit to P-Chain using registerL1Validator with all required parameters
-      const registerL1ValidatorPromise = coreWalletClient.extended.registerL1Validator({
+      const registerL1ValidatorPromise = coreWalletClient.registerL1Validator({
         balance: validatorBalance.trim(),
         blsProofOfPossession: blsProofOfPossession.trim(),
         signedWarpMessage: signedMessage,

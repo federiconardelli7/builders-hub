@@ -23,8 +23,11 @@ import { getActiveRulesAt, GetActiveRulesAtResponse } from './methods/getActiveR
 import { ExtractWarpMessageFromTxResponse } from './methods/extractWarpMessageFromPChainTx'
 import { ExtractChainInfoResponse } from './methods/extractChainInfo'
 
-// Extended methods namespace type (custom methods that don't override base client)
-type ExtendedMethods = {
+// Type for the Avalanche wallet client with custom methods at root level
+export type CoreWalletClientType = Omit<AvalancheWalletClient, 'addChain'> & {
+    // Overridden methods at root level
+    addChain: (args: CoreWalletAddChainParameters) => Promise<void>;
+    // Custom methods at root level
     isTestnet: () => Promise<boolean>;
     getPChainAddress: () => Promise<string>;
     getCorethAddress: () => Promise<string>;
@@ -41,14 +44,6 @@ type ExtendedMethods = {
     getActiveRulesAt: () => Promise<GetActiveRulesAtResponse>;
     extractChainInfo: (args: ExtractChainInfoParams) => Promise<ExtractChainInfoResponse>;
     getPChainBalance: () => Promise<bigint>;
-};
-
-// Type for the Avalanche wallet client with overrides and extended namespace
-export type CoreWalletClientType = Omit<AvalancheWalletClient, 'addChain'> & {
-    // Overridden methods at root level
-    addChain: (args: CoreWalletAddChainParameters) => Promise<void>;
-    // Extended namespace for custom methods
-    extended: ExtendedMethods;
 };
 
 export async function createCoreWalletClient(_account: `0x${string}`): Promise<CoreWalletClientType | null> {
@@ -80,31 +75,29 @@ export async function createCoreWalletClient(_account: `0x${string}`): Promise<C
         account: _account
     });
 
-    // Override base client methods and add extended namespace
-    const clientWithOverrides = {
+    // Add all custom methods at root level
+    const clientWithCustomMethods = {
         ...baseClient,
-        // Override methods at root level
+        // Overridden methods at root level
         addChain: (args: CoreWalletAddChainParameters) => addChain(baseClient, args),
-        // Extended namespace for custom methods
-        extended: {
-            isTestnet: () => isTestnet(baseClient),
-            getPChainAddress: () => getPChainAddress(baseClient),
-            getCorethAddress: () => getCorethAddress(baseClient),
-            createSubnet: (args: CreateSubnetParams) => createSubnet(baseClient, args),
-            createChain: (args: CreateChainParams) => createChain(baseClient, args),
-            convertToL1: (args: ConvertToL1Params) => convertToL1(baseClient, args),
-            registerL1Validator: (args: RegisterL1ValidatorParams) => registerL1Validator(baseClient, args),
-            setL1ValidatorWeight: (args: SetL1ValidatorWeightParams) => setL1ValidatorWeight(baseClient, args),
-            increaseL1ValidatorBalance: (args: IncreaseL1ValidatorBalanceParams) => increaseL1ValidatorBalance(baseClient, args),
-            extractWarpMessageFromPChainTx: (args: ExtractWarpMessageFromTxParams) => extractWarpMessageFromPChainTx(baseClient, args),
-            extractL1ValidatorWeightMessage: (args: ExtractL1ValidatorWeightMessageParams) => extractL1ValidatorWeightMessage(baseClient, args),
-            extractRegisterL1ValidatorMessage: (args: ExtractRegisterL1ValidatorMessageParams) => extractRegisterL1ValidatorMessage(baseClient, args),
-            getEthereumChain: () => getEthereumChain(baseClient),
-            getActiveRulesAt: () => getActiveRulesAt(baseClient),
-            extractChainInfo: (args: ExtractChainInfoParams) => extractChainInfo(baseClient, args),
-            getPChainBalance: () => getPChainBalance(baseClient),
-        }
+        // Custom methods at root level
+        isTestnet: () => isTestnet(baseClient),
+        getPChainAddress: () => getPChainAddress(baseClient),
+        getCorethAddress: () => getCorethAddress(baseClient),
+        createSubnet: (args: CreateSubnetParams) => createSubnet(baseClient, args),
+        createChain: (args: CreateChainParams) => createChain(baseClient, args),
+        convertToL1: (args: ConvertToL1Params) => convertToL1(baseClient, args),
+        registerL1Validator: (args: RegisterL1ValidatorParams) => registerL1Validator(baseClient, args),
+        setL1ValidatorWeight: (args: SetL1ValidatorWeightParams) => setL1ValidatorWeight(baseClient, args),
+        increaseL1ValidatorBalance: (args: IncreaseL1ValidatorBalanceParams) => increaseL1ValidatorBalance(baseClient, args),
+        extractWarpMessageFromPChainTx: (args: ExtractWarpMessageFromTxParams) => extractWarpMessageFromPChainTx(baseClient, args),
+        extractL1ValidatorWeightMessage: (args: ExtractL1ValidatorWeightMessageParams) => extractL1ValidatorWeightMessage(baseClient, args),
+        extractRegisterL1ValidatorMessage: (args: ExtractRegisterL1ValidatorMessageParams) => extractRegisterL1ValidatorMessage(baseClient, args),
+        getEthereumChain: () => getEthereumChain(baseClient),
+        getActiveRulesAt: () => getActiveRulesAt(baseClient),
+        extractChainInfo: (args: ExtractChainInfoParams) => extractChainInfo(baseClient, args),
+        getPChainBalance: () => getPChainBalance(baseClient),
     } as CoreWalletClientType;
 
-    return clientWithOverrides;
+    return clientWithCustomMethods;
 }

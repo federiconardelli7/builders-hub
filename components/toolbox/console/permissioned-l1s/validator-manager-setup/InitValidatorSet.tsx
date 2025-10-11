@@ -59,7 +59,7 @@ function InitValidatorSet({ onSuccess }: BaseConsoleToolProps) {
         setIsAggregating(true);
 
         const aggPromise = (async () => {
-            const { message, justification, signingSubnetId } = await coreWalletClient.extended.extractWarpMessageFromPChainTx({ txId: conversionTxID });
+            const { message, justification, signingSubnetId } = await coreWalletClient.extractWarpMessageFromPChainTx({ txId: conversionTxID });
 
             const { signedMessage } = await aggregateSignature({
                 message: message,
@@ -114,7 +114,7 @@ function InitValidatorSet({ onSuccess }: BaseConsoleToolProps) {
         setError(null);
 
         const initPromise = (async () => {
-            const { validators, subnetId, chainId, managerAddress } = await coreWalletClient.extended.extractWarpMessageFromPChainTx({ txId: conversionTxID });
+            const { validators, subnetId, chainId, managerAddress } = await coreWalletClient.extractWarpMessageFromPChainTx({ txId: conversionTxID });
             const txArgs = [
                 {
                     subnetID: cb58ToHex(subnetId),

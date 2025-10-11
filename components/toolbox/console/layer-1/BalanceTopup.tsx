@@ -85,7 +85,7 @@ function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
         throw new Error("Wallet client not initialized")
       }
 
-      const txHash = await coreWalletClient.extended.increaseL1ValidatorBalance({
+      const txHash = await coreWalletClient.increaseL1ValidatorBalance({
         validationId: validatorSelection.validationId,
         balanceInAvax: amountNumber,
       })

@@ -112,7 +112,7 @@ const CompleteValidatorRemoval: React.FC<CompleteValidatorRemovalProps> = ({
     setIsProcessing(true);
     try {
       // Step 1: Extract L1ValidatorWeightMessage from P-Chain transaction
-      const weightMessageData = await coreWalletClient.extended.extractL1ValidatorWeightMessage({
+      const weightMessageData = await coreWalletClient.extractL1ValidatorWeightMessage({
         txId: pChainTxId
       });
 
