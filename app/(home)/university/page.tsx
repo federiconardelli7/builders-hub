@@ -251,7 +251,7 @@ export default function Page() {
                 title="Entrepreneur Academy Chat"
                 description="Connect with other entrepreneurs and get support for your startup."
                 icon={<Users className="w-6 h-6 text-foreground" />}
-                href="http://t.me/avalancheacademy/4960"
+                href="https://t.me/c/avalancheacademy/10068"
                 external
               />
             </div>
