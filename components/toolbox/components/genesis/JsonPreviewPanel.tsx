@@ -23,7 +23,7 @@ export function JsonPreviewPanel({
     const [copied, setCopied] = useState(false);
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
     const [jsonLines, setJsonLines] = useState<string[]>([]);
-
+    const [lastHighlightPath, setLastHighlightPath] = useState<string | undefined>(undefined);
 
     // Parse JSON and find line numbers for highlighting
     useEffect(() => {
@@ -88,20 +88,26 @@ export function JsonPreviewPanel({
                 const lineNumber = findLineNumberForPath(lines, highlightPath, pathMap);
                 setHighlightedLine(lineNumber);
 
-                // Use setTimeout to ensure DOM has updated with syntax highlighting
-                if (lineNumber) {
+                // Only scroll if the highlight path has changed, not on every data update
+                const pathChanged = lastHighlightPath !== highlightPath;
+                if (lineNumber && pathChanged) {
+                    setLastHighlightPath(highlightPath);
+                    // Use setTimeout to ensure DOM has updated with syntax highlighting
                     setTimeout(() => {
                         scrollToLine(lineNumber);
                     }, 100);
                 }
             } else {
                 setHighlightedLine(null);
+                if (lastHighlightPath !== undefined) {
+                    setLastHighlightPath(undefined);
+                }
             }
         } catch (error) {
             console.error('Error parsing JSON for highlighting:', error);
             setJsonLines([]);
         }
-    }, [jsonData, highlightPath]);
+    }, [jsonData, highlightPath, lastHighlightPath]);
 
     const findLineNumberForPath = (lines: string[], path: string, pathMap: Record<string, { section: string, offset: number }>): number | null => {
         try {
@@ -307,7 +313,7 @@ export function JsonPreviewPanel({
     const barClass = percent >= 90 ? 'bg-red-500' : percent >= 75 ? 'bg-yellow-500' : 'bg-green-500';
 
     return (
-        <div className="h-full flex flex-col border-l border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col max-h-[calc(100vh-8rem)] border-l border-zinc-200 dark:border-zinc-800">
             {/* Header */}
             <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
                 <div className="flex items-start justify-between">
@@ -359,7 +365,7 @@ export function JsonPreviewPanel({
             </div>
 
             {/* JSON Content */}
-            <div className="flex-1 overflow-auto p-3 bg-zinc-50 dark:bg-zinc-950 text-xs json-preview-scroll">
+            <div className="overflow-auto p-3 bg-zinc-50 dark:bg-zinc-950 text-xs json-preview-scroll">
                 <div className="rounded-lg overflow-hidden">
                     {isValidJson ? (
                         <div className="text-[11px] leading-5">
@@ -378,7 +384,7 @@ export function JsonPreviewPanel({
                             )}
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center h-full text-zinc-500 dark:text-zinc-400">
+                        <div className="flex items-center justify-center h-64 text-zinc-500 dark:text-zinc-400">
                             <div className="text-center">
                                 <p className="text-sm">Configure your chain to see the genesis JSON</p>
                                 {jsonData.startsWith("Error:") && (

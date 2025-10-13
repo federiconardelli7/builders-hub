@@ -62,15 +62,15 @@ function GenesisWizardContent({ children, genesisData, onGenesisDataChange, foot
 
     // Desktop layout - split view with global footer
     return (
-        <div className="flex flex-col h-[calc(100vh-300px)] min-h-[500px] bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-            <div className="flex flex-1 min-h-0">
+        <div className="flex flex-col bg-white dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800">
+            <div className="flex">
                 {/* Left Panel - Configuration */}
-                <div className="flex-1 overflow-y-auto p-5 bg-white dark:bg-zinc-950 text-[13px]">
+                <div className="flex-1 p-5 bg-white dark:bg-zinc-950 text-[13px]">
                     {children}
                 </div>
 
                 {/* Right Panel - JSON Preview */}
-                <div className="w-[640px] xl:w-[720px] border-l border-zinc-200 dark:border-zinc-800">
+                <div className="w-[640px] xl:w-[720px] border-l border-zinc-200 dark:border-zinc-800 sticky top-4 self-start">
                     <JsonPreviewPanel
                         jsonData={genesisData}
                         onJsonUpdate={onGenesisDataChange}
