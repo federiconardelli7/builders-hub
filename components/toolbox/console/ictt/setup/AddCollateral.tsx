@@ -405,8 +405,8 @@ function AddCollateral() {
                 address: tokenHomeAddress as Address,
                 abi: tokenHomeABI,
                 functionName: 'addCollateral',
-                account: coreWalletClient.account,
                 chain: sourceL1ViemChain,
+                account: walletEVMAddress as `0x${string}`,
             };
             
             // For native tokens, amount is sent as value; for ERC20, as an argument
@@ -419,7 +419,10 @@ function AddCollateral() {
             
             const { request } = await publicClient.simulateContract(simulateParams);
 
-            const writePromise = coreWalletClient.writeContract(request);
+            const writePromise = coreWalletClient.writeContract({
+                ...request,
+                account: walletEVMAddress,
+            });
             notify({
                 type: 'call',
                 name: 'Add Collateral'
