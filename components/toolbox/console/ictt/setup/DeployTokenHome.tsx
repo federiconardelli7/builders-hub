@@ -59,7 +59,6 @@ export default function DeployTokenHome() {
       tokenType === "erc20"
         ? exampleErc20Address
         : wrappedNativeTokenAddress || selectedL1?.wrappedTokenAddress;
-    if (!tokenAddress) return;
     setTokenAddress(tokenAddress);
   }, [tokenType, selectedL1, exampleErc20Address]);
 
