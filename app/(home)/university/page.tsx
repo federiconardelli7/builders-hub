@@ -157,28 +157,12 @@ export default function Page() {
         {/* Photo Slideshow Section */}
         <section className="mt-16">
           <UniversitySlideshow className="mb-8" />
-          <p className="text-center text-xl font-semibold">
+          <p className="text-center text-2xl md:text-3xl font-semibold">
             Learn, connect, build and innovate with Avalanche.
           </p>
         </section>
 
-        {/* University Statistics */}
-        <section className="mt-24">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-red-500">500+</div>
-              <div className="text-muted-foreground">Universities Worldwide</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-red-500">50,000+</div>
-              <div className="text-muted-foreground">Students Engaged</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-red-500">100+</div>
-              <div className="text-muted-foreground">Faculty Members</div>
-            </div>
-          </div>
-        </section>
+
 
         {/* LEARN Section */}
         <section className="space-y-12 mt-24">
@@ -202,7 +186,7 @@ export default function Page() {
               href="/codebase-entrepreneur-academy"
             />
             <ProgramCard
-              title="Avalanche Faculty Development Program"
+              title="Faculty Development Program"
               description="Apply now for our next development training for faculty, learn how to integrate blockchain in your curriculum and connect with fellow educators."
               icon={<Users className="w-6 h-6 text-foreground" />}
               href="https://4h8ew.share.hsforms.com/22moDWT9uT1mWJcIrdTPnZA"
@@ -221,15 +205,11 @@ export default function Page() {
           </div>
           
           {/* Stay in the loop */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold">Stay in the loop</h3>
-            <p className="text-muted-foreground">
-              Subscribe to our newsletter and be the first to know about upcoming university events, 
-              internship opportunities, and more.
-            </p>
+          <div className="space-y-6">    
             <ActionCard
-              title="Newsletter Subscription"
-              description="Get updates on university events, internships, and opportunities"
+              title="Stay in the Loop with the Newsletter"
+              description="Subscribe to our newsletter and be the first to know about upcoming university events, 
+              internship opportunities, and more."
               icon={<Mail className="w-6 h-6 text-foreground" />}
               href="https://4h8ew.share.hsforms.com/10iRrhSW3Q9Od8rcOda5O2A4h8ew"
               external
@@ -238,13 +218,9 @@ export default function Page() {
 
           {/* Attend events */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-semibold">Attend our Avalanche events</h3>
-            <p className="text-muted-foreground">
-              Check out our Team1 and Avalanche global events and attend an event near you.
-            </p>
             <ActionCard
-              title="View Events"
-              description="Find and attend Avalanche events in your area"
+              title="Attend Avalanche Events"
+              description="Check out our Team1 and Avalanche global events and attend an event near you."
               icon={<Calendar className="w-6 h-6 text-foreground" />}
               href="/events"
             />
@@ -256,7 +232,7 @@ export default function Page() {
             <p className="text-muted-foreground">
               Make new friends and join the conversation on our telegram groups for university students and educators.
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <ActionCard
                 title="Avalanche Academy Telegram"
                 description="Connect with students and educators in our main telegram group"
@@ -267,6 +243,13 @@ export default function Page() {
               <ActionCard
                 title="University Students Group"
                 description="Join the dedicated group for university students"
+                icon={<GraduationCap className="w-6 h-6 text-foreground" />}
+                href="http://t.me/avalancheacademy/4960"
+                external
+              />
+              <ActionCard
+                title="Entrepreneur Academy Chat"
+                description="Connect with other entrepreneurs and get support for your startup."
                 icon={<Users className="w-6 h-6 text-foreground" />}
                 href="http://t.me/avalancheacademy/4960"
                 external

@@ -64,8 +64,8 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
 
   if (loading) {
     return (
-      <div className={`w-full ${className}`}>
-        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
+      <div className={`w-full max-w-3xl mx-auto px-4 ${className}`}>
+        <div className="aspect-video bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-muted-foreground/30 shadow-lg border-border/50">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted-foreground/20 flex items-center justify-center animate-pulse">
               <svg
@@ -91,8 +91,8 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
 
   if (error) {
     return (
-      <div className={`w-full ${className}`}>
-        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
+      <div className={`w-full max-w-3xl mx-auto px-4 ${className}`}>
+        <div className="aspect-video bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-muted-foreground/30 shadow-lg border-border/50">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
               <svg
@@ -119,8 +119,8 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
 
   if (images.length === 0) {
     return (
-      <div className={`w-full ${className}`}>
-        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
+      <div className={`w-full max-w-3xl mx-auto px-4 ${className}`}>
+        <div className="aspect-video bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-muted-foreground/30 shadow-lg border-border/50">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted-foreground/20 flex items-center justify-center">
               <svg
@@ -147,8 +147,8 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
   }
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+    <div className={`w-full max-w-3xl mx-auto px-4 ${className}`}>
+      <div className="relative aspect-video bg-muted rounded-xl overflow-hidden shadow-lg border border-border/50">
         {/* Main Image */}
         <div className="relative w-full h-full">
           <Image
@@ -165,18 +165,18 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white"
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-all duration-200"
                 onClick={prevImage}
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white"
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-all duration-200"
                 onClick={nextImage}
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </>
           )}
@@ -188,10 +188,10 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
+                className={`w-3 h-3 rounded-full transition-all duration-200 ${
                   index === currentIndex
-                    ? 'bg-white'
-                    : 'bg-white/50 hover:bg-white/75'
+                    ? 'bg-white shadow-lg scale-110'
+                    : 'bg-white/60 hover:bg-white/80 hover:scale-105'
                 }`}
                 onClick={() => goToImage(index)}
                 aria-label={`Go to slide ${index + 1}`}
@@ -202,7 +202,7 @@ export default function UniversitySlideshow({ className = "" }: UniversitySlides
 
         {/* Image Counter */}
         {images.length > 1 && (
-          <div className="absolute top-4 right-4 bg-black/20 text-white px-3 py-1 rounded-full text-sm">
+          <div className="absolute top-4 right-4 bg-black/30 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm border border-white/20">
             {currentIndex + 1} / {images.length}
           </div>
         )}
