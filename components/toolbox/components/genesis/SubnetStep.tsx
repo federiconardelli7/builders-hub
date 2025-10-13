@@ -15,30 +15,26 @@ interface SubnetStepProps {
 
 export function SubnetStep({ subnetId, onSubnetIdChange }: SubnetStepProps) {
     const { pChainAddress } = useWalletStore();
-    const { avalancheWalletClient } = useConnectedWallet();
+    const { coreWalletClient } = useConnectedWallet();
     const { notify } = useConsoleNotifications();
     const [isCreatingSubnet, setIsCreatingSubnet] = useState(false);
 
-    const handleCreateSubnet = async () => {
+    async function handleCreateSubnet() {
         setIsCreatingSubnet(true);
 
-        const createSubnetTx = await avalancheWalletClient.pChain.prepareCreateSubnetTxn({
-            subnetOwners: {
-                addresses: [pChainAddress],
-                threshold: 1,
-            }
+        const createSubnetTx = coreWalletClient.createSubnet({
+            subnetOwners: [pChainAddress]
         });
-        const txnResponse = avalancheWalletClient.sendXPTransaction(createSubnetTx);
 
-        notify('createSubnet', txnResponse);
+        notify('createSubnet', createSubnetTx);
 
         try {
-            const txID = await txnResponse;
-            onSubnetIdChange(txID.txHash);
+            const txID = await createSubnetTx;
+            onSubnetIdChange(txID);
         } finally {
             setIsCreatingSubnet(false);
         }
-    };
+    }
 
     return (
         <div className="space-y-6 text-[13px]">
