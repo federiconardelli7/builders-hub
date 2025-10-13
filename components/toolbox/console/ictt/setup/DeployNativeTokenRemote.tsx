@@ -150,7 +150,7 @@ export default function DeployNativeTokenRemote() {
             const constructorArgs = [
                 {
                     teleporterRegistryAddress: teleporterRegistryAddress as `0x${string}`,
-                    teleporterManager: teleporterManager || coreWalletClient.account.address,
+                    teleporterManager: teleporterManager || walletEVMAddress,
                     minTeleporterVersion: BigInt(minTeleporterVersion),
                     tokenHomeBlockchainID: tokenHomeBlockchainIDHex as `0x${string}`,
                     tokenHomeAddress: homeAddress as `0x${string}`,
@@ -202,6 +202,7 @@ export default function DeployNativeTokenRemote() {
             <Container
                 title="Deploy Native Token Remote Contract"
                 description="Deploy the NativeTokenRemote contract for your native token."
+                githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/ictt/setup/DeployNativeTokenRemote.tsx"
             >
 
                 <div>

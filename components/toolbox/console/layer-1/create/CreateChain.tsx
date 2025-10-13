@@ -10,6 +10,7 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
 // Import new Genesis Wizard components
 import { GenesisWizard } from "@/components/toolbox/components/genesis/GenesisWizard";
@@ -21,7 +22,8 @@ const metadata: ConsoleToolMetadata = {
     description: "Create a subnet and add a new blockchain with custom parameters and genesis data",
     walletRequirements: [
         WalletRequirementsConfigKey.PChainBalance
-    ]
+    ],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 interface CreateChainProps extends BaseConsoleToolProps {
