@@ -136,7 +136,7 @@ const WALLET_REQUIREMENTS: Record<WalletRequirementsConfigKey, WalletRequirement
         icon: Wallet,
         action: ACTIONS.DOWNLOAD_CORE_WALLET,
         getStatus: (walletState: WalletState) => ({
-            met: !!walletState.coreWalletClient,
+            met: walletState.bootstrapped,
             waiting: false // Core wallet detection is immediate
         })
     },
