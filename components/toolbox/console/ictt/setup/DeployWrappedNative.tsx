@@ -1,7 +1,7 @@
 "use client";
 
 import WrappedNativeToken from "@/contracts/icm-contracts/compiled/WrappedNativeToken.json";
-import { useToolboxStore, useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
+import { useViemChainStore } from "@/components/toolbox/stores/toolboxStore";
 import { useWrappedNativeToken, useSetWrappedNativeToken } from "@/components/toolbox/stores/l1ListStore";
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useNativeCurrencyInfo, useSetNativeCurrencyInfo } from "@/components/toolbox/stores/l1ListStore";
@@ -23,7 +23,6 @@ import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-
 // Pre-deployed wrapped native token address (from genesis)
 // This is the standard address used in the pre-installed contracts section
 const PREDEPLOYED_WRAPPED_NATIVE_ADDRESS = '0x1111111111111111111111111111111111111111';
-
 
 const metadata: ConsoleToolMetadata = {
     title: "Wrapped Native Token",
