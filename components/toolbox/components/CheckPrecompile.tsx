@@ -32,7 +32,7 @@ export const CheckPrecompile = ({
     docsLink,
     docsLinkText = "Learn how to activate this precompile"
 }: CheckPrecompileProps) => {
-    const { coreWalletClient } = useWalletStore();
+    const { coreWalletClient, walletChainId } = useWalletStore();
     const [state, setState] = useState<PrecompileState>({
         isActive: false,
         isLoading: false,
@@ -60,7 +60,7 @@ export const CheckPrecompile = ({
         };
 
         checkPrecompileStatus();
-    }, [coreWalletClient, configKey]);
+    }, [coreWalletClient, configKey, walletChainId]);
 
     if (state.isLoading) {
         return (
