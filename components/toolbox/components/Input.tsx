@@ -138,7 +138,7 @@ export function Input({
         {suggestions && suggestions.length > 0 && (
           <div className={cn(
             "p-3 rounded-b-lg bg-zinc-50/50 dark:bg-zinc-900/30 border border-t-0 border-zinc-200/50 dark:border-zinc-800/50",
-            (error || helperText) && "pt-0"
+            (helperText) && "pt-0"
           )}>
             <div className="text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-2">Suggestions:</div>
             <div className="space-y-2">
