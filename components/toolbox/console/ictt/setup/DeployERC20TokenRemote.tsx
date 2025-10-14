@@ -22,14 +22,22 @@ import { utils } from "@avalabs/avalanchejs";
 import ERC20TokenHomeABI from "@/contracts/icm-contracts/compiled/ERC20TokenHome.json";
 import ExampleERC20 from "@/contracts/icm-contracts/compiled/ExampleERC20.json";
 import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchainId";
-import { Container } from "@/components/toolbox/components/Container";
 import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import TeleporterRegistryAddressInput from "@/components/toolbox/components/TeleporterRegistryAddressInput";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { AcknowledgementCallout } from "@/components/toolbox/components/AcknowledgementCallout";
 import { LockedContent } from "@/components/toolbox/components/LockedContent";
+import { ConsoleToolMetadata, withConsoleToolMetadata } from "@/components/toolbox/components/WithConsoleToolMetadata";
+import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
 
-export default function DeployERC20TokenRemote() {
+const metadata: ConsoleToolMetadata = {
+  title: "Deploy ERC20 Token Remote Contract",
+  description: "Deploy the ERC20TokenRemote contract for your ERC20 token.",
+  walletRequirements: [WalletRequirementsConfigKey.EVMChainBalance],
+  githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
+};
+
+function DeployERC20TokenRemote() {
   const [criticalError, setCriticalError] = useState<Error | null>(null);
   const { erc20TokenRemoteAddress, setErc20TokenRemoteAddress } =
     useToolboxStore();
@@ -242,11 +250,7 @@ export default function DeployERC20TokenRemote() {
   }
 
   return (
-    <Container
-      title="Deploy ERC20 Token Remote Contract"
-      description="Deploy the ERC20TokenRemote contract for your ERC20 token."
-      githubUrl={generateConsoleToolGitHubUrl(import.meta.url)}
-    >
+    <>
       <div>
         <p className="mt-2">
           This deploys an `ERC20TokenRemote` contract to the current network (
@@ -388,6 +392,8 @@ export default function DeployERC20TokenRemote() {
           : "Deploy ERC20 Token Remote"}
       </Button>
       </LockedContent>
-    </Container>
+    </>
   );
 }
+
+export default withConsoleToolMetadata(DeployERC20TokenRemote, metadata);

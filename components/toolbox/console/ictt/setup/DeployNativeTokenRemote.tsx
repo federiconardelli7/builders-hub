@@ -16,13 +16,21 @@ import ERC20TokenHomeABI from "@/contracts/icm-contracts/compiled/ERC20TokenHome
 import ExampleERC20 from "@/contracts/icm-contracts/compiled/ExampleERC20.json";
 import SelectBlockchainId from "@/components/toolbox/components/SelectBlockchainId";
 import { CheckPrecompile } from "@/components/toolbox/components/CheckPrecompile";
-import { Container } from "@/components/toolbox/components/Container";
 import TeleporterRegistryAddressInput from "@/components/toolbox/components/TeleporterRegistryAddressInput";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { AcknowledgementCallout } from "@/components/toolbox/components/AcknowledgementCallout";
 import { LockedContent } from "@/components/toolbox/components/LockedContent";
+import { ConsoleToolMetadata, withConsoleToolMetadata } from "@/components/toolbox/components/WithConsoleToolMetadata";
+import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
+import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 
-export default function DeployNativeTokenRemote() {
+const metadata: ConsoleToolMetadata = {
+    title: "Deploy Native Token Remote Contract",
+    description: "Deploy the NativeTokenRemote contract for your native token.",
+    walletRequirements: [WalletRequirementsConfigKey.EVMChainBalance],
+    githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
+};
+function DeployNativeTokenRemote() {
     const [criticalError, setCriticalError] = useState<Error | null>(null);
     const {
         nativeTokenRemoteAddress,
@@ -221,11 +229,6 @@ export default function DeployNativeTokenRemote() {
             docsLink="https://build.avax.network/docs/avalanche-l1s/upgrade/customize-avalanche-l1#network-upgrades-enabledisable-precompiles"
             docsLinkText="Learn how to activate the Native Minter precompile"
         >
-            <Container
-                title="Deploy Native Token Remote Contract"
-                description="Deploy the NativeTokenRemote contract for your native token."
-                githubUrl="https://github.com/ava-labs/builders-hub/edit/master/components/toolbox/console/ictt/setup/DeployNativeTokenRemote.tsx"
-            >
 
                 <div>
                     <p className="mt-2">
@@ -380,7 +383,8 @@ export default function DeployNativeTokenRemote() {
                     {nativeTokenRemoteAddress ? "Re-Deploy Native Token Remote" : "Deploy Native Token Remote"}
                 </Button>
                 </LockedContent>
-            </Container>
         </CheckPrecompile>
     );
 } 
+
+export default withConsoleToolMetadata(DeployNativeTokenRemote, metadata);
