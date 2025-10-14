@@ -261,7 +261,7 @@ export function useWalletRequirements(configKey: WalletRequirementsConfigKey | W
         selectedL1Balance,
         bootstrapped,
         isLoading,
-    }), [coreWalletClient, isTestnet, walletEVMAddress, walletChainId, pChainAddress, pChainBalance, cChainBalance, selectedL1Balance, bootstrapped, isLoading]);
+    }), [coreWalletClient, isTestnet, walletEVMAddress, walletChainId, pChainAddress, pChainBalance, cChainBalance, selectedL1Balance, bootstrapped]);
 
     // Action functions for each requirement
     const handleConnectWallet = async () => {
