@@ -290,7 +290,7 @@ export default function Page() {
                 <Link href="/student-launchpad" className="group">
                   <div className="flex items-center gap-3 px-6 py-3 rounded-lg border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-colors">
                     <UserPlus className="w-5 h-5 text-red-500" />
-                    <span className="font-medium">Submit a Request</span>
+                    <span className="font-medium">Join the BuilderHub and Submit a Request</span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-red-500 transition-colors" />
                   </div>
                 </Link>
