@@ -258,7 +258,7 @@ export default function Page() {
                     <DollarSign className="w-6 h-6 text-red-500" />
                   </div>
                   <h3 className="font-semibold text-lg">Funding Support</h3>
-                  <p className="text-muted-foreground">Get financial support for your blockchain events and initiatives</p>
+                  <p className="text-muted-foreground">Get financial support <br> for your blockchain events and initiatives</p>
                 </div>
                 <div className="text-center space-y-4">
                   <div className="w-12 h-12 rounded-lg bg-orange-500/10 dark:bg-orange-500/20 flex items-center justify-center mx-auto border border-orange-500/20">
