@@ -204,81 +204,58 @@ export default function Page() {
             </p>
           </div>
           
-          {/* Stay in the loop */}
-          <div className="space-y-6">    
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Stay in the loop */}
             <ActionCard
               title="Stay in the Loop with the Newsletter"
-              description="Subscribe to our newsletter and be the first to know about upcoming university events, 
-              internship opportunities, and more."
+              description="Subscribe to our newsletter and be the first to know about upcoming university events, internship opportunities, and more."
               icon={<Mail className="w-6 h-6 text-foreground" />}
               href="https://4h8ew.share.hsforms.com/10iRrhSW3Q9Od8rcOda5O2A4h8ew"
               external
             />
-          </div>
 
-          {/* Attend events */}
-          <div className="space-y-6">
+            {/* Attend events */}
             <ActionCard
               title="Attend Avalanche Events"
               description="Check out our Team1 and Avalanche global events and attend an event near you."
               icon={<Calendar className="w-6 h-6 text-foreground" />}
               href="/events"
             />
-          </div>
 
-          {/* Join communities */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold">Join our communities on telegram</h3>
-            <p className="text-muted-foreground">
-              Make new friends and join the conversation on our telegram groups for university students and educators.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6">
-              <ActionCard
-                title="Avalanche Academy Telegram"
-                description="Connect with students and educators in our main telegram group"
-                icon={<MessageSquare className="w-6 h-6 text-foreground" />}
-                href="http://t.me/avalancheacademy"
-                external
-              />
-              <ActionCard
-                title="University Students Group"
-                description="Join the dedicated group for university students"
-                icon={<GraduationCap className="w-6 h-6 text-foreground" />}
-                href="http://t.me/avalancheacademy/4960"
-                external
-              />
-              <ActionCard
-                title="Entrepreneur Academy Chat"
-                description="Connect with other entrepreneurs and get support for your startup."
-                icon={<Users className="w-6 h-6 text-foreground" />}
-                href="https://t.me/c/avalancheacademy/10068"
-                external
-              />
-            </div>
+            {/* Join communities */}
+            <ActionCard
+              title="Join Our Communities"
+              description="Dedicated chats for university students, educators, and entrepreneurs. Find study groups, get support for your projects, and network with like-minded builders."
+              icon={<MessageSquare className="w-6 h-6 text-foreground" />}
+              href="http://t.me/avalancheacademy"
+              external
+            />
           </div>
+        </section>
 
-          {/* Student Club Launchpad */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold">Student Club Launchpad</h3>
-            <p className="text-muted-foreground">
-              Want more Avalanche on your campus? 
+        {/* Student Club Launchpad Section */}
+        <section className="space-y-12 mt-24">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold">STUDENT CLUB LAUNCHPAD</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Want more Avalanche on your campus? Get access to resources for your club, from guest speakers to teaching materials and funding for your event.
             </p>
-            <div className="grid md:grid-cols-3 gap-6">
-              <ActionCard
-                title="Submit a request"
-                description="Get access to resources for your university or club, from guest speakers to teaching materials and funding for your event."
-                icon={<UserPlus className="w-6 h-6 text-foreground" />}
-                href="/student-launchpad"
-                
-              />
-              <ActionCard
-                title="Complete your student profile"
-                description="Let us know who you are and what you're interested in."
-                icon={<Mic className="w-6 h-6 text-foreground" />}
-                href="/students"
-                external
-              />
-            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <ActionCard
+              title="Submit a request"
+              description="Get access to resources for your university or club, from guest speakers to teaching materials and funding for your event."
+              icon={<UserPlus className="w-6 h-6 text-foreground" />}
+              href="/student-launchpad"
+            />
+            <ActionCard
+              title="Complete your student profile"
+              description="Let us know who you are and what you're interested in."
+              icon={<Mic className="w-6 h-6 text-foreground" />}
+              href="/students"
+              external
+            />
           </div>
         </section>
 
