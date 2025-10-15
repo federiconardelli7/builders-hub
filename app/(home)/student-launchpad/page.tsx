@@ -4,15 +4,42 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function StudentLaunchpadPage() {
   const { resolvedTheme } = useTheme()
   const arrowColor = resolvedTheme === "dark" ? "white" : "black"
   const [iframeLoaded, setIframeLoaded] = useState(false)
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
   const handleIframeLoad = () => {
     setIframeLoaded(true)
+  }
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      const currentUrl = window.location.href
+      const loginUrl = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`
+      router.push(loginUrl)
+    }
+  }, [status, router])
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  // Don't render the form if not authenticated (will redirect)
+  if (status === 'unauthenticated') {
+    return null
   }
 
   return (
