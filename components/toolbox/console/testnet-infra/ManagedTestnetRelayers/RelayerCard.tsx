@@ -19,7 +19,7 @@ import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
 import { createPublicClient, http, formatEther, parseEther, Chain } from 'viem';
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import { useWalletStore } from "@/components/toolbox/stores/walletStore";
-import { useL1ListStore } from "@/components/toolbox/stores/l1ListStore";
+import { useL1ListStore, L1ListItem } from "@/components/toolbox/stores/l1ListStore";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 
 interface RelayerCardProps {
@@ -79,7 +79,7 @@ export default function RelayerCard({
     const { l1List } = useL1ListStore()();
     const { notify } = useConsoleNotifications();
 
-    const timeRemaining = calculateTimeRemaining(relayer.expiresAt);
+    const timeRemaining = calculateTimeRemaining(String(relayer.expiresAt));
     const statusData = getStatusData(timeRemaining);
 
     // Helper to get chain info from L1 list or fallback
@@ -90,7 +90,7 @@ export default function RelayerCard({
         }
         
         // Look up in L1 list by blockchain ID
-        const l1 = l1List.find(l1 => l1.id === config.blockchainId);
+        const l1 = l1List.find((item: L1ListItem) => item.id === config.blockchainId);
         if (l1) {
             return { name: l1.name, coinName: l1.coinName };
         }
@@ -153,7 +153,7 @@ export default function RelayerCard({
 
             // Get chain info for the transaction
             const chainInfo = getChainInfo(config);
-            const l1 = l1List.find(l1 => l1.id === config.blockchainId);
+            const l1 = l1List.find((item: L1ListItem) => item.id === config.blockchainId);
             const evmChainId = l1?.evmChainId || (config.rpcUrl.includes('avax-test.network') ? 43113 : parseInt(config.blockchainId.slice(0, 8), 16));
 
             const viemChain: Chain = {
