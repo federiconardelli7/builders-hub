@@ -261,28 +261,21 @@ export default function Page() {
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold">Student Club Launchpad</h3>
             <p className="text-muted-foreground">
-              Want more Avalanche on your campus? Get access to resources for your club, 
-              from guest speakers to teaching materials and funding for your event.
+              Want more Avalanche on your campus? 
             </p>
             <div className="grid md:grid-cols-3 gap-6">
               <ActionCard
-                title="Run a Team1 club at your university"
-                description="Start and manage an Avalanche club at your university"
+                title="Submit a request"
+                description="Get access to resources for your university or club, from guest speakers to teaching materials and funding for your event."
                 icon={<UserPlus className="w-6 h-6 text-foreground" />}
-                href="/students"
+                href="/student-launchpad"
+                
               />
               <ActionCard
-                title="Request a guest speaker"
-                description="Request a guest speaker for your next club event"
+                title="Complete your student profile"
+                description="Let us know who you are and what you're interested in."
                 icon={<Mic className="w-6 h-6 text-foreground" />}
-                href="http://t.me/avalancheacademy/8726"
-                external
-              />
-              <ActionCard
-                title="Submit an event sponsorship request"
-                description="Get funding and support for your university events"
-                icon={<DollarSign className="w-6 h-6 text-foreground" />}
-                href="http://t.me/avalancheacademy/8726"
+                href="/students"
                 external
               />
             </div>
