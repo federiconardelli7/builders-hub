@@ -11,7 +11,7 @@ interface CheckWalletRequirementsProps {
     errorMessage?: string;
 }
 
-interface PrecompileState {
+interface WalletRequirementsState {
     isActive: boolean;
     isLoading: boolean;
     error: string | null;
@@ -23,7 +23,7 @@ export const CheckWalletRequirements = ({
 }: CheckWalletRequirementsProps) => {
     const { requirements, allRequirementsMet, handleAction } = useWalletRequirements(configKey);
     const { isTestnet } = useWalletStore();
-    const [state, setState] = useState<PrecompileState>({
+    const [state, setState] = useState<WalletRequirementsState>({
         isActive: false,
         isLoading: true, // Start with loading to prevent hydration mismatch
         error: null
