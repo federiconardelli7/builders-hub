@@ -258,21 +258,30 @@ export default function Page() {
                     <DollarSign className="w-6 h-6 text-red-500" />
                   </div>
                   <h3 className="font-semibold text-lg">Funding Support</h3>
-                  <p className="text-muted-foreground">Get financial support <br> for your blockchain events and initiatives</p>
+                  <p className="text-muted-foreground">
+                    Get financial support<br />
+                    for your blockchain events and initiatives
+                  </p>
                 </div>
                 <div className="text-center space-y-4">
                   <div className="w-12 h-12 rounded-lg bg-orange-500/10 dark:bg-orange-500/20 flex items-center justify-center mx-auto border border-orange-500/20">
                     <Users className="w-6 h-6 text-orange-500" />
                   </div>
                   <h3 className="font-semibold text-lg">Expert Speakers</h3>
-                  <p className="text-muted-foreground">Access to industry experts and guest speakers for your events</p>
+                  <p className="text-muted-foreground">
+                    Access to industry experts<br />
+                    and guest speakers for your events
+                  </p>
                 </div>
                 <div className="text-center space-y-4">
                   <div className="w-12 h-12 rounded-lg bg-yellow-500/10 dark:bg-yellow-500/20 flex items-center justify-center mx-auto border border-yellow-500/20">
                     <BookOpen className="w-6 h-6 text-yellow-500" />
                   </div>
                   <h3 className="font-semibold text-lg">Learning Materials</h3>
-                  <p className="text-muted-foreground">Comprehensive teaching materials and educational resources</p>
+                  <p className="text-muted-foreground">
+                    Comprehensive teaching materials<br />
+                    and educational resources
+                  </p>
                 </div>
               </div>
               
@@ -283,13 +292,6 @@ export default function Page() {
                     <UserPlus className="w-5 h-5 text-red-500" />
                     <span className="font-medium">Submit a Request</span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-red-500 transition-colors" />
-                  </div>
-                </Link>
-                <Link href="/students" className="group">
-                  <div className="flex items-center gap-3 px-6 py-3 rounded-lg border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10 transition-colors">
-                    <Mic className="w-5 h-5 text-orange-500" />
-                    <span className="font-medium">Complete Your Profile</span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-orange-500 transition-colors" />
                   </div>
                 </Link>
               </div>
