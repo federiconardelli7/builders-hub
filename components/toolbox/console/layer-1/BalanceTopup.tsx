@@ -37,19 +37,19 @@ function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
   const [validatorTxId, setValidatorTxId] = useState<string>("")
 
   // Use nullish coalescing to safely access store values
-  const { pChainAddress, updatePChainBalance, isTestnet } = useWalletStore()
+  const { pChainAddress, isTestnet } = useWalletStore()
+  const updatePChainBalance = useWalletStore((s) => s.updatePChainBalance);
   const pChainBalance = useWalletStore((s) => s.balances.pChain);
   const { coreWalletClient } = useConnectedWallet()
 
   // Fetch P-Chain balance periodically
   useEffect(() => {
-    if (coreWalletClient && pChainAddress) {
-      // todo: check here
-      // updatePChainBalance()
-      // const interval = setInterval(updatePChainBalance, 10000)
-      // return () => clearInterval(interval)
+    if (pChainAddress) {
+      updatePChainBalance()
+      const interval = setInterval(updatePChainBalance, 10000)
+      return () => clearInterval(interval)
     }
-  }, [coreWalletClient, pChainAddress])
+  }, [pChainAddress, updatePChainBalance])
 
   // Handle confetti timeout
   useEffect(() => {
@@ -82,10 +82,6 @@ function ValidatorBalanceIncrease({ onSuccess }: BaseConsoleToolProps) {
     setStatusMessage("Increasing validator balance...")
 
     try {
-      if (!coreWalletClient) {
-        throw new Error("Wallet client not initialized")
-      }
-
       const txHash = await coreWalletClient.increaseL1ValidatorBalance({
         validationId: validatorSelection.validationId,
         balanceInAvax: amountNumber,
