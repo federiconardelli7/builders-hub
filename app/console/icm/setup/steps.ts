@@ -22,8 +22,8 @@ export const steps: StepDefinition[] = [
       key: "icm-relayer-type",
       title: "Setup ICM Relayer",
       options: [
-        { key: "self-hosted", label: "Setup Self Hosted ICM Relayer", component: ICMRelayer },
-        { key: "managed-testnet", label: "Managed Testnet Relayer", component: CreateManagedTestnetRelayer },
+        { key: "self-hosted-relayer", label: "Setup Self Hosted ICM Relayer", component: ICMRelayer },
+        { key: "managed-testnet-relayer", label: "Managed Testnet Relayer", component: CreateManagedTestnetRelayer },
       ],
     },
 ];
