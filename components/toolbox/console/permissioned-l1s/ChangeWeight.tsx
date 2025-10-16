@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/toolbox/components/Button';
-import { AlertCircle } from 'lucide-react';
+import { Alert } from '@/components/toolbox/components/Alert';
 import SelectSubnetId from '@/components/toolbox/components/SelectSubnetId';
 import { ValidatorManagerDetails } from '@/components/toolbox/components/ValidatorManagerDetails';
 import { useValidatorManagerDetails } from '@/components/toolbox/hooks/useValidatorManagerDetails';
@@ -108,12 +108,7 @@ const ChangeWeightStateless: React.FC<BaseConsoleToolProps> = ({ onSuccess }) =>
     <>
         <div className="space-y-6">
           {globalError && (
-            <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
-              <div className="flex items-center">
-                <AlertCircle className="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
-                <span>Error: {globalError}</span>
-              </div>
-            </div>
+            <Alert variant="error">Error: {globalError}</Alert>
           )}
 
           <Steps>
