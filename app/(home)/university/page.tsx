@@ -146,7 +146,7 @@ export default function Page() {
             />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            University Program
+            Campus Connect
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Discover opportunities for students and educators to explore blockchain technology, 
