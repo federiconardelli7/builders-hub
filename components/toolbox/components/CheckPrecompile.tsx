@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useWalletStore } from "../stores/walletStore";
+import { Alert } from "./Alert";
 
 type PrecompileConfigKey =
     | "warpConfig"
@@ -77,20 +78,16 @@ export const CheckPrecompile = ({
 
     if (state.error) {
         return (
-            <div className="p-4 border border-red-200 rounded-md bg-red-50 dark:bg-red-900/20 dark:border-red-800">
-                <p className="text-red-700 dark:text-red-300">
-                    Error checking {precompileName}: {state.error}
-                </p>
-            </div>
+            <Alert variant="error">
+                Error checking {precompileName}: {state.error}
+            </Alert>
         );
     }
 
     if (!state.isActive) {
         return (
-            <div className="p-4 border border-yellow-200 rounded-md bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800">
-                <p className="text-yellow-700 dark:text-yellow-300">
-                    {errorMessage || `${precompileName} is not available on this chain.`}
-                </p>
+            <Alert variant="warning">
+                {errorMessage || `${precompileName} is not available on this chain.`}
                 {docsLink && (
                     <a
                         href={docsLink}
@@ -101,7 +98,7 @@ export const CheckPrecompile = ({
                         {docsLinkText} →
                     </a>
                 )}
-            </div>
+            </Alert>
         );
     }
 

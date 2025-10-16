@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import type { Abi, AbiEvent, Address, Log } from 'viem'
 import { bytesToHex, hexToBytes } from 'viem'
-import { AlertCircle } from "lucide-react"
 import { Container } from "@/components/toolbox/components/Container"
+import { Alert } from '@/components/toolbox/components/Alert'
 import { Button } from "@/components/toolbox/components/Button"
 import SelectSubnetId from "@/components/toolbox/components/SelectSubnetId"
 import { ValidatorManagerDetails } from "@/components/toolbox/components/ValidatorManagerDetails"
@@ -397,12 +397,7 @@ const RemoveExpiredValidatorRegistration: React.FC = () => {
     >
       <div className="space-y-6">
         {error && (
-          <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
-            <div className="flex items-center">
-              <AlertCircle className="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
-              <span>Error: {error}</span>
-            </div>
-          </div>
+          <Alert variant="error">Error: {error}</Alert>
         )}
 
         <div className="space-y-2">
