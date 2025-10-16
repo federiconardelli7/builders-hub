@@ -38,7 +38,7 @@ export const Alert = ({ children, variant = 'info', className, icon = true }: Al
         className
       )}
     >
-      <div className="flex gap-2 items-start">
+      <div className="flex gap-3 items-center">
         {icon && config.icon}
         <div className="flex-1">{children}</div>
       </div>
