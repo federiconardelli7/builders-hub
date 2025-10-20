@@ -147,7 +147,7 @@ function ManagedTestnetRelayersBase() {
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            <span className="font-semibold">{relayers.length}</span> / 100 active relayers
+                            <span className="font-semibold">{relayers.length}</span> active relayers
                         </p>
                     </div>
                     <Button
