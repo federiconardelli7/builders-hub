@@ -19,6 +19,7 @@ import { BaseConsoleToolProps, ConsoleToolMetadata, withConsoleToolMetadata } fr
 import { useConnectedWallet } from "@/components/toolbox/contexts/ConnectedWalletContext";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
+import { getSubnetInfo } from "@/components/toolbox/coreViem/utils/glacier";
 
 const metadata: ConsoleToolMetadata = {
     title: "Initial Validator Manager Configuration",
@@ -44,6 +45,8 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
     const selectedL1 = useSelectedL1()();
     const [subnetId, setSubnetId] = useState("");
     const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
+    const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+    const [autoDiscoveryWarning, setAutoDiscoveryWarning] = useState<string | null>(null);
 
     const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
 
@@ -60,6 +63,44 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
             setSubnetId(selectedL1.subnetId);
         }
     }, [createChainStoreSubnetId, selectedL1, subnetId]);
+
+    // Auto-discover ValidatorManager proxy address from genesis/Glacier API
+    useEffect(() => {
+        (async function () {
+            try {
+                const subnetIdToFetch = selectedL1?.subnetId;
+                if (!subnetIdToFetch) {
+                    return;
+                }
+
+                setIsLoadingAddress(true);
+                setAutoDiscoveryWarning(null);
+
+                const info = await getSubnetInfo(subnetIdToFetch);
+                const newProxyAddress = info.l1ValidatorManagerDetails?.contractAddress || "";
+
+                if (newProxyAddress) {
+                    setProxyAddress(newProxyAddress);
+                    // Auto-trigger validation after setting the address
+                    // We'll trigger checkIfInitialized after the address is set
+                } else {
+                    setAutoDiscoveryWarning("Could not auto-discover ValidatorManager proxy address. Please enter it manually.");
+                }
+            } catch (error) {
+                console.error('Error auto-discovering proxy address:', error);
+                setAutoDiscoveryWarning("Failed to auto-discover ValidatorManager proxy address. Please enter it manually.");
+            } finally {
+                setIsLoadingAddress(false);
+            }
+        })();
+    }, [selectedL1]);
+
+    // Auto-trigger validation when proxy address is populated
+    useEffect(() => {
+        if (proxyAddress && !isLoadingAddress && !isChecking) {
+            checkIfInitialized();
+        }
+    }, [proxyAddress, isLoadingAddress]);
 
     let subnetIDHex = "";
     try {
@@ -179,9 +220,20 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
                             label="Proxy Address of ValidatorManager"
                             value={proxyAddress}
                             onChange={setProxyAddress}
-                            disabled={isInitializing}
+                            disabled={isInitializing || isLoadingAddress}
                         />
 
+                        {isLoadingAddress && (
+                            <p className="text-sm text-blue-600 dark:text-blue-400">
+                                Auto-discovering ValidatorManager proxy address from L1 configuration...
+                            </p>
+                        )}
+
+                        {autoDiscoveryWarning && (
+                            <p className="text-sm text-amber-600 dark:text-amber-400">
+                                ⚠️ {autoDiscoveryWarning}
+                            </p>
+                        )}
 
                         <Button
                             onClick={checkIfInitialized}
