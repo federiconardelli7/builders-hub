@@ -32,13 +32,29 @@ function toIso8601(datetimeLocal: string) {
   return date.toISOString();
 }
 
-const MyHackathonsList = ({ myHackathons, language, onSelect, selectedId, isDevrel }: { 
+const MyHackathonsList = ({ myHackathons, language, onSelect, selectedId, isDevrel, loading }: { 
   myHackathons: any[], 
   language: 'en' | 'es', 
   onSelect: (hackathon: any) => void, 
   selectedId: string | null, 
-  isDevrel: boolean
+  isDevrel: boolean,
+  loading: boolean
 }) => {
+  if (loading) {
+    return (
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">
+          {isDevrel ? (language === 'en' ? 'All Active Hackathons' : 'Todos los Hackathons Activos') : t[language].myHackathons}
+        </h2>
+        <div className="flex justify-center items-center py-8">
+          <svg className="animate-spin h-8 w-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        </div>
+      </div>
+    );
+  }
   if (!myHackathons.length) return null;
   return (
     <div className="mb-6">
@@ -120,25 +136,31 @@ const UpdateModal = ({ open, onClose, onConfirm, fieldsToUpdate, t, language }: 
   language: 'en' | 'es',
 }) => {
   if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6 max-w-lg w-full">
-        <h2 className="text-lg font-bold mb-4">{t[language].confirmUpdateTitle || 'Confirm Update'}</h2>
-        <p className="mb-2">{t[language].confirmUpdateText || 'You are about to update the following fields:'}</p>
-        <ul className="mb-4 list-disc pl-6">
-          {fieldsToUpdate.map(({ key, oldValue, newValue }) => (
-            <li key={key} className="mb-1">
-              <span className="font-semibold">{key}:</span> <span className="text-red-600 line-through">{String(oldValue)}</span> → <span className="text-green-600">{String(newValue)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600">{t[language].cancel}</button>
-          <button onClick={onConfirm} className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">{t[language].update}</button>
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6 max-w-4xl w-full max-h-[90vh] flex flex-col">
+          <h2 className="text-lg font-bold mb-4 flex-shrink-0">{t[language].confirmUpdateTitle || 'Confirm Update'}</h2>
+          <p className="mb-2 flex-shrink-0">{t[language].confirmUpdateText || 'You are about to update the following fields:'}</p>
+          <ul className="list-disc pl-6 flex-1 min-h-0 overflow-y-auto overflow-x-auto mb-4">
+            {fieldsToUpdate.map(({ key, oldValue, newValue }) => (
+              <li key={key} className="mb-1">
+                <div className="font-semibold mb-1">{key}:</div>
+                <div className="overflow-x-auto max-w-full border border-gray-200 dark:border-gray-700 rounded p-2">
+                  <div className="text-red-600 dark:text-red-500 line-through whitespace-nowrap text-sm min-w-max">{String(oldValue)}</div>
+                </div>
+                <div className="overflow-x-auto max-w-full border border-gray-200 dark:border-gray-700 rounded p-2">
+                  <div className="text-green-600 dark:text-green-500 whitespace-nowrap text-sm min-w-max">{String(newValue)}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="flex justify-end gap-2 mt-4 flex-shrink-0">
+            <button onClick={onClose} className="px-4 py-2 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600">{t[language].cancel}</button>
+            <button onClick={onConfirm} className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">{t[language].update}</button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 type TrackItemProps = {
@@ -730,6 +752,7 @@ const ResourceItem = memo(function ResourceItem({ resource, index, collapsed, on
 const HackathonsEdit = () => {
   const { data: session, status } = useSession();
   const [myHackathons, setMyHackathons] = useState<any[]>([]);
+  const [loadingHackathons, setLoadingHackathons] = useState<boolean>(true);
   const [isSelectedHackathon, setIsSelectedHackathon] = useState(false);
   const [selectedHackathon, setSelectedHackathon] = useState<any | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -741,7 +764,9 @@ const HackathonsEdit = () => {
   const [formDataLatest, setFormDataLatest] = useState<IDataLatest>(initialData.latest);
 
   const getMyHackathons = async () => {
-    const response = await axios.get(
+    setLoadingHackathons(true);
+    try {
+      const response = await axios.get(
         `/api/hackathons`,
         {
             headers: {
@@ -760,6 +785,11 @@ const HackathonsEdit = () => {
         console.log({response: response.data.hackathons, unfinishedHackathons});
         setMyHackathons(unfinishedHackathons);
       }
+    } catch (error) {
+      console.error('Error loading hackathons:', error);
+    } finally {
+      setLoadingHackathons(false);
+    }
   }
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -1670,39 +1700,40 @@ const HackathonsEdit = () => {
         onSelect={handleSelectHackathon} 
         selectedId={selectedHackathon?.id ?? null} 
         isDevrel={session?.user?.custom_attributes?.includes("devrel") || false}
+        loading={loadingHackathons}
       />
+      {isSelectedHackathon && (
+        <div className="flex gap-2 mb-4 sticky top-0 z-10 bg-zinc-950 py-2">
+          <Button onClick={handleCancelEdit} variant="outline">
+            {t[language].cancel}
+          </Button>
+          <Button type="button" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleUpdateClick}>
+            {t[language].update}
+          </Button>  
+          {session?.user?.custom_attributes?.includes("devrel") && (
+            <Button 
+              type="button" 
+              className={`${
+                formDataMain.is_public 
+                  ? 'bg-orange-600 hover:bg-orange-700' 
+                  : 'bg-green-600 hover:bg-green-700'
+              } text-white`}
+              onClick={() => handleToggleVisibility(selectedHackathon.id, !formDataMain.is_public)}
+            >
+              {formDataMain.is_public ? 'Hide' : 'Activate'}
+            </Button>
+          )}  
+          {/* <Button
+            type="button"
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete
+          </Button> */}
+        </div>
+      )}
       {showForm && (
         <>
-        {isSelectedHackathon && (
-            <div className="flex gap-2 mb-4">
-              <Button onClick={handleCancelEdit} variant="outline">
-                {t[language].cancel}
-              </Button>
-              <Button type="button" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleUpdateClick}>
-                {t[language].update}
-              </Button>  
-              {session?.user?.custom_attributes?.includes("devrel") && (
-                <Button 
-                  type="button" 
-                  className={`${
-                    formDataMain.is_public 
-                      ? 'bg-orange-600 hover:bg-orange-700' 
-                      : 'bg-green-600 hover:bg-green-700'
-                  } text-white`}
-                  onClick={() => handleToggleVisibility(selectedHackathon.id, !formDataMain.is_public)}
-                >
-                  {formDataMain.is_public ? 'Hide' : 'Activate'}
-                </Button>
-              )}  
-              {/* <Button
-                type="button"
-                className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={() => setShowDeleteModal(true)}
-              >
-                Delete
-              </Button> */}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="bg-zinc-900/60 border border-zinc-700 rounded-lg p-6 my-6">
               <div className="flex items-center justify-between mb-4">
