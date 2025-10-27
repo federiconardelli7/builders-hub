@@ -1,6 +1,5 @@
 "use client";
 
-import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useL1ListStore } from "@/components/toolbox/stores/l1ListStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
@@ -20,13 +19,13 @@ const metadata: ConsoleToolMetadata = {
     title: "Managed Testnet Relayers",
     description: "Manage your hosted testnet ICM relayers for cross-chain message delivery.",
     toolRequirements: [
+        WalletRequirementsConfigKey.TestnetRequired,
         WalletRequirementsConfigKey.EVMChainBalance
     ],
     githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ManagedTestnetRelayersBase() {
-    const { isTestnet } = useWalletStore();
     const { l1List } = useL1ListStore()();
     const {
         relayers,
