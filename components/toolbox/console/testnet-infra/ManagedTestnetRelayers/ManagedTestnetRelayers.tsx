@@ -1,6 +1,5 @@
 "use client";
 
-import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 import { useL1ListStore } from "@/components/toolbox/stores/l1ListStore";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/toolbox/components/Button";
@@ -12,7 +11,6 @@ import RelayersList from "./RelayersList";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { useManagedTestnetRelayers } from "@/hooks/useManagedTestnetRelayers";
 import { toast } from "@/hooks/use-toast";
-import TestnetOnly from "../ManagedTestnetNodes/TestnetOnly";
 import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
@@ -20,14 +18,14 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 const metadata: ConsoleToolMetadata = {
     title: "Managed Testnet Relayers",
     description: "Manage your hosted testnet ICM relayers for cross-chain message delivery.",
-    walletRequirements: [
+    toolRequirements: [
+        WalletRequirementsConfigKey.TestnetRequired,
         WalletRequirementsConfigKey.EVMChainBalance
     ],
     githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
 function ManagedTestnetRelayersBase() {
-    const { isTestnet } = useWalletStore();
     const { l1List } = useL1ListStore()();
     const {
         relayers,
@@ -132,13 +130,6 @@ function ManagedTestnetRelayersBase() {
             }
         }
     };
-
-    // If not on testnet, show disabled message
-    if (!isTestnet) {
-        return (
-            <TestnetOnly />
-        );
-    }
 
     return (
         <>
