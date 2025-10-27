@@ -131,18 +131,6 @@ function ManagedTestnetRelayersBase() {
         }
     };
 
-    // If not on testnet, show disabled message
-    if (!isTestnet) {
-        return (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Testnet Required</h3>
-                <p className="text-yellow-700 dark:text-yellow-300">
-                    This tool requires a connection to the testnet. Please switch to testnet mode in your Core wallet to use this feature.
-                </p>
-            </div>
-        );
-    }
-
     return (
         <>
             {/* Stats Section */}
