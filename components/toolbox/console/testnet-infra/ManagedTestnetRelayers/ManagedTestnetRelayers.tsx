@@ -12,7 +12,6 @@ import RelayersList from "./RelayersList";
 import useConsoleNotifications from "@/hooks/useConsoleNotifications";
 import { useManagedTestnetRelayers } from "@/hooks/useManagedTestnetRelayers";
 import { toast } from "@/hooks/use-toast";
-import TestnetOnly from "../ManagedTestnetNodes/TestnetOnly";
 import { ConsoleToolMetadata, withConsoleToolMetadata } from "../../../components/WithConsoleToolMetadata";
 import { generateConsoleToolGitHubUrl } from "@/components/toolbox/utils/github-url";
 import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalletRequirements";
@@ -20,7 +19,7 @@ import { WalletRequirementsConfigKey } from "@/components/toolbox/hooks/useWalle
 const metadata: ConsoleToolMetadata = {
     title: "Managed Testnet Relayers",
     description: "Manage your hosted testnet ICM relayers for cross-chain message delivery.",
-    walletRequirements: [
+    toolRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
     githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
@@ -136,7 +135,12 @@ function ManagedTestnetRelayersBase() {
     // If not on testnet, show disabled message
     if (!isTestnet) {
         return (
-            <TestnetOnly />
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Testnet Required</h3>
+                <p className="text-yellow-700 dark:text-yellow-300">
+                    This tool requires a connection to the testnet. Please switch to testnet mode in your Core wallet to use this feature.
+                </p>
+            </div>
         );
     }
 

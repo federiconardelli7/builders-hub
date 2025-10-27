@@ -20,7 +20,7 @@ import { useWalletStore } from "@/components/toolbox/stores/walletStore";
 const metadata: ConsoleToolMetadata = {
     title: "Create Managed Testnet Relayer",
     description: "Create a free testnet ICM relayer to enable cross-chain message delivery between your L1s. These relayers will shut down after 3 days. They are suitable for quick testing. For production settings or extended testing, use self-hosted relayers. You need a Builder Hub Account to use this tool.",
-    walletRequirements: [WalletRequirementsConfigKey.TestnetRequired],
+    toolRequirements: [WalletRequirementsConfigKey.TestnetRequired],
     githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
 };
 
