@@ -54,15 +54,8 @@ export function useAccountRequirements(configKey: AccountRequirementsConfigKey |
     unmetRequirements: Requirement[];
     handleAction: (requirement: Requirement) => void;
 } {
-    // Safely get session - if SessionProvider is not available, default to unauthenticated
-    let session;
-    try {
-        session = useSession();
-    } catch (error) {
-        // SessionProvider not available in this context
-        session = { status: 'unauthenticated' as const, data: null };
-    }
-    const status = session?.status || 'unauthenticated';
+    const session = useSession();
+    const status = session?.status || 'loading';
     
     const isAuthenticated: boolean = status === 'authenticated';
     const isLoading: boolean = status === 'loading'
