@@ -15,5 +15,5 @@ jobs:
       - name: Add Issue to Project
         uses: actions/add-to-project@v1.0.2
         with:
-          github-token: ${{ env.MY_GITHUB_TOKEN }}
+          github-token: ${{ env.ADMIN_GH_TOKEN }}
           project-url: https://github.com/orgs/ava-labs/projects/28
