@@ -24,7 +24,7 @@ import { Copy, Check } from "lucide-react";
 const metadata: ConsoleToolMetadata = {
     title: "Initial Validator Manager Configuration",
     description: "Initialize the ValidatorManager contract with the initial configuration",
-    walletRequirements: [
+    toolRequirements: [
         WalletRequirementsConfigKey.EVMChainBalance
     ],
     githubUrl: generateConsoleToolGitHubUrl(import.meta.url)
@@ -45,8 +45,9 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
     const selectedL1 = useSelectedL1()();
     const [subnetId, setSubnetId] = useState("");
     const createChainStoreSubnetId = useCreateChainStore()(state => state.subnetId);
+    const createChainStoreVMCAddress = useCreateChainStore()(state => state.managerAddress);
 
-    const { sendCoreWalletNotSetNotification, notify } = useConsoleNotifications();
+    const { notify } = useConsoleNotifications();
 
     useEffect(() => {
         if (walletEVMAddress && !adminAddress) {
@@ -62,6 +63,12 @@ function Initialize({ onSuccess }: BaseConsoleToolProps) {
         }
     }, [createChainStoreSubnetId, selectedL1, subnetId]);
 
+    useEffect(() => {
+        if (createChainStoreVMCAddress && !proxyAddress) {
+            setProxyAddress(createChainStoreVMCAddress);
+        }
+    }, [createChainStoreVMCAddress]);
+    
     let subnetIDHex = "";
     try {
         subnetIDHex = utils.bufferToHex(utils.base58check.decode(subnetId || ""));

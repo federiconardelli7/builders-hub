@@ -58,16 +58,22 @@ const gweiToWei = (gwei: number): number => gwei * 1000000000;
 // --- Main Component --- 
 
 type GenesisBuilderProps = {
-    genesisData: string;
-    setGenesisData: (data: string) => void;
+    genesisData?: string;
+    setGenesisData?: (data: string) => void;
     initiallyExpandedSections?: SectionId[];
 };
 
 function GenesisBuilderInner({
-    genesisData,
-    setGenesisData,
+    genesisData: externalGenesisData,
+    setGenesisData: externalSetGenesisData,
     initiallyExpandedSections = ["chainParams"]
 }: GenesisBuilderProps) {
+    // Internal state for when used standalone (e.g., in MDX files)
+    const [internalGenesisData, setInternalGenesisData] = useState<string>("");
+    
+    // Use external state if provided, otherwise use internal state
+    const genesisData = externalGenesisData !== undefined ? externalGenesisData : internalGenesisData;
+    const setGenesisData = externalSetGenesisData || setInternalGenesisData;
     const { walletEVMAddress } = useWalletStore();
     const { setHighlightPath, clearHighlight } = useGenesisHighlight();
 
@@ -271,7 +277,7 @@ function GenesisBuilderInner({
                         },
                         // Add fee and reward manager configurations
                         ...(feeManagerConfig.activated && {
-                            feeManagerAddress: {
+                            feeManagerConfig: {
                                 blockTimestamp: blockTimestamp || 0,
                                 adminAddresses: [
                                     ...(feeManagerConfig.addresses?.Admin || []).map(a => a.address),
@@ -281,7 +287,7 @@ function GenesisBuilderInner({
                             }
                         }),
                         ...(rewardManagerConfig.activated && {
-                            rewardManagerAddress: {
+                            rewardManagerConfig: {
                                 blockTimestamp: blockTimestamp || 0,
                                 adminAddresses: [
                                     ...(rewardManagerConfig.addresses?.Admin || []).map(a => a.address),
